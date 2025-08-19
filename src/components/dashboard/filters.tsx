@@ -149,9 +149,9 @@ export function Filters({
             </Popover>
           </div>
 
-          {/* Data Exec. Filter */}
+          {/* Data Execução Filter */}
           <div className="space-y-2">
-            <label className="text-sm font-medium">Data Exec.</label>
+            <label className="text-sm font-medium">Data Execução</label>
             <Popover>
               <PopoverTrigger asChild>
                 <Button

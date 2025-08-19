@@ -174,21 +174,105 @@ const Index = () => {
   });
 
   // Statistics calculations
-  const sucessoCount = filteredServices.filter(s => isSucesso(s["Satus iCare"])).length;
-  const currentMonthTotal = currentMonthServices.length;
-  const sucessoPercentage = currentMonthTotal > 0 ? Math.round((sucessoCount / currentMonthTotal) * 100) : 0;
+  // For "Retiradas Realizadas" cards: count ALL successes regardless of creation date
+  // But for percentage calculation, use current month total from selected period
+  
+  // Get services filtered only by date range (for percentage calculation base)
+  const periodFilteredServices = services.filter(service => {
+    if (filters.dateRange.from || filters.dateRange.to) {
+      const serviceDate = parseDate(service["Data Criação"]);
+      if (!serviceDate) return false;
+      if (filters.dateRange.from && serviceDate < filters.dateRange.from) return false;
+      if (filters.dateRange.to && serviceDate > filters.dateRange.to) return false;
+      return true;
+    }
+    return true; // If no date filter, consider all
+  });
 
-  // Retiradas Realizadas calculations - separating MODEM FIBRA from others
+  // Total successes (independent of creation date, but respecting other filters except date)
+  const allSucessosTotal = services.filter(s => {
+    // Apply all filters except date filters
+    let matches = isSucesso(s["Satus iCare"]);
+    
+    if (filters.statusICare && filters.statusICare !== "todos") {
+      matches = matches && s["Satus iCare"] === filters.statusICare;
+    }
+    if (filters.statusAtividade && filters.statusAtividade !== "todos") {
+      matches = matches && s["Status Atividade"] === filters.statusAtividade;
+    }
+    if (filters.tipoSubtipo && filters.tipoSubtipo !== "todos") {
+      matches = matches && s["Tipo-Subtipo de Serviço"] === filters.tipoSubtipo;
+    }
+    if (filters.modelo && filters.modelo !== "todos") {
+      matches = matches && s["Modelo"] === filters.modelo;
+    }
+    if (filters.dataExecRange.from || filters.dataExecRange.to) {
+      const execDate = parseDate(s["Data Exec."]);
+      if (!execDate) return false;
+      if (filters.dataExecRange.from && execDate < filters.dataExecRange.from) return false;
+      if (filters.dataExecRange.to && execDate > filters.dataExecRange.to) return false;
+    }
+    
+    return matches;
+  }).length;
+
+  // For percentage: use period filtered services as base
+  const periodTotal = periodFilteredServices.length;
+  const sucessoPercentage = periodTotal > 0 ? Math.round((allSucessosTotal / periodTotal) * 100) : 0;
+
+  // MODEM FIBRA calculations
+  const sucessoModemFibraTotal = services.filter(s => {
+    let matches = s["Modelo"] === "MODEM FIBRA" && isSucesso(s["Satus iCare"]);
+    
+    // Apply non-date filters
+    if (filters.statusICare && filters.statusICare !== "todos") {
+      matches = matches && s["Satus iCare"] === filters.statusICare;
+    }
+    if (filters.statusAtividade && filters.statusAtividade !== "todos") {
+      matches = matches && s["Status Atividade"] === filters.statusAtividade;
+    }
+    if (filters.tipoSubtipo && filters.tipoSubtipo !== "todos") {
+      matches = matches && s["Tipo-Subtipo de Serviço"] === filters.tipoSubtipo;
+    }
+    if (filters.dataExecRange.from || filters.dataExecRange.to) {
+      const execDate = parseDate(s["Data Exec."]);
+      if (!execDate) return false;
+      if (filters.dataExecRange.from && execDate < filters.dataExecRange.from) return false;
+      if (filters.dataExecRange.to && execDate > filters.dataExecRange.to) return false;
+    }
+    
+    return matches;
+  }).length;
   
-  // MODEM FIBRA calculations - total successes vs current month total
-  const sucessoModemFibraTotal = services.filter(s => s["Modelo"] === "MODEM FIBRA" && isSucesso(s["Satus iCare"])).length;
-  const currentMonthModemFibra = currentMonthServices.filter(s => s["Modelo"] === "MODEM FIBRA");
-  const sucessoModemFibraPercentage = currentMonthModemFibra.length > 0 ? Math.round((sucessoModemFibraTotal / currentMonthModemFibra.length) * 100) : 0;
+  const periodModemFibraTotal = periodFilteredServices.filter(s => s["Modelo"] === "MODEM FIBRA").length;
+  const sucessoModemFibraPercentage = periodModemFibraTotal > 0 ? Math.round((sucessoModemFibraTotal / periodModemFibraTotal) * 100) : 0;
   
-  // Other models calculations - total successes vs current month total
-  const sucessoOutrosTotal = services.filter(s => s["Modelo"] !== "MODEM FIBRA" && isSucesso(s["Satus iCare"])).length;
-  const currentMonthOutros = currentMonthServices.filter(s => s["Modelo"] !== "MODEM FIBRA");
-  const sucessoOutrosPercentage = currentMonthOutros.length > 0 ? Math.round((sucessoOutrosTotal / currentMonthOutros.length) * 100) : 0;
+  // Other models calculations
+  const sucessoOutrosTotal = services.filter(s => {
+    let matches = s["Modelo"] !== "MODEM FIBRA" && isSucesso(s["Satus iCare"]);
+    
+    // Apply non-date filters
+    if (filters.statusICare && filters.statusICare !== "todos") {
+      matches = matches && s["Satus iCare"] === filters.statusICare;
+    }
+    if (filters.statusAtividade && filters.statusAtividade !== "todos") {
+      matches = matches && s["Status Atividade"] === filters.statusAtividade;
+    }
+    if (filters.tipoSubtipo && filters.tipoSubtipo !== "todos") {
+      matches = matches && s["Tipo-Subtipo de Serviço"] === filters.tipoSubtipo;
+    }
+    if (filters.dataExecRange.from || filters.dataExecRange.to) {
+      const execDate = parseDate(s["Data Exec."]);
+      if (!execDate) return false;
+      if (filters.dataExecRange.from && execDate < filters.dataExecRange.from) return false;
+      if (filters.dataExecRange.to && execDate > filters.dataExecRange.to) return false;
+    }
+    
+    return matches;
+  }).length;
+  
+  const periodOutrosTotal = periodFilteredServices.filter(s => s["Modelo"] !== "MODEM FIBRA").length;
+  const sucessoOutrosPercentage = periodOutrosTotal > 0 ? Math.round((sucessoOutrosTotal / periodOutrosTotal) * 100) : 0;
 
   // Calculate backlog count using the same grouping logic as the status chart
   const backlogCount = filteredServices.filter(s => {
@@ -220,7 +304,7 @@ const Index = () => {
     total: filteredServices.length,
     backlog: backlogCount,
     finalizados: filteredServices.filter(s => isFinalized(s["Satus iCare"])).length,
-    sucesso: sucessoCount,
+    sucesso: allSucessosTotal,
     sucessoTrend: sucessoPercentage,
     insucesso: filteredServices.filter(s => s["Satus iCare"]?.includes('Insucesso')).length,
     emAndamento: filteredServices.filter(s => s["Satus iCare"]?.includes('Andamento')).length,
@@ -372,7 +456,7 @@ const Index = () => {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-muted-foreground">Total Entrantes no Mês Atual</p>
-                      <p className="text-xl font-bold">{currentMonthTotal}</p>
+                      <p className="text-xl font-bold">{currentMonthServices.length}</p>
                     </div>
                     <Users className="h-6 w-6 text-primary" />
                   </div>
@@ -383,7 +467,7 @@ const Index = () => {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-muted-foreground">FIBRA Entrantes no Mês Atual</p>
-                      <p className="text-xl font-bold">{currentMonthModemFibra.length}</p>
+                      <p className="text-xl font-bold">{currentMonthServices.filter(s => s["Modelo"] === "MODEM FIBRA").length}</p>
                     </div>
                     <Users className="h-6 w-6 text-success" />
                   </div>
@@ -394,7 +478,7 @@ const Index = () => {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-muted-foreground">PAYTV Entrantes no Mês Atual</p>
-                      <p className="text-xl font-bold">{currentMonthOutros.length}</p>
+                      <p className="text-xl font-bold">{currentMonthServices.filter(s => s["Modelo"] !== "MODEM FIBRA").length}</p>
                     </div>
                     <Users className="h-6 w-6 text-accent" />
                   </div>
