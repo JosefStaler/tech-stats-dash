@@ -60,7 +60,9 @@ const Index = () => {
     // Date range filter
     if (filters.dateRange.from || filters.dateRange.to) {
       filtered = filtered.filter(service => {
-        const serviceDate = new Date(service["Data Criação"].split('/').reverse().join('-'));
+        const dateStr = service["Data Criação"];
+        if (!dateStr || typeof dateStr !== 'string') return false;
+        const serviceDate = new Date(dateStr.split('/').reverse().join('-'));
         if (filters.dateRange.from && serviceDate < filters.dateRange.from) return false;
         if (filters.dateRange.to && serviceDate > filters.dateRange.to) return false;
         return true;
@@ -148,8 +150,14 @@ const Index = () => {
   const monthlyData = Array.from({ length: 6 }, (_, i) => {
     const month = new Date(2024, i, 1).toLocaleDateString('pt-BR', { month: 'short' });
     const monthServices = filteredServices.filter(s => {
-      const serviceMonth = new Date(s["Data Criação"].split('/').reverse().join('-')).getMonth();
-      return serviceMonth === i;
+      const dateStr = s["Data Criação"];
+      if (!dateStr || typeof dateStr !== 'string') return false;
+      try {
+        const serviceMonth = new Date(dateStr.split('/').reverse().join('-')).getMonth();
+        return serviceMonth === i;
+      } catch (error) {
+        return false;
+      }
     });
     
     return {
