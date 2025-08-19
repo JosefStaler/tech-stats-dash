@@ -60,6 +60,13 @@ export function Charts({
   console.log('statusICareData:', statusICareData);
   console.log('statusICareData filtered:', statusICareData.filter(item => item.value > 0));
 
+  // Dados de teste hardcoded para validar se o gráfico funciona
+  const testData = [
+    { name: 'Finalizado', value: 50 },
+    { name: 'Pendente', value: 30 },
+    { name: 'Em Andamento', value: 20 }
+  ];
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       {/* Status iCare Distribution */}
@@ -73,7 +80,7 @@ export function Charts({
         <CardContent>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart 
-              data={statusICareData} 
+              data={testData} 
               layout="horizontal"
               margin={{ top: 20, right: 30, left: 80, bottom: 5 }}
             >
