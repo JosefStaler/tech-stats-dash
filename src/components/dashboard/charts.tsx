@@ -25,12 +25,19 @@ interface ChartsProps {
 
 export function Charts(props: ChartsProps) {
   
-  // Dados fixos para teste
-  const testData = [
-    { name: 'Finalizado', value: 45 },
-    { name: 'Pendente', value: 25 },
-    { name: 'Em Andamento', value: 30 }
-  ];
+  console.log('=== PROPS DEBUG ===');
+  console.log('statusICareData:', props.statusICareData);
+  console.log('length:', props.statusICareData?.length);
+  console.log('=== END DEBUG ===');
+  
+  // Use dados reais se existirem, senão dados de teste
+  const chartData = props.statusICareData && props.statusICareData.length > 0 
+    ? props.statusICareData.filter(item => item.value > 0)
+    : [
+        { name: 'Finalizado', value: 45 },
+        { name: 'Pendente', value: 25 },
+        { name: 'Em Andamento', value: 30 }
+      ];
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -41,7 +48,7 @@ export function Charts(props: ChartsProps) {
         </CardHeader>
         <CardContent>
           <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={testData}>
+            <BarChart data={chartData}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="name" />
               <YAxis />
