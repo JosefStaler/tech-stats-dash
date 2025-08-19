@@ -31,26 +31,26 @@ export function Filters({ filters, onFiltersChange, tecnicos, tipos, statusOptio
   const clearFilters = () => {
     onFiltersChange({
       dateRange: { from: undefined, to: undefined },
-      status: "",
-      tecnico: "",
-      tipo: ""
+      status: "todos",
+      tecnico: "todos",
+      tipo: "todos"
     });
   };
 
   const hasActiveFilters = !!(
     filters.dateRange.from || 
     filters.dateRange.to || 
-    filters.status || 
-    filters.tecnico || 
-    filters.tipo
+    (filters.status && filters.status !== "todos") || 
+    (filters.tecnico && filters.tecnico !== "todos") || 
+    (filters.tipo && filters.tipo !== "todos")
   );
 
   const getActiveFiltersCount = () => {
     let count = 0;
     if (filters.dateRange.from || filters.dateRange.to) count++;
-    if (filters.status) count++;
-    if (filters.tecnico) count++;
-    if (filters.tipo) count++;
+    if (filters.status && filters.status !== "todos") count++;
+    if (filters.tecnico && filters.tecnico !== "todos") count++;
+    if (filters.tipo && filters.tipo !== "todos") count++;
     return count;
   };
 
@@ -141,7 +141,7 @@ export function Filters({ filters, onFiltersChange, tecnicos, tipos, statusOptio
                 <SelectValue placeholder="Todos os status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Todos os status</SelectItem>
+                <SelectItem value="todos">Todos os status</SelectItem>
                 {statusOptions.map((status) => (
                   <SelectItem key={status} value={status}>
                     {status}
@@ -164,7 +164,7 @@ export function Filters({ filters, onFiltersChange, tecnicos, tipos, statusOptio
                 <SelectValue placeholder="Todos os técnicos" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Todos os técnicos</SelectItem>
+                <SelectItem value="todos">Todos os técnicos</SelectItem>
                 {tecnicos.map((tecnico) => (
                   <SelectItem key={tecnico} value={tecnico}>
                     {tecnico}
@@ -187,7 +187,7 @@ export function Filters({ filters, onFiltersChange, tecnicos, tipos, statusOptio
                 <SelectValue placeholder="Todos os tipos" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Todos os tipos</SelectItem>
+                <SelectItem value="todos">Todos os tipos</SelectItem>
                 {tipos.map((tipo) => (
                   <SelectItem key={tipo} value={tipo}>
                     {tipo}

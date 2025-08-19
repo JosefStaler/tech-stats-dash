@@ -25,9 +25,9 @@ const Index = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [filters, setFilters] = useState<FilterState>({
     dateRange: { from: undefined, to: undefined },
-    status: "",
-    tecnico: "",
-    tipo: ""
+    status: "todos",
+    tecnico: "todos",
+    tipo: "todos"
   });
   const { toast } = useToast();
 
@@ -68,17 +68,17 @@ const Index = () => {
     }
 
     // Status filter
-    if (filters.status) {
+    if (filters.status && filters.status !== "todos") {
       filtered = filtered.filter(service => service.status === filters.status);
     }
 
     // Técnico filter
-    if (filters.tecnico) {
+    if (filters.tecnico && filters.tecnico !== "todos") {
       filtered = filtered.filter(service => service.tecnico === filters.tecnico);
     }
 
     // Tipo filter
-    if (filters.tipo) {
+    if (filters.tipo && filters.tipo !== "todos") {
       filtered = filtered.filter(service => service.tipo === filters.tipo);
     }
 
