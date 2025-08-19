@@ -72,11 +72,11 @@ export function DataTable({ data, currentPage, totalPages, onPageChange }: DataT
                 <TableCell>{service.Bairro}</TableCell>
                 <TableCell>
                   <Badge variant={
-                    service["Satus iCare"].includes("Concluído") ? "success" :
-                    service["Satus iCare"].includes("Pendente") ? "destructive" :
-                    service["Satus iCare"].includes("Andamento") ? "accent" : "secondary"
+                    (service["Satus iCare"] || '').includes("Concluído") ? "success" :
+                    (service["Satus iCare"] || '').includes("Pendente") ? "destructive" :
+                    (service["Satus iCare"] || '').includes("Andamento") ? "accent" : "secondary"
                   }>
-                    {service["Satus iCare"]}
+                    {service["Satus iCare"] || 'N/A'}
                   </Badge>
                 </TableCell>
                 <TableCell>{service["Técnico - Último Atendimento"]}</TableCell>

@@ -124,9 +124,9 @@ const Index = () => {
   // Statistics calculations
   const stats = {
     total: filteredServices.length,
-    concluidos: filteredServices.filter(s => s["Satus iCare"] === 'Concluído').length,
-    pendentes: filteredServices.filter(s => s["Satus iCare"].includes('Pendente')).length,
-    emAndamento: filteredServices.filter(s => s["Satus iCare"] === 'Em Andamento').length,
+    concluidos: filteredServices.filter(s => s["Satus iCare"]?.includes('Concluído')).length,
+    pendentes: filteredServices.filter(s => s["Satus iCare"]?.includes('Pendente')).length,
+    emAndamento: filteredServices.filter(s => s["Satus iCare"]?.includes('Andamento')).length,
     cycleTimeTotal: filteredServices.reduce((sum, s) => sum + (parseInt(s["Cycle Time"]) || 0), 0),
     cycleTimeMedia: filteredServices.length > 0 ? 
       filteredServices.reduce((sum, s) => sum + (parseInt(s["Cycle Time"]) || 0), 0) / filteredServices.length : 0
@@ -137,11 +137,12 @@ const Index = () => {
     { name: 'Concluído', value: stats.concluidos, fill: 'hsl(142 76% 36%)' },
     { name: 'Pendente', value: stats.pendentes, fill: 'hsl(45 93% 47%)' },
     { name: 'Em Andamento', value: stats.emAndamento, fill: 'hsl(36 77% 55%)' },
-    { name: 'Outros', value: filteredServices.filter(s => 
-      !s["Satus iCare"].includes('Concluído') && 
-      !s["Satus iCare"].includes('Pendente') && 
-      !s["Satus iCare"].includes('Andamento')
-    ).length, fill: 'hsl(0 84% 60%)' }
+    { name: 'Outros', value: filteredServices.filter(s => {
+      const status = s["Satus iCare"] || '';
+      return !status.includes('Concluído') && 
+             !status.includes('Pendente') && 
+             !status.includes('Andamento');
+    }).length, fill: 'hsl(0 84% 60%)' }
   ];
 
   const monthlyData = Array.from({ length: 6 }, (_, i) => {
@@ -153,9 +154,9 @@ const Index = () => {
     
     return {
       month,
-      concluidos: monthServices.filter(s => s["Satus iCare"] === 'Concluído').length,
-      pendentes: monthServices.filter(s => s["Satus iCare"].includes('Pendente')).length,
-      emAndamento: monthServices.filter(s => s["Satus iCare"] === 'Em Andamento').length,
+      concluidos: monthServices.filter(s => s["Satus iCare"]?.includes('Concluído')).length,
+      pendentes: monthServices.filter(s => s["Satus iCare"]?.includes('Pendente')).length,
+      emAndamento: monthServices.filter(s => s["Satus iCare"]?.includes('Andamento')).length,
       cycleTime: monthServices.reduce((sum, s) => sum + (parseInt(s["Cycle Time"]) || 0), 0)
     };
   });
