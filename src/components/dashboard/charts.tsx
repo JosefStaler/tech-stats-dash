@@ -90,22 +90,7 @@ export function Charts({
                   <Cell key={`cell-${index}`} fill={entry.fill || COLORS.primary} />
                 ))}
               </Pie>
-              <Tooltip 
-                content={({ active, payload }) => {
-                  if (active && payload && payload.length) {
-                    const data = payload[0].payload;
-                    return (
-                      <div className="bg-card border border-border rounded-lg shadow-lg p-3">
-                        <p className="font-medium">{data.name}</p>
-                        <p style={{ color: payload[0].color }}>
-                          Quantidade: {data.value}
-                        </p>
-                      </div>
-                    );
-                  }
-                  return null;
-                }}
-              />
+              <Tooltip />
             </PieChart>
           </ResponsiveContainer>
         </CardContent>
