@@ -377,6 +377,43 @@ const Index = () => {
               statusAtividadeOptions={statusAtividadeOptions}
             />
 
+            {/* Small Total Cards - Current Month */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <Card className="bg-gradient-card border-border/50">
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-muted-foreground">Total Mês Atual</p>
+                      <p className="text-xl font-bold">{currentMonthTotal}</p>
+                    </div>
+                    <Users className="h-6 w-6 text-primary" />
+                  </div>
+                </CardContent>
+              </Card>
+              <Card className="bg-gradient-card border-border/50">
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-muted-foreground">Total FIBRA Mês Atual</p>
+                      <p className="text-xl font-bold">{currentMonthModemFibra.length}</p>
+                    </div>
+                    <Users className="h-6 w-6 text-success" />
+                  </div>
+                </CardContent>
+              </Card>
+              <Card className="bg-gradient-card border-border/50">
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-muted-foreground">Total PAYTV Mês Atual</p>
+                      <p className="text-xl font-bold">{currentMonthOutros.length}</p>
+                    </div>
+                    <Users className="h-6 w-6 text-accent" />
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
             {/* Statistics Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
               <StatCard
