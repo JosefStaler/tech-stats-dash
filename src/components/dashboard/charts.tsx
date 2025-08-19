@@ -68,7 +68,11 @@ export function Charts({
         </CardHeader>
         <CardContent>
           <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={statusICareData} layout="horizontal">
+            <BarChart 
+              data={statusICareData.filter(item => item.value > 0)} 
+              layout="horizontal"
+              margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+            >
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
               <XAxis 
                 type="number" 
@@ -88,7 +92,7 @@ export function Charts({
                 }}
               />
               <Tooltip 
-                content={({ active, payload }) => {
+                content={({ active, payload, label }) => {
                   if (active && payload && payload.length) {
                     const data = payload[0].payload;
                     return (
@@ -105,9 +109,12 @@ export function Charts({
               />
               <Bar 
                 dataKey="value" 
-                fill={COLORS.primary}
                 radius={[0, 2, 2, 0]}
-              />
+              >
+                {statusICareData.filter(item => item.value > 0).map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={entry.fill || COLORS.primary} />
+                ))}
+              </Bar>
             </BarChart>
           </ResponsiveContainer>
         </CardContent>
