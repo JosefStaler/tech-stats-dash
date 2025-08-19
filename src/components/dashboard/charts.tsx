@@ -40,27 +40,16 @@ export function Charts({
   tipoServicoData, 
   modeloData 
 }: ChartsProps) {
-  const CustomTooltip = ({ active, payload, label }: any) => {
-    if (active && payload && payload.length) {
-      return (
-        <div className="bg-card border border-border rounded-lg shadow-lg p-3">
-          <p className="font-medium">{label}</p>
-          {payload.map((entry: any, index: number) => (
-            <p key={index} style={{ color: entry.color }}>
-              {entry.name}: {entry.value}
-            </p>
-          ))}
-        </div>
-      );
-    }
-    return null;
-  };
-
-  // Debug dos dados
+  // Debug completo de todas as props
+  console.log('=== CHARTS COMPONENT DEBUG ===');
   console.log('statusICareData:', statusICareData);
-  console.log('statusICareData filtered:', statusICareData.filter(item => item.value > 0));
+  console.log('statusAtividadeData:', statusAtividadeData);
+  console.log('monthlyData:', monthlyData);
+  console.log('tipoServicoData:', tipoServicoData);
+  console.log('modeloData:', modeloData);
+  console.log('=== END DEBUG ===');
 
-  // Dados de teste hardcoded para validar se o gráfico funciona
+  // Dados de teste simples
   const testData = [
     { name: 'Finalizado', value: 50 },
     { name: 'Pendente', value: 30 },
@@ -123,7 +112,7 @@ export function Charts({
                 fontSize={12}
               />
               <YAxis stroke="hsl(var(--foreground))" fontSize={12} />
-              <Tooltip content={<CustomTooltip />} />
+              <Tooltip />
               <Bar 
                 dataKey="value" 
                 fill={COLORS.accent}
@@ -152,7 +141,7 @@ export function Charts({
                 fontSize={12}
               />
               <YAxis stroke="hsl(var(--foreground))" fontSize={12} />
-              <Tooltip content={<CustomTooltip />} />
+              <Tooltip />
               <Legend />
               <Bar 
                 dataKey="finalizados" 
@@ -200,7 +189,6 @@ export function Charts({
                 label={{ value: 'Dias', angle: -90, position: 'insideLeft' }}
               />
               <Tooltip 
-                content={<CustomTooltip />}
                 formatter={(value: number) => [`${value} dias`, 'Cycle Time']}
               />
               <Line 
@@ -240,7 +228,7 @@ export function Charts({
                 fontSize={12}
                 width={120}
               />
-              <Tooltip content={<CustomTooltip />} />
+              <Tooltip />
               <Bar 
                 dataKey="value" 
                 fill={COLORS.primary}
@@ -272,7 +260,7 @@ export function Charts({
                 height={80}
               />
               <YAxis stroke="hsl(var(--foreground))" fontSize={12} />
-              <Tooltip content={<CustomTooltip />} />
+              <Tooltip />
               <Bar 
                 dataKey="value" 
                 fill={COLORS.success}
