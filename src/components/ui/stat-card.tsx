@@ -9,6 +9,7 @@ interface StatCardProps {
   trend?: {
     value: number;
     isPositive: boolean;
+    description?: string;
   };
   variant?: "default" | "success" | "warning" | "accent";
   className?: string;
@@ -75,7 +76,7 @@ export function StatCard({ title, value, icon, trend, variant = "default", class
             <span className="mr-1">
               {trend.isPositive ? "↗" : "↘"}
             </span>
-            Total de retiradas sem sucesso
+            {trend.description || "em relação às retiradas entrantes"}
           </p>
         )}
       </CardContent>

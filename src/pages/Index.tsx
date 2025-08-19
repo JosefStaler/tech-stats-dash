@@ -448,7 +448,7 @@ const Index = () => {
                 value={stats.insucesso}
                 icon={<AlertTriangle className="h-5 w-5" />}
                 variant="warning"
-                trend={{ value: 15, isPositive: false }}
+                trend={{ value: 15, isPositive: false, description: "Total de retiradas sem sucesso" }}
               />
               <StatCard
                 title="Cycle Time Médio"
