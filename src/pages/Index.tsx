@@ -219,6 +219,26 @@ const Index = () => {
           'hsl(210 12% 45%)'
   }));
 
+  // Chart data preparation - Status iCare original (não agrupado)
+  const originalStatusCounts = filteredServices.reduce((acc, service) => {
+    const status = service["Satus iCare"] || 'Outros';
+    acc[status] = (acc[status] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+
+  const statusICareOriginalData = Object.entries(originalStatusCounts).map(([status, count]) => ({
+    name: status,
+    value: count,
+    fill: status.includes('Sucesso-Reuso') ? 'hsl(159 84% 39%)' :
+          status.includes('Sucesso-Reversa') ? 'hsl(142 76% 36%)' :
+          status.includes('Backlog ≤ 4 Dias') ? 'hsl(54 91% 55%)' :
+          status.includes('Backlog > 4 Dias') ? 'hsl(45 93% 47%)' :
+          status.includes('Backlog > 14 Dias') ? 'hsl(35 91% 40%)' :
+          status.includes('Insucesso') ? 'hsl(0 84% 60%)' :
+          status.includes('Cancelado') ? 'hsl(210 12% 45%)' :
+          'hsl(210 12% 45%)'
+  }));
+
   // Chart data preparation - Status Atividade
   const statusAtividadeData = statusAtividadeOptions.map(status => ({
     name: status || 'Sem Status',
@@ -361,6 +381,7 @@ const Index = () => {
             {/* Charts */}
             <Charts
               statusICareData={statusICareData}
+              statusICareOriginalData={statusICareOriginalData}
               statusAtividadeData={statusAtividadeData}
               monthlyData={monthlyData}
               tipoServicoData={tipoServicoData}

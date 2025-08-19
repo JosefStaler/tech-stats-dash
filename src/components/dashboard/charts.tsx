@@ -17,6 +17,7 @@ interface MonthlyData {
 
 interface ChartsProps {
   statusICareData: ChartData[];
+  statusICareOriginalData: ChartData[];
   statusAtividadeData: ChartData[];
   monthlyData: MonthlyData[];
   tipoServicoData: ChartData[];
@@ -105,8 +106,8 @@ export function Charts(props: ChartsProps) {
         <CardContent>
           {(() => {
             // Usar dados originais sem agrupamento
-            const originalData = props.statusICareData && props.statusICareData.length > 0 
-              ? props.statusICareData.filter(item => item.value > 0)
+            const originalData = props.statusICareOriginalData && props.statusICareOriginalData.length > 0 
+              ? props.statusICareOriginalData.filter(item => item.value > 0)
               : [
                   { name: 'Sucesso-Reuso', value: 25 },
                   { name: 'Sucesso-Reversa', value: 20 },
