@@ -215,6 +215,24 @@ const Index = () => {
            status?.includes('Backlog > 14 Dias');
   }).length;
 
+  // Calculate backlog count for MODEM FIBRA
+  const backlogFibraCount = filteredServices.filter(s => {
+    const status = s["Satus iCare"];
+    const isBacklog = status?.includes('Backlog ≤ 4 Dias') || 
+                      status?.includes('Backlog > 4 Dias') || 
+                      status?.includes('Backlog > 14 Dias');
+    return isBacklog && s["Modelo"] === "MODEM FIBRA";
+  }).length;
+
+  // Calculate backlog count for PAYTV (other models)
+  const backlogPaytvCount = filteredServices.filter(s => {
+    const status = s["Satus iCare"];
+    const isBacklog = status?.includes('Backlog ≤ 4 Dias') || 
+                      status?.includes('Backlog > 4 Dias') || 
+                      status?.includes('Backlog > 14 Dias');
+    return isBacklog && s["Modelo"] !== "MODEM FIBRA";
+  }).length;
+
   const stats = {
     total: filteredServices.length,
     backlog: backlogCount,
@@ -424,12 +442,24 @@ const Index = () => {
             </div>
 
             {/* Statistics Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6">
               <StatCard
                 title="Backlog de Retiradas TOTAL"
                 value={stats.backlog}
                 icon={<FileSpreadsheet className="h-5 w-5" />}
                 trend={{ isPositive: true, description: "Total de Retiradas em Backlog", hideValue: true }}
+              />
+              <StatCard
+                title="Backlog de Retiradas FIBRA"
+                value={backlogFibraCount}
+                icon={<FileSpreadsheet className="h-5 w-5" />}
+                trend={{ isPositive: true, description: "Retiradas de Modem em Backlog", hideValue: true }}
+              />
+              <StatCard
+                title="Backlog de Retiradas PAYTV"
+                value={backlogPaytvCount}
+                icon={<FileSpreadsheet className="h-5 w-5" />}
+                trend={{ isPositive: true, description: "Retiradas de Receptores em Backlog", hideValue: true }}
               />
               <StatCard
                 title="Retiradas Realizadas"
