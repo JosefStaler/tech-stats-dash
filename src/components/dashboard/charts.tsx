@@ -56,25 +56,6 @@ export function Charts({
     return null;
   };
 
-  // Função para reorganizar dados alternando fatias grandes e pequenas
-  const organizeSlices = (data: ChartData[]) => {
-    const sorted = [...data].sort((a, b) => b.value - a.value);
-    const large = sorted.filter((_, index) => index % 2 === 0);
-    const small = sorted.filter((_, index) => index % 2 === 1);
-    
-    const organized: ChartData[] = [];
-    const maxLength = Math.max(large.length, small.length);
-    
-    for (let i = 0; i < maxLength; i++) {
-      if (large[i]) organized.push(large[i]);
-      if (small[i]) organized.push(small[i]);
-    }
-    
-    return organized;
-  };
-
-  const organizedStatusICareData = organizeSlices(statusICareData);
-
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       {/* Status iCare Distribution */}
@@ -89,11 +70,13 @@ export function Charts({
           <ResponsiveContainer width="100%" height={300}>
             <PieChart>
               <Pie
-                data={organizedStatusICareData}
+                data={statusICareData}
                 cx="50%"
                 cy="50%"
                 labelLine={false}
                 label={({ name, value, percent }) => {
+                  // Só mostra label se a fatia for maior que 2%
+                  if (percent < 0.02) return '';
                   const shortName = name.split('-').pop() || name;
                   return `${shortName}: ${value} (${(percent * 100).toFixed(1)}%)`;
                 }}
@@ -101,7 +84,7 @@ export function Charts({
                 fill="#8884d8"
                 dataKey="value"
               >
-                {organizedStatusICareData.map((entry, index) => (
+                {statusICareData.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={entry.fill || COLORS.primary} />
                 ))}
               </Pie>
