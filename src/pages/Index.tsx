@@ -197,15 +197,15 @@ const Index = () => {
 
   // Retiradas Realizadas calculations - separating MODEM FIBRA from others
   
-  // MODEM FIBRA calculations - only successes from current month
+  // MODEM FIBRA calculations - total successes vs current month total
+  const sucessoModemFibraTotal = services.filter(s => s["Modelo"] === "MODEM FIBRA" && isSucesso(s["Satus iCare"])).length;
   const currentMonthModemFibra = currentMonthServices.filter(s => s["Modelo"] === "MODEM FIBRA");
-  const sucessoModemFibraCurrentMonth = currentMonthModemFibra.filter(s => isSucesso(s["Satus iCare"]));
-  const sucessoModemFibraPercentage = currentMonthModemFibra.length > 0 ? Math.round((sucessoModemFibraCurrentMonth.length / currentMonthModemFibra.length) * 100) : 0;
+  const sucessoModemFibraPercentage = currentMonthModemFibra.length > 0 ? Math.round((sucessoModemFibraTotal / currentMonthModemFibra.length) * 100) : 0;
   
-  // Other models calculations - only successes from current month
+  // Other models calculations - total successes vs current month total
+  const sucessoOutrosTotal = services.filter(s => s["Modelo"] !== "MODEM FIBRA" && isSucesso(s["Satus iCare"])).length;
   const currentMonthOutros = currentMonthServices.filter(s => s["Modelo"] !== "MODEM FIBRA");
-  const sucessoOutrosCurrentMonth = currentMonthOutros.filter(s => isSucesso(s["Satus iCare"]));
-  const sucessoOutrosPercentage = currentMonthOutros.length > 0 ? Math.round((sucessoOutrosCurrentMonth.length / currentMonthOutros.length) * 100) : 0;
+  const sucessoOutrosPercentage = currentMonthOutros.length > 0 ? Math.round((sucessoOutrosTotal / currentMonthOutros.length) * 100) : 0;
 
   const stats = {
     total: filteredServices.length,
@@ -214,9 +214,9 @@ const Index = () => {
     sucessoTrend: sucessoPercentage,
     pendentes: filteredServices.filter(s => s["Satus iCare"]?.includes('Pendente')).length,
     emAndamento: filteredServices.filter(s => s["Satus iCare"]?.includes('Andamento')).length,
-    sucessoModemFibra: sucessoModemFibraCurrentMonth.length,
+    sucessoModemFibra: sucessoModemFibraTotal,
     sucessoModemFibraTrend: sucessoModemFibraPercentage,
-    sucessoOutros: sucessoOutrosCurrentMonth.length,
+    sucessoOutros: sucessoOutrosTotal,
     sucessoOutrosTrend: sucessoOutrosPercentage,
     cycleTimeTotal: filteredServices.reduce((sum, s) => sum + (parseInt(s["Cycle Time"]) || 0), 0),
     cycleTimeMedia: filteredServices.length > 0 ? 
