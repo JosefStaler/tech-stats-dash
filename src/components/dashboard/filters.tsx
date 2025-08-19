@@ -15,7 +15,7 @@ export interface FilterState {
     from: Date | undefined;
     to: Date | undefined;
   };
-  dataAgendRange: {
+  dataExecRange: {
     from: Date | undefined;
     to: Date | undefined;
   };
@@ -45,7 +45,7 @@ export function Filters({
   const clearFilters = () => {
     onFiltersChange({
       dateRange: { from: undefined, to: undefined },
-      dataAgendRange: { from: undefined, to: undefined },
+      dataExecRange: { from: undefined, to: undefined },
       statusICare: "todos",
       statusAtividade: "todos",
       tipoSubtipo: "todos",
@@ -56,8 +56,8 @@ export function Filters({
   const hasActiveFilters = !!(
     filters.dateRange.from || 
     filters.dateRange.to || 
-    filters.dataAgendRange.from || 
-    filters.dataAgendRange.to || 
+    filters.dataExecRange.from || 
+    filters.dataExecRange.to || 
     (filters.statusICare && filters.statusICare !== "todos") || 
     (filters.statusAtividade && filters.statusAtividade !== "todos") || 
     (filters.tipoSubtipo && filters.tipoSubtipo !== "todos") || 
@@ -67,7 +67,7 @@ export function Filters({
   const getActiveFiltersCount = () => {
     let count = 0;
     if (filters.dateRange.from || filters.dateRange.to) count++;
-    if (filters.dataAgendRange.from || filters.dataAgendRange.to) count++;
+    if (filters.dataExecRange.from || filters.dataExecRange.to) count++;
     if (filters.statusICare && filters.statusICare !== "todos") count++;
     if (filters.statusAtividade && filters.statusAtividade !== "todos") count++;
     if (filters.tipoSubtipo && filters.tipoSubtipo !== "todos") count++;
@@ -149,27 +149,27 @@ export function Filters({
             </Popover>
           </div>
 
-          {/* Data Agend. Filter */}
+          {/* Data Exec. Filter */}
           <div className="space-y-2">
-            <label className="text-sm font-medium">Data Agend.</label>
+            <label className="text-sm font-medium">Data Exec.</label>
             <Popover>
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
                   className={cn(
                     "w-full justify-start text-left font-normal",
-                    !filters.dataAgendRange.from && "text-muted-foreground"
+                    !filters.dataExecRange.from && "text-muted-foreground"
                   )}
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
-                  {filters.dataAgendRange.from ? (
-                    filters.dataAgendRange.to ? (
+                  {filters.dataExecRange.from ? (
+                    filters.dataExecRange.to ? (
                       <>
-                        {format(filters.dataAgendRange.from, "dd/MM/yy")} -{" "}
-                        {format(filters.dataAgendRange.to, "dd/MM/yy")}
+                        {format(filters.dataExecRange.from, "dd/MM/yy")} -{" "}
+                        {format(filters.dataExecRange.to, "dd/MM/yy")}
                       </>
                     ) : (
-                      format(filters.dataAgendRange.from, "dd/MM/yy")
+                      format(filters.dataExecRange.from, "dd/MM/yy")
                     )
                   ) : (
                     "Período"
@@ -180,12 +180,12 @@ export function Filters({
                 <Calendar
                   initialFocus
                   mode="range"
-                  defaultMonth={filters.dataAgendRange.from}
-                  selected={filters.dataAgendRange}
+                  defaultMonth={filters.dataExecRange.from}
+                  selected={filters.dataExecRange}
                   onSelect={(range) => 
                     onFiltersChange({
                       ...filters,
-                      dataAgendRange: { from: range?.from, to: range?.to }
+                      dataExecRange: { from: range?.from, to: range?.to }
                     })
                   }
                   numberOfMonths={2}

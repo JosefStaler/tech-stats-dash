@@ -26,7 +26,7 @@ const Index = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [filters, setFilters] = useState<FilterState>({
     dateRange: { from: undefined, to: undefined },
-    dataAgendRange: { from: undefined, to: undefined },
+    dataExecRange: { from: undefined, to: undefined },
     statusICare: "todos",
     statusAtividade: "todos",
     tipoSubtipo: "todos",
@@ -97,13 +97,13 @@ const Index = () => {
       });
     }
 
-    // Data Agend. filter
-    if (filters.dataAgendRange.from || filters.dataAgendRange.to) {
+    // Data Exec. filter
+    if (filters.dataExecRange.from || filters.dataExecRange.to) {
       filtered = filtered.filter(service => {
-        const serviceDate = parseDate(service["Data Agend."]);
+        const serviceDate = parseDate(service["Data Exec."]);
         if (!serviceDate) return false;
-        if (filters.dataAgendRange.from && serviceDate < filters.dataAgendRange.from) return false;
-        if (filters.dataAgendRange.to && serviceDate > filters.dataAgendRange.to) return false;
+        if (filters.dataExecRange.from && serviceDate < filters.dataExecRange.from) return false;
+        if (filters.dataExecRange.to && serviceDate > filters.dataExecRange.to) return false;
         return true;
       });
     }
