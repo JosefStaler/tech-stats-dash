@@ -74,18 +74,8 @@ export function Charts({
                 cx="50%"
                 cy="50%"
                 labelLine={false}
-                label={({ name, value, percent }) => {
-                  // Lógica específica para cada tipo de nome
-                  let shortName = name;
-                  if (name.startsWith('Ret. Parcial-')) {
-                    shortName = name.replace('Ret. Parcial-', '');
-                  } else if (name.includes('-')) {
-                    const parts = name.split('-');
-                    shortName = parts[parts.length - 1];
-                  }
-                  return `${shortName}: ${value} (${(percent * 100).toFixed(1)}%)`;
-                }}
-                outerRadius={65}
+                label={false}
+                outerRadius={80}
                 fill="#8884d8"
                 dataKey="value"
               >
