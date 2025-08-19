@@ -195,13 +195,32 @@ const Index = () => {
   const currentMonthTotal = currentMonthServices.length;
   const sucessoPercentage = currentMonthTotal > 0 ? Math.round((sucessoCount / currentMonthTotal) * 100) : 0;
 
+  // Em Andamento calculations - separating Modem Fibra from others
+  const emAndamentoServices = filteredServices.filter(s => s["Satus iCare"]?.includes('Andamento'));
+  
+  // Modem Fibra calculations
+  const emAndamentoModemFibra = emAndamentoServices.filter(s => s["Modelo"] === "Modem Fibra");
+  const sucessoModemFibra = emAndamentoModemFibra.filter(s => isSucesso(s["Satus iCare"])).length;
+  const currentMonthModemFibra = currentMonthServices.filter(s => s["Modelo"] === "Modem Fibra").length;
+  const sucessoModemFibraPercentage = currentMonthModemFibra > 0 ? Math.round((sucessoModemFibra / currentMonthModemFibra) * 100) : 0;
+  
+  // Other models calculations
+  const emAndamentoOutros = emAndamentoServices.filter(s => s["Modelo"] !== "Modem Fibra");
+  const sucessoOutros = emAndamentoOutros.filter(s => isSucesso(s["Satus iCare"])).length;
+  const currentMonthOutros = currentMonthServices.filter(s => s["Modelo"] !== "Modem Fibra").length;
+  const sucessoOutrosPercentage = currentMonthOutros > 0 ? Math.round((sucessoOutros / currentMonthOutros) * 100) : 0;
+
   const stats = {
     total: filteredServices.length,
     finalizados: filteredServices.filter(s => isFinalized(s["Satus iCare"])).length,
     sucesso: sucessoCount,
     sucessoTrend: sucessoPercentage,
     pendentes: filteredServices.filter(s => s["Satus iCare"]?.includes('Pendente')).length,
-    emAndamento: filteredServices.filter(s => s["Satus iCare"]?.includes('Andamento')).length,
+    emAndamento: emAndamentoServices.length,
+    emAndamentoModemFibra: emAndamentoModemFibra.length,
+    emAndamentoModemFibraTrend: sucessoModemFibraPercentage,
+    emAndamentoOutros: emAndamentoOutros.length,
+    emAndamentoOutrosTrend: sucessoOutrosPercentage,
     cycleTimeTotal: filteredServices.reduce((sum, s) => sum + (parseInt(s["Cycle Time"]) || 0), 0),
     cycleTimeMedia: filteredServices.length > 0 ? 
       Math.round(filteredServices.reduce((sum, s) => sum + (parseInt(s["Cycle Time"]) || 0), 0) / filteredServices.length * 10) / 10 : 0
@@ -377,11 +396,18 @@ const Index = () => {
                 trend={{ value: stats.sucessoTrend, isPositive: true }}
               />
               <StatCard
-                title="Em Andamento"
-                value={stats.emAndamento}
+                title="Em Andamento - Modem Fibra"
+                value={stats.emAndamentoModemFibra}
                 icon={<Clock className="h-5 w-5" />}
                 variant="accent"
-                trend={{ value: 5, isPositive: false }}
+                trend={{ value: stats.emAndamentoModemFibraTrend, isPositive: true }}
+              />
+              <StatCard
+                title="Em Andamento - Outros"
+                value={stats.emAndamentoOutros}
+                icon={<Clock className="h-5 w-5" />}
+                variant="accent"
+                trend={{ value: stats.emAndamentoOutrosTrend, isPositive: true }}
               />
               <StatCard
                 title="Pendentes"
