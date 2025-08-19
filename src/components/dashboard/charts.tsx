@@ -1,5 +1,5 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, LabelList } from "recharts";
 
 interface ChartData {
   name: string;
@@ -39,6 +39,31 @@ export function Charts(props: ChartsProps) {
         { name: 'Em Andamento', value: 30 }
       ];
 
+  // Calcular total para percentuais
+  const total = chartData.reduce((sum, item) => sum + item.value, 0);
+
+  // Função para renderizar labels customizados
+  const renderCustomLabel = (entry: any) => {
+    const percentage = total > 0 ? ((entry.value / total) * 100).toFixed(1) : '0';
+    return `${entry.value} (${percentage}%)`;
+  };
+
+  // Tooltip customizado
+  const CustomTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
+      const value = payload[0].value;
+      const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : '0';
+      return (
+        <div className="bg-background border border-border rounded-lg p-3 shadow-lg">
+          <p className="font-medium">{`${label}`}</p>
+          <p className="text-primary">{`Quantidade: ${value}`}</p>
+          <p className="text-muted-foreground">{`Percentual: ${percentage}%`}</p>
+        </div>
+      );
+    }
+    return null;
+  };
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <Card>
@@ -62,8 +87,10 @@ export function Charts(props: ChartsProps) {
                 tick={{ fontSize: 12 }}
               />
               <YAxis />
-              <Tooltip />
-              <Bar dataKey="value" fill="#3b82f6" />
+              <Tooltip content={<CustomTooltip />} />
+              <Bar dataKey="value" fill="#3b82f6">
+                <LabelList dataKey="value" content={renderCustomLabel} position="top" />
+              </Bar>
             </BarChart>
           </ResponsiveContainer>
         </CardContent>
