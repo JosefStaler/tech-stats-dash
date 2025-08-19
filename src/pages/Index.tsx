@@ -26,6 +26,7 @@ const Index = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [filters, setFilters] = useState<FilterState>({
     dateRange: { from: undefined, to: undefined },
+    dataAgendRange: { from: undefined, to: undefined },
     statusICare: "todos",
     statusAtividade: "todos",
     tipoSubtipo: "todos",
@@ -56,18 +57,53 @@ const Index = () => {
     });
   }, [toast]);
 
+  // Helper function to parse dates that might be Excel serial numbers
+  const parseDate = (dateValue: any): Date | null => {
+    if (!dateValue) return null;
+    
+    // If it's a number (Excel serial date)
+    if (typeof dateValue === 'number') {
+      // Excel serial date to JavaScript date conversion
+      const excelEpoch = new Date(1900, 0, 1);
+      const days = dateValue - 2; // Adjust for Excel's leap year bug
+      return new Date(excelEpoch.getTime() + days * 24 * 60 * 60 * 1000);
+    }
+    
+    // If it's a string in DD/MM/YYYY format
+    if (typeof dateValue === 'string') {
+      if (dateValue.includes('/')) {
+        const parts = dateValue.split('/');
+        if (parts.length === 3) {
+          return new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));
+        }
+      }
+    }
+    
+    return null;
+  };
+
   // Apply filters
   useEffect(() => {
     let filtered = [...services];
 
-    // Date range filter
+    // Data Criação filter
     if (filters.dateRange.from || filters.dateRange.to) {
       filtered = filtered.filter(service => {
-        const dateStr = service["Data Criação"];
-        if (!dateStr || typeof dateStr !== 'string') return false;
-        const serviceDate = new Date(dateStr.split('/').reverse().join('-'));
+        const serviceDate = parseDate(service["Data Criação"]);
+        if (!serviceDate) return false;
         if (filters.dateRange.from && serviceDate < filters.dateRange.from) return false;
         if (filters.dateRange.to && serviceDate > filters.dateRange.to) return false;
+        return true;
+      });
+    }
+
+    // Data Agend. filter
+    if (filters.dataAgendRange.from || filters.dataAgendRange.to) {
+      filtered = filtered.filter(service => {
+        const serviceDate = parseDate(service["Data Agend."]);
+        if (!serviceDate) return false;
+        if (filters.dataAgendRange.from && serviceDate < filters.dataAgendRange.from) return false;
+        if (filters.dataAgendRange.to && serviceDate > filters.dataAgendRange.to) return false;
         return true;
       });
     }

@@ -61,9 +61,9 @@ export function Charts({
       {/* Status iCare Distribution */}
       <Card>
         <CardHeader>
-          <CardTitle>Distribuição por Status iCare</CardTitle>
+          <CardTitle>Status no iCare</CardTitle>
           <CardDescription>
-            Status atual dos serviços no sistema iCare
+            Status atual no iCare
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -74,7 +74,7 @@ export function Charts({
                 cx="50%"
                 cy="50%"
                 labelLine={false}
-                label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                label={false}
                 outerRadius={80}
                 fill="#8884d8"
                 dataKey="value"
@@ -84,6 +84,13 @@ export function Charts({
                 ))}
               </Pie>
               <Tooltip content={<CustomTooltip />} />
+              <Legend 
+                verticalAlign="bottom" 
+                height={36}
+                formatter={(value, entry) => (
+                  <span style={{ color: entry.color }}>{value}</span>
+                )}
+              />
             </PieChart>
           </ResponsiveContainer>
         </CardContent>

@@ -63,7 +63,9 @@ export function generateSampleData(): ServiceData[] {
   const modelos = ['MODEM FIBRA', 'ROTEADOR WIFI', 'ONT FIBRA', 'MODEM ADSL'];
   const statusOptions = [
     'Pendente-Backlog ≤ 4 Dias',
-    'Concluído',
+    'Finalizado-Sucesso-Reuso',
+    'Executado-Sucesso-Reversa', 
+    'Finalizado-Insucesso',
     'Em Andamento',
     'Pendente-Backlog > 4 Dias'
   ];

@@ -15,6 +15,10 @@ export interface FilterState {
     from: Date | undefined;
     to: Date | undefined;
   };
+  dataAgendRange: {
+    from: Date | undefined;
+    to: Date | undefined;
+  };
   statusICare: string;
   statusAtividade: string;
   tipoSubtipo: string;
@@ -41,6 +45,7 @@ export function Filters({
   const clearFilters = () => {
     onFiltersChange({
       dateRange: { from: undefined, to: undefined },
+      dataAgendRange: { from: undefined, to: undefined },
       statusICare: "todos",
       statusAtividade: "todos",
       tipoSubtipo: "todos",
@@ -51,6 +56,8 @@ export function Filters({
   const hasActiveFilters = !!(
     filters.dateRange.from || 
     filters.dateRange.to || 
+    filters.dataAgendRange.from || 
+    filters.dataAgendRange.to || 
     (filters.statusICare && filters.statusICare !== "todos") || 
     (filters.statusAtividade && filters.statusAtividade !== "todos") || 
     (filters.tipoSubtipo && filters.tipoSubtipo !== "todos") || 
@@ -60,6 +67,7 @@ export function Filters({
   const getActiveFiltersCount = () => {
     let count = 0;
     if (filters.dateRange.from || filters.dateRange.to) count++;
+    if (filters.dataAgendRange.from || filters.dataAgendRange.to) count++;
     if (filters.statusICare && filters.statusICare !== "todos") count++;
     if (filters.statusAtividade && filters.statusAtividade !== "todos") count++;
     if (filters.tipoSubtipo && filters.tipoSubtipo !== "todos") count++;
@@ -94,10 +102,10 @@ export function Filters({
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-          {/* Date Range Filter */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
+          {/* Data Criação Filter */}
           <div className="space-y-2">
-            <label className="text-sm font-medium">Período</label>
+            <label className="text-sm font-medium">Data Criação</label>
             <Popover>
               <PopoverTrigger asChild>
                 <Button
@@ -111,14 +119,14 @@ export function Filters({
                   {filters.dateRange.from ? (
                     filters.dateRange.to ? (
                       <>
-                        {format(filters.dateRange.from, "dd/MM/yyyy", { locale: ptBR })} -{" "}
-                        {format(filters.dateRange.to, "dd/MM/yyyy", { locale: ptBR })}
+                        {format(filters.dateRange.from, "dd/MM/yy")} -{" "}
+                        {format(filters.dateRange.to, "dd/MM/yy")}
                       </>
                     ) : (
-                      format(filters.dateRange.from, "dd/MM/yyyy", { locale: ptBR })
+                      format(filters.dateRange.from, "dd/MM/yy")
                     )
                   ) : (
-                    "Selecione o período"
+                    "Período"
                   )}
                 </Button>
               </PopoverTrigger>
@@ -135,7 +143,53 @@ export function Filters({
                     })
                   }
                   numberOfMonths={2}
-                  locale={ptBR}
+                  className="pointer-events-auto"
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+
+          {/* Data Agend. Filter */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Data Agend.</label>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className={cn(
+                    "w-full justify-start text-left font-normal",
+                    !filters.dataAgendRange.from && "text-muted-foreground"
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {filters.dataAgendRange.from ? (
+                    filters.dataAgendRange.to ? (
+                      <>
+                        {format(filters.dataAgendRange.from, "dd/MM/yy")} -{" "}
+                        {format(filters.dataAgendRange.to, "dd/MM/yy")}
+                      </>
+                    ) : (
+                      format(filters.dataAgendRange.from, "dd/MM/yy")
+                    )
+                  ) : (
+                    "Período"
+                  )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  initialFocus
+                  mode="range"
+                  defaultMonth={filters.dataAgendRange.from}
+                  selected={filters.dataAgendRange}
+                  onSelect={(range) => 
+                    onFiltersChange({
+                      ...filters,
+                      dataAgendRange: { from: range?.from, to: range?.to }
+                    })
+                  }
+                  numberOfMonths={2}
+                  className="pointer-events-auto"
                 />
               </PopoverContent>
             </Popover>
