@@ -68,26 +68,25 @@ export function Charts({
         </CardHeader>
         <CardContent>
           <ResponsiveContainer width="100%" height={300}>
-            <PieChart>
-              <Pie
-                data={statusICareData}
-                cx="50%"
-                cy="50%"
-                labelLine={false}
-                label={({ name, value, percent }) => {
-                  // Só mostra label se a fatia for maior que 2%
-                  if (percent < 0.02) return '';
-                  const shortName = name.split('-').pop() || name;
-                  return `${shortName}: ${value} (${(percent * 100).toFixed(1)}%)`;
+            <BarChart data={statusICareData} layout="horizontal">
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+              <XAxis 
+                type="number" 
+                stroke="hsl(var(--foreground))"
+                fontSize={12}
+              />
+              <YAxis 
+                dataKey="name" 
+                type="category" 
+                stroke="hsl(var(--foreground))"
+                fontSize={10}
+                width={150}
+                tick={{ fontSize: 10 }}
+                tickFormatter={(value) => {
+                  const shortName = value.split('-').pop() || value;
+                  return shortName.length > 15 ? shortName.substring(0, 15) + '...' : shortName;
                 }}
-                outerRadius={80}
-                fill="#8884d8"
-                dataKey="value"
-              >
-                {statusICareData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.fill || COLORS.primary} />
-                ))}
-              </Pie>
+              />
               <Tooltip 
                 content={({ active, payload }) => {
                   if (active && payload && payload.length) {
@@ -104,7 +103,12 @@ export function Charts({
                   return null;
                 }}
               />
-            </PieChart>
+              <Bar 
+                dataKey="value" 
+                fill={COLORS.primary}
+                radius={[0, 2, 2, 0]}
+              />
+            </BarChart>
           </ResponsiveContainer>
         </CardContent>
       </Card>
