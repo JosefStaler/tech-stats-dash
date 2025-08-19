@@ -429,6 +429,7 @@ const Index = () => {
                 title="Backlog de Retiradas TOTAL"
                 value={stats.backlog}
                 icon={<FileSpreadsheet className="h-5 w-5" />}
+                trend={{ value: 0, isPositive: true, description: "Total de Retiradas em Backlog" }}
               />
               <StatCard
                 title="Retiradas Realizadas"
