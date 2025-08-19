@@ -216,9 +216,9 @@ const Index = () => {
     return matches;
   }).length;
 
-  // For percentage: use period filtered services as base
-  const periodTotal = periodFilteredServices.length;
-  const sucessoPercentage = periodTotal > 0 ? Math.round((allSucessosTotal / periodTotal) * 100) : 0;
+  // For percentage: use current month total as base (all entrantes in the current month)
+  const currentMonthTotal = currentMonthServices.length;
+  const sucessoPercentage = currentMonthTotal > 0 ? Math.round((allSucessosTotal / currentMonthTotal) * 100) : 0;
 
   // MODEM FIBRA calculations
   const sucessoModemFibraTotal = services.filter(s => {
@@ -244,8 +244,8 @@ const Index = () => {
     return matches;
   }).length;
   
-  const periodModemFibraTotal = periodFilteredServices.filter(s => s["Modelo"] === "MODEM FIBRA").length;
-  const sucessoModemFibraPercentage = periodModemFibraTotal > 0 ? Math.round((sucessoModemFibraTotal / periodModemFibraTotal) * 100) : 0;
+  const currentMonthModemFibraTotal = currentMonthServices.filter(s => s["Modelo"] === "MODEM FIBRA").length;
+  const sucessoModemFibraPercentage = currentMonthModemFibraTotal > 0 ? Math.round((sucessoModemFibraTotal / currentMonthModemFibraTotal) * 100) : 0;
   
   // Other models calculations
   const sucessoOutrosTotal = services.filter(s => {
@@ -271,8 +271,8 @@ const Index = () => {
     return matches;
   }).length;
   
-  const periodOutrosTotal = periodFilteredServices.filter(s => s["Modelo"] !== "MODEM FIBRA").length;
-  const sucessoOutrosPercentage = periodOutrosTotal > 0 ? Math.round((sucessoOutrosTotal / periodOutrosTotal) * 100) : 0;
+  const currentMonthOutrosTotal = currentMonthServices.filter(s => s["Modelo"] !== "MODEM FIBRA").length;
+  const sucessoOutrosPercentage = currentMonthOutrosTotal > 0 ? Math.round((sucessoOutrosTotal / currentMonthOutrosTotal) * 100) : 0;
 
   // Calculate backlog count using the same grouping logic as the status chart
   const backlogCount = filteredServices.filter(s => {
