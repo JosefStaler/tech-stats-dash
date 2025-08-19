@@ -6,6 +6,7 @@ import { DataTable, ServiceData } from "@/components/ui/data-table";
 import { FileUpload } from "@/components/ui/file-upload";
 import { Filters, FilterState } from "@/components/dashboard/filters";
 import { Charts } from "@/components/dashboard/charts";
+import { MonthSelector } from "@/components/dashboard/month-selector";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { 
@@ -24,6 +25,8 @@ const Index = () => {
   const [services, setServices] = useState<ServiceData[]>([]);
   const [filteredServices, setFilteredServices] = useState<ServiceData[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [referenceMonth, setReferenceMonth] = useState(new Date().getMonth());
+  const [referenceYear, setReferenceYear] = useState(new Date().getFullYear());
   const [filters, setFilters] = useState<FilterState>({
     dateRange: { from: undefined, to: undefined },
     dataExecRange: { from: undefined, to: undefined },
@@ -164,22 +167,11 @@ const Index = () => {
     return status.includes('Sucesso-Reuso') || status.includes('Sucesso-Reversa');
   };
 
-  // Get period services based on Data Criação filter or current month if no filter
-  const periodServices = services.filter(s => {
+  // Get period services based on reference month for percentage calculations
+  const referenceMonthServices = services.filter(s => {
     const serviceDate = parseDate(s["Data Criação"]);
     if (!serviceDate) return false;
-    
-    // If date range filter is applied, use it
-    if (filters.dateRange.from || filters.dateRange.to) {
-      if (filters.dateRange.from && serviceDate < filters.dateRange.from) return false;
-      if (filters.dateRange.to && serviceDate > filters.dateRange.to) return false;
-      return true;
-    }
-    
-    // Otherwise, use current month
-    const currentMonth = new Date().getMonth();
-    const currentYear = new Date().getFullYear();
-    return serviceDate.getMonth() === currentMonth && serviceDate.getFullYear() === currentYear;
+    return serviceDate.getMonth() === referenceMonth && serviceDate.getFullYear() === referenceYear;
   });
 
   // Statistics calculations
@@ -225,9 +217,9 @@ const Index = () => {
     return matches;
   }).length;
 
-  // For percentage: use period total as base
-  const periodTotal = periodServices.length;
-  const sucessoPercentage = periodTotal > 0 ? Math.round((allSucessosTotal / periodTotal) * 100) : 0;
+  // For percentage: use reference month total as base
+  const referenceMonthTotal = referenceMonthServices.length;
+  const sucessoPercentage = referenceMonthTotal > 0 ? Math.round((allSucessosTotal / referenceMonthTotal) * 100) : 0;
 
   // MODEM FIBRA calculations
   const sucessoModemFibraTotal = services.filter(s => {
@@ -253,8 +245,8 @@ const Index = () => {
     return matches;
   }).length;
   
-  const periodModemFibraTotal = periodServices.filter(s => s["Modelo"] === "MODEM FIBRA").length;
-  const sucessoModemFibraPercentage = periodModemFibraTotal > 0 ? Math.round((sucessoModemFibraTotal / periodModemFibraTotal) * 100) : 0;
+  const referenceModemFibraTotal = referenceMonthServices.filter(s => s["Modelo"] === "MODEM FIBRA").length;
+  const sucessoModemFibraPercentage = referenceModemFibraTotal > 0 ? Math.round((sucessoModemFibraTotal / referenceModemFibraTotal) * 100) : 0;
   
   // Other models calculations
   const sucessoOutrosTotal = services.filter(s => {
@@ -280,8 +272,8 @@ const Index = () => {
     return matches;
   }).length;
   
-  const periodOutrosTotal = periodServices.filter(s => s["Modelo"] !== "MODEM FIBRA").length;
-  const sucessoOutrosPercentage = periodOutrosTotal > 0 ? Math.round((sucessoOutrosTotal / periodOutrosTotal) * 100) : 0;
+  const referenceOutrosTotal = referenceMonthServices.filter(s => s["Modelo"] !== "MODEM FIBRA").length;
+  const sucessoOutrosPercentage = referenceOutrosTotal > 0 ? Math.round((sucessoOutrosTotal / referenceOutrosTotal) * 100) : 0;
 
   // Calculate backlog count using the same grouping logic as the status chart
   const backlogCount = filteredServices.filter(s => {
@@ -464,8 +456,8 @@ const Index = () => {
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-muted-foreground">Total Entrantes no Período</p>
-                      <p className="text-xl font-bold">{periodServices.length}</p>
+                      <p className="text-sm font-medium text-muted-foreground">Total Entrantes no Mês de Referência</p>
+                      <p className="text-xl font-bold">{referenceMonthServices.length}</p>
                     </div>
                     <Users className="h-6 w-6 text-primary" />
                   </div>
@@ -475,8 +467,8 @@ const Index = () => {
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-muted-foreground">FIBRA Entrantes no Período</p>
-                      <p className="text-xl font-bold">{periodServices.filter(s => s["Modelo"] === "MODEM FIBRA").length}</p>
+                      <p className="text-sm font-medium text-muted-foreground">FIBRA Entrantes no Mês de Referência</p>
+                      <p className="text-xl font-bold">{referenceMonthServices.filter(s => s["Modelo"] === "MODEM FIBRA").length}</p>
                     </div>
                     <Users className="h-6 w-6 text-success" />
                   </div>
@@ -486,8 +478,8 @@ const Index = () => {
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-muted-foreground">PAYTV Entrantes no Período</p>
-                      <p className="text-xl font-bold">{periodServices.filter(s => s["Modelo"] !== "MODEM FIBRA").length}</p>
+                      <p className="text-sm font-medium text-muted-foreground">PAYTV Entrantes no Mês de Referência</p>
+                      <p className="text-xl font-bold">{referenceMonthServices.filter(s => s["Modelo"] !== "MODEM FIBRA").length}</p>
                     </div>
                     <Users className="h-6 w-6 text-accent" />
                   </div>
