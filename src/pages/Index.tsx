@@ -195,27 +195,17 @@ const Index = () => {
   const currentMonthTotal = currentMonthServices.length;
   const sucessoPercentage = currentMonthTotal > 0 ? Math.round((sucessoCount / currentMonthTotal) * 100) : 0;
 
-  // Retiradas Realizadas calculations - separating Modem Fibra from others
+  // Retiradas Realizadas calculations - separating MODEM FIBRA from others
   
-  // Debug logs to check data
-  console.log('Total services:', services.length);
-  console.log('Current month services:', currentMonthServices.length);
-  console.log('Services with Modem Fibra:', services.filter(s => s["Modelo"] === "Modem Fibra").length);
-  console.log('Current month Modem Fibra:', currentMonthServices.filter(s => s["Modelo"] === "Modem Fibra").length);
-  console.log('Sample service:', services[0]);
+  // MODEM FIBRA calculations - only successes from current month
+  const currentMonthModemFibra = currentMonthServices.filter(s => s["Modelo"] === "MODEM FIBRA");
+  const sucessoModemFibraCurrentMonth = currentMonthModemFibra.filter(s => isSucesso(s["Satus iCare"]));
+  const sucessoModemFibraPercentage = currentMonthModemFibra.length > 0 ? Math.round((sucessoModemFibraCurrentMonth.length / currentMonthModemFibra.length) * 100) : 0;
   
-  // Modem Fibra calculations - using all services, not just filtered
-  const sucessoModemFibra = services.filter(s => s["Modelo"] === "Modem Fibra" && isSucesso(s["Satus iCare"])).length;
-  const currentMonthModemFibra = currentMonthServices.filter(s => s["Modelo"] === "Modem Fibra").length;
-  const sucessoModemFibraPercentage = currentMonthModemFibra > 0 ? Math.round((sucessoModemFibra / currentMonthModemFibra) * 100) : 0;
-  
-  console.log('Sucesso Modem Fibra:', sucessoModemFibra);
-  console.log('Sucesso Modem Fibra Percentage:', sucessoModemFibraPercentage);
-  
-  // Other models calculations - using all services, not just filtered
-  const sucessoOutros = services.filter(s => s["Modelo"] !== "Modem Fibra" && isSucesso(s["Satus iCare"])).length;
-  const currentMonthOutros = currentMonthServices.filter(s => s["Modelo"] !== "Modem Fibra").length;
-  const sucessoOutrosPercentage = currentMonthOutros > 0 ? Math.round((sucessoOutros / currentMonthOutros) * 100) : 0;
+  // Other models calculations - only successes from current month
+  const currentMonthOutros = currentMonthServices.filter(s => s["Modelo"] !== "MODEM FIBRA");
+  const sucessoOutrosCurrentMonth = currentMonthOutros.filter(s => isSucesso(s["Satus iCare"]));
+  const sucessoOutrosPercentage = currentMonthOutros.length > 0 ? Math.round((sucessoOutrosCurrentMonth.length / currentMonthOutros.length) * 100) : 0;
 
   const stats = {
     total: filteredServices.length,
@@ -224,9 +214,9 @@ const Index = () => {
     sucessoTrend: sucessoPercentage,
     pendentes: filteredServices.filter(s => s["Satus iCare"]?.includes('Pendente')).length,
     emAndamento: filteredServices.filter(s => s["Satus iCare"]?.includes('Andamento')).length,
-    sucessoModemFibra: sucessoModemFibra,
+    sucessoModemFibra: sucessoModemFibraCurrentMonth.length,
     sucessoModemFibraTrend: sucessoModemFibraPercentage,
-    sucessoOutros: sucessoOutros,
+    sucessoOutros: sucessoOutrosCurrentMonth.length,
     sucessoOutrosTrend: sucessoOutrosPercentage,
     cycleTimeTotal: filteredServices.reduce((sum, s) => sum + (parseInt(s["Cycle Time"]) || 0), 0),
     cycleTimeMedia: filteredServices.length > 0 ? 
