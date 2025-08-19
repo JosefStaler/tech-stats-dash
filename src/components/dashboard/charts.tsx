@@ -75,10 +75,14 @@ export function Charts({
                 cy="50%"
                 labelLine={false}
                 label={({ name, value, percent }) => {
-                  const shortName = name.includes('-') ? name.substring(name.indexOf('-') + 1) : name;
+                  let shortName = name.includes('-') ? name.substring(name.indexOf('-') + 1) : name;
+                  // Se ainda tem hífen, pega apenas a última parte
+                  if (shortName.includes('-')) {
+                    shortName = shortName.substring(shortName.lastIndexOf('-') + 1);
+                  }
                   return `${shortName}: ${value} (${(percent * 100).toFixed(1)}%)`;
                 }}
-                outerRadius={75}
+                outerRadius={80}
                 fill="#8884d8"
                 dataKey="value"
               >
