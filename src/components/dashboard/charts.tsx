@@ -75,7 +75,8 @@ export function Charts({
                 cy="50%"
                 labelLine={false}
                 label={({ name, value, percent }) => {
-                  return `${name}: ${value} (${(percent * 100).toFixed(1)}%)`;
+                  const shortName = name.includes('-') ? name.substring(name.indexOf('-') + 1) : name;
+                  return `${shortName}: ${value} (${(percent * 100).toFixed(1)}%)`;
                 }}
                 outerRadius={70}
                 fill="#8884d8"
