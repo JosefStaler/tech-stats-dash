@@ -175,10 +175,31 @@ const Index = () => {
            status.includes('Finalizado-Insucesso');
   };
 
+  // Function to check if service has success status
+  const isSucesso = (status: string | undefined) => {
+    if (!status) return false;
+    return status.includes('Sucesso-Reuso') || status.includes('Sucesso-Reversa');
+  };
+
+  // Get current month services from all services (not filtered)
+  const currentMonth = new Date().getMonth();
+  const currentYear = new Date().getFullYear();
+  const currentMonthServices = services.filter(s => {
+    const serviceDate = parseDate(s["Data Criação"]);
+    if (!serviceDate) return false;
+    return serviceDate.getMonth() === currentMonth && serviceDate.getFullYear() === currentYear;
+  });
+
   // Statistics calculations
+  const sucessoCount = filteredServices.filter(s => isSucesso(s["Satus iCare"])).length;
+  const currentMonthTotal = currentMonthServices.length;
+  const sucessoPercentage = currentMonthTotal > 0 ? Math.round((sucessoCount / currentMonthTotal) * 100) : 0;
+
   const stats = {
     total: filteredServices.length,
     finalizados: filteredServices.filter(s => isFinalized(s["Satus iCare"])).length,
+    sucesso: sucessoCount,
+    sucessoTrend: sucessoPercentage,
     pendentes: filteredServices.filter(s => s["Satus iCare"]?.includes('Pendente')).length,
     emAndamento: filteredServices.filter(s => s["Satus iCare"]?.includes('Andamento')).length,
     cycleTimeTotal: filteredServices.reduce((sum, s) => sum + (parseInt(s["Cycle Time"]) || 0), 0),
@@ -349,11 +370,11 @@ const Index = () => {
                 trend={{ value: 12, isPositive: true }}
               />
               <StatCard
-                title="Serviços Finalizados"
-                value={stats.finalizados}
+                title="Retiradas Realizadas"
+                value={stats.sucesso}
                 icon={<CheckCircle className="h-5 w-5" />}
                 variant="success"
-                trend={{ value: 8, isPositive: true }}
+                trend={{ value: stats.sucessoTrend, isPositive: true }}
               />
               <StatCard
                 title="Em Andamento"
