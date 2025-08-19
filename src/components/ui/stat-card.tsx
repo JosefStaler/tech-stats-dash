@@ -7,9 +7,10 @@ interface StatCardProps {
   value: string | number;
   icon: ReactNode;
   trend?: {
-    value: number;
+    value?: number;
     isPositive: boolean;
     description?: string;
+    hideValue?: boolean;
   };
   variant?: "default" | "success" | "warning" | "accent";
   className?: string;
@@ -62,7 +63,7 @@ export function StatCard({ title, value, icon, trend, variant = "default", class
       <CardContent>
         <div className="flex items-center gap-2">
           <div className="text-2xl font-bold">{value}</div>
-          {trend && (
+          {trend && !trend.hideValue && trend.value !== undefined && (
             <div className="text-2xl font-bold text-success">
               ({trend.value}%)
             </div>
