@@ -195,16 +195,15 @@ const Index = () => {
   const currentMonthTotal = currentMonthServices.length;
   const sucessoPercentage = currentMonthTotal > 0 ? Math.round((sucessoCount / currentMonthTotal) * 100) : 0;
 
-  // Em Andamento calculations - separating Modem Fibra from others
-  const emAndamentoServices = filteredServices.filter(s => s["Satus iCare"]?.includes('Andamento'));
+  // Retiradas Realizadas calculations - separating Modem Fibra from others
   
-  // Modem Fibra calculations - showing only success
-  const sucessoModemFibra = filteredServices.filter(s => s["Modelo"] === "Modem Fibra" && isSucesso(s["Satus iCare"])).length;
+  // Modem Fibra calculations - using all services, not just filtered
+  const sucessoModemFibra = services.filter(s => s["Modelo"] === "Modem Fibra" && isSucesso(s["Satus iCare"])).length;
   const currentMonthModemFibra = currentMonthServices.filter(s => s["Modelo"] === "Modem Fibra").length;
   const sucessoModemFibraPercentage = currentMonthModemFibra > 0 ? Math.round((sucessoModemFibra / currentMonthModemFibra) * 100) : 0;
   
-  // Other models calculations - showing only success
-  const sucessoOutros = filteredServices.filter(s => s["Modelo"] !== "Modem Fibra" && isSucesso(s["Satus iCare"])).length;
+  // Other models calculations - using all services, not just filtered
+  const sucessoOutros = services.filter(s => s["Modelo"] !== "Modem Fibra" && isSucesso(s["Satus iCare"])).length;
   const currentMonthOutros = currentMonthServices.filter(s => s["Modelo"] !== "Modem Fibra").length;
   const sucessoOutrosPercentage = currentMonthOutros > 0 ? Math.round((sucessoOutros / currentMonthOutros) * 100) : 0;
 
@@ -214,7 +213,7 @@ const Index = () => {
     sucesso: sucessoCount,
     sucessoTrend: sucessoPercentage,
     pendentes: filteredServices.filter(s => s["Satus iCare"]?.includes('Pendente')).length,
-    emAndamento: emAndamentoServices.length,
+    emAndamento: filteredServices.filter(s => s["Satus iCare"]?.includes('Andamento')).length,
     sucessoModemFibra: sucessoModemFibra,
     sucessoModemFibraTrend: sucessoModemFibraPercentage,
     sucessoOutros: sucessoOutros,
@@ -394,7 +393,7 @@ const Index = () => {
                 trend={{ value: stats.sucessoTrend, isPositive: true }}
               />
               <StatCard
-                title="Retiradas Realizadas Fibra"
+                title="Retiradas Realizadas FIBRA"
                 value={stats.sucessoModemFibra}
                 icon={<CheckCircle className="h-5 w-5" />}
                 variant="success"
