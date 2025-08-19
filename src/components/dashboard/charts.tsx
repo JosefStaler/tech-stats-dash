@@ -99,13 +99,70 @@ export function Charts(props: ChartsProps) {
       
       <Card>
         <CardHeader>
-          <CardTitle>Teste</CardTitle>
-          <CardDescription>Gráfico de teste</CardDescription>
+          <CardTitle>Status iCare Detalhado</CardTitle>
+          <CardDescription>Status detalhado no iCare</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="p-4">
-            <p>Dados recebidos: {JSON.stringify(props.statusICareData?.length || 0)} items</p>
-          </div>
+          {(() => {
+            // Usar dados originais sem agrupamento
+            const originalData = props.statusICareData && props.statusICareData.length > 0 
+              ? props.statusICareData.filter(item => item.value > 0)
+              : [
+                  { name: 'Sucesso-Reuso', value: 25 },
+                  { name: 'Sucesso-Reversa', value: 20 },
+                  { name: 'Backlog ≤ 4 Dias', value: 15 },
+                  { name: 'Backlog > 4 Dias', value: 10 },
+                  { name: 'Insucesso', value: 8 },
+                  { name: 'Cancelado', value: 5 }
+                ];
+
+            const originalTotal = originalData.reduce((sum, item) => sum + item.value, 0);
+            
+            const originalDataWithPercentage = originalData.map(item => ({
+              ...item,
+              percentage: originalTotal > 0 ? ((item.value / originalTotal) * 100).toFixed(1) : '0',
+              label: `${item.value} (${originalTotal > 0 ? ((item.value / originalTotal) * 100).toFixed(1) : '0'}%)`
+            }));
+
+            const OriginalCustomTooltip = ({ active, payload, label }: any) => {
+              if (active && payload && payload.length) {
+                const value = payload[0].value;
+                const percentage = originalTotal > 0 ? ((value / originalTotal) * 100).toFixed(1) : '0';
+                return (
+                  <div className="bg-background border border-border rounded-lg p-3 shadow-lg">
+                    <p className="font-medium">{`${label}`}</p>
+                    <p className="text-primary">{`Quantidade: ${value}`}</p>
+                    <p className="text-muted-foreground">{`Percentual: ${percentage}%`}</p>
+                  </div>
+                );
+              }
+              return null;
+            };
+
+            return (
+              <ResponsiveContainer width="100%" height={350}>
+                <BarChart 
+                  data={originalDataWithPercentage}
+                  margin={{ top: 50, right: 30, left: 20, bottom: 60 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis 
+                    dataKey="name" 
+                    angle={-45}
+                    textAnchor="end"
+                    height={80}
+                    interval={0}
+                    tick={{ fontSize: 12 }}
+                  />
+                  <YAxis />
+                  <Tooltip content={<OriginalCustomTooltip />} />
+                  <Bar dataKey="value" fill="#10b981">
+                    <LabelList dataKey="label" position="top" style={{ fontSize: '12px', fill: 'currentColor' }} />
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            );
+          })()}
         </CardContent>
       </Card>
     </div>
