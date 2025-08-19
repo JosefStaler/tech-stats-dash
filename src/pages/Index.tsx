@@ -277,24 +277,23 @@ const Index = () => {
   const referenceOutrosTotal = referenceMonthServices.filter(s => s["Modelo"] !== "MODEM FIBRA").length;
   const sucessoOutrosPercentage = referenceOutrosTotal > 0 ? Math.round((sucessoOutrosTotal / referenceOutrosTotal) * 100) : 0;
 
-  // Filter services with creation date equal to reference month for backlog cards
-  const referenceMonthCreationServices = services.filter(s => {
+  // Filter services excluding those with creation date > reference month or > max filter date
+  const eligibleBacklogServices = services.filter(s => {
     const creationDate = parseDate(s["Data Criação"]);
     if (!creationDate) return false;
     
-    return creationDate.getMonth() === referenceMonth && 
-           creationDate.getFullYear() === referenceYear;
+    // Exclude if creation date > reference month
+    const refDate = new Date(referenceYear, referenceMonth + 1, 0); // Last day of reference month
+    if (creationDate > refDate) return false;
+    
+    // Exclude if creation date > max filter date (if specified)
+    if (filters.dateRange.to && creationDate > filters.dateRange.to) return false;
+    
+    return true;
   });
 
-  // Calculate backlog count using creation date filter + other filters
-  const backlogCount = referenceMonthCreationServices.filter(s => {
-    const status = s["Satus iCare"];
-    const isBacklog = status?.includes('Backlog ≤ 4 Dias') || 
-           status?.includes('Backlog > 4 Dias') || 
-           status?.includes('Backlog > 14 Dias');
-    
-    if (!isBacklog) return false;
-    
+  // Calculate backlog count for all eligible services
+  const backlogCount = eligibleBacklogServices.filter(s => {
     // Apply other filters
     if (filters.statusICare && filters.statusICare !== "todos") {
       if (!s["Satus iCare"]?.includes(filters.statusICare)) return false;
@@ -302,39 +301,47 @@ const Index = () => {
     if (filters.modelo && filters.modelo !== "todos") {
       if (s["Modelo"] !== filters.modelo) return false;
     }
+    if (filters.tipoSubtipo && filters.tipoSubtipo !== "todos") {
+      if (s["Tipo-Subtipo de Serviço"] !== filters.tipoSubtipo) return false;
+    }
+    if (filters.statusAtividade && filters.statusAtividade !== "todos") {
+      if (s["Status da Atividade"] !== filters.statusAtividade) return false;
+    }
     
     return true;
   }).length;
 
   // Calculate backlog count for MODEM FIBRA
-  const backlogFibraCount = referenceMonthCreationServices.filter(s => {
-    const status = s["Satus iCare"];
-    const isBacklog = status?.includes('Backlog ≤ 4 Dias') || 
-                      status?.includes('Backlog > 4 Dias') || 
-                      status?.includes('Backlog > 14 Dias');
-    
-    if (!isBacklog || s["Modelo"] !== "MODEM FIBRA") return false;
+  const backlogFibraCount = eligibleBacklogServices.filter(s => {
+    if (s["Modelo"] !== "MODEM FIBRA") return false;
     
     // Apply other filters
     if (filters.statusICare && filters.statusICare !== "todos") {
       if (!s["Satus iCare"]?.includes(filters.statusICare)) return false;
+    }
+    if (filters.tipoSubtipo && filters.tipoSubtipo !== "todos") {
+      if (s["Tipo-Subtipo de Serviço"] !== filters.tipoSubtipo) return false;
+    }
+    if (filters.statusAtividade && filters.statusAtividade !== "todos") {
+      if (s["Status da Atividade"] !== filters.statusAtividade) return false;
     }
     
     return true;
   }).length;
 
   // Calculate backlog count for PAYTV (other models)
-  const backlogPaytvCount = referenceMonthCreationServices.filter(s => {
-    const status = s["Satus iCare"];
-    const isBacklog = status?.includes('Backlog ≤ 4 Dias') || 
-                      status?.includes('Backlog > 4 Dias') || 
-                      status?.includes('Backlog > 14 Dias');
-    
-    if (!isBacklog || s["Modelo"] === "MODEM FIBRA") return false;
+  const backlogPaytvCount = eligibleBacklogServices.filter(s => {
+    if (s["Modelo"] === "MODEM FIBRA") return false;
     
     // Apply other filters
     if (filters.statusICare && filters.statusICare !== "todos") {
       if (!s["Satus iCare"]?.includes(filters.statusICare)) return false;
+    }
+    if (filters.tipoSubtipo && filters.tipoSubtipo !== "todos") {
+      if (s["Tipo-Subtipo de Serviço"] !== filters.tipoSubtipo) return false;
+    }
+    if (filters.statusAtividade && filters.statusAtividade !== "todos") {
+      if (s["Status da Atividade"] !== filters.statusAtividade) return false;
     }
     
     return true;
