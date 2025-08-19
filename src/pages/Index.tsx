@@ -186,13 +186,36 @@ const Index = () => {
       Math.round(filteredServices.reduce((sum, s) => sum + (parseInt(s["Cycle Time"]) || 0), 0) / filteredServices.length * 10) / 10 : 0
   };
 
-  // Chart data preparation - Status iCare
-  const statusICareData = statusICardOptions.map(status => ({
+  // Chart data preparation - Status iCare agrupado
+  const getGroupedStatus = (status: string) => {
+    if (status?.includes('Sucesso-Reuso') || status?.includes('Sucesso-Reversa')) {
+      return 'Sucesso';
+    }
+    if (status?.includes('Backlog ≤ 4 Dias') || status?.includes('Backlog > 4 Dias') || status?.includes('Backlog > 14 Dias')) {
+      return 'Backlog';
+    }
+    if (status?.includes('Insucesso')) {
+      return 'Insucesso';
+    }
+    if (status?.includes('Cancelado')) {
+      return 'Cancelado';
+    }
+    return status || 'Outros';
+  };
+
+  const groupedStatusCounts = filteredServices.reduce((acc, service) => {
+    const groupedStatus = getGroupedStatus(service["Satus iCare"]);
+    acc[groupedStatus] = (acc[groupedStatus] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+
+  const statusICareData = Object.entries(groupedStatusCounts).map(([status, count]) => ({
     name: status,
-    value: filteredServices.filter(s => s["Satus iCare"] === status).length,
-    fill: isFinalized(status) ? 'hsl(142 76% 36%)' :
-          status?.includes('Pendente') ? 'hsl(45 93% 47%)' :
-          status?.includes('Andamento') ? 'hsl(36 77% 55%)' :
+    value: count,
+    fill: status === 'Sucesso' ? 'hsl(142 76% 36%)' :
+          status === 'Backlog' ? 'hsl(45 93% 47%)' :
+          status === 'Insucesso' ? 'hsl(0 84% 60%)' :
+          status === 'Cancelado' ? 'hsl(210 12% 45%)' :
           'hsl(210 12% 45%)'
   }));
 
