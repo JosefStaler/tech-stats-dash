@@ -11,13 +11,24 @@ import { Badge } from "@/components/ui/badge";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export interface ServiceData {
-  id: string;
-  cliente: string;
-  tecnico: string;
-  tipo: string;
-  status: 'Concluído' | 'Pendente' | 'Em Andamento' | 'Cancelado';
-  data: string;
-  valor: number;
+  "OS": string;
+  "OS_Item": string;
+  "Tipo-Subtipo de Serviço": string;
+  "Data Criação": string;
+  "Data Agend.": string;
+  "Data Exec.": string;
+  "Cycle Time": string;
+  "Município": string;
+  "Bairro": string;
+  "Conta": string;
+  "Cliente": string;
+  "NDS": string;
+  "Modelo": string;
+  "Satus iCare": string;
+  "Status Atividade": string;
+  "Último Atendimento": string;
+  "Técnico - Último Atendimento": string;
+  "Tipo - Último Atendimento": string;
 }
 
 interface DataTableProps {
@@ -27,13 +38,6 @@ interface DataTableProps {
   onPageChange: (page: number) => void;
 }
 
-const statusConfig = {
-  'Concluído': { variant: 'success' as const, className: 'bg-success/10 text-success border-success/20' },
-  'Pendente': { variant: 'warning' as const, className: 'bg-warning/10 text-warning border-warning/20' },
-  'Em Andamento': { variant: 'accent' as const, className: 'bg-accent/10 text-accent border-accent/20' },
-  'Cancelado': { variant: 'destructive' as const, className: 'bg-destructive/10 text-destructive border-destructive/20' }
-};
-
 export function DataTable({ data, currentPage, totalPages, onPageChange }: DataTableProps) {
   return (
     <div className="space-y-4">
@@ -41,37 +45,42 @@ export function DataTable({ data, currentPage, totalPages, onPageChange }: DataT
         <Table>
           <TableHeader>
             <TableRow className="bg-muted/50">
-              <TableHead className="font-semibold">ID</TableHead>
+              <TableHead className="font-semibold">OS</TableHead>
+              <TableHead className="font-semibold">Tipo-Subtipo</TableHead>
+              <TableHead className="font-semibold">Data Criação</TableHead>
+              <TableHead className="font-semibold">Data Agend.</TableHead>
               <TableHead className="font-semibold">Cliente</TableHead>
+              <TableHead className="font-semibold">Município</TableHead>
+              <TableHead className="font-semibold">Bairro</TableHead>
+              <TableHead className="font-semibold">Status iCare</TableHead>
               <TableHead className="font-semibold">Técnico</TableHead>
-              <TableHead className="font-semibold">Tipo de Serviço</TableHead>
-              <TableHead className="font-semibold">Status</TableHead>
-              <TableHead className="font-semibold">Data</TableHead>
-              <TableHead className="text-right font-semibold">Valor</TableHead>
+              <TableHead className="font-semibold">Modelo</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {data.map((service) => (
               <TableRow 
-                key={service.id}
+                key={service.OS}
                 className="hover:bg-muted/50 transition-colors"
               >
-                <TableCell className="font-mono text-sm">{service.id}</TableCell>
-                <TableCell className="font-medium">{service.cliente}</TableCell>
-                <TableCell>{service.tecnico}</TableCell>
-                <TableCell>{service.tipo}</TableCell>
+                <TableCell className="font-mono text-sm">{service.OS}</TableCell>
+                <TableCell>{service["Tipo-Subtipo de Serviço"]}</TableCell>
+                <TableCell className="text-muted-foreground">{service["Data Criação"]}</TableCell>
+                <TableCell className="text-muted-foreground">{service["Data Agend."]}</TableCell>
+                <TableCell className="font-medium">{service.Cliente}</TableCell>
+                <TableCell>{service.Município}</TableCell>
+                <TableCell>{service.Bairro}</TableCell>
                 <TableCell>
-                  <Badge 
-                    variant={statusConfig[service.status].variant}
-                    className={statusConfig[service.status].className}
-                  >
-                    {service.status}
+                  <Badge variant={
+                    service["Satus iCare"].includes("Concluído") ? "success" :
+                    service["Satus iCare"].includes("Pendente") ? "destructive" :
+                    service["Satus iCare"].includes("Andamento") ? "accent" : "secondary"
+                  }>
+                    {service["Satus iCare"]}
                   </Badge>
                 </TableCell>
-                <TableCell className="text-muted-foreground">{service.data}</TableCell>
-                <TableCell className="text-right font-medium">
-                  R$ {service.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                </TableCell>
+                <TableCell>{service["Técnico - Último Atendimento"]}</TableCell>
+                <TableCell>{service.Modelo}</TableCell>
               </TableRow>
             ))}
           </TableBody>

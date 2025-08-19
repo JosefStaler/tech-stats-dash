@@ -21,7 +21,7 @@ interface MonthlyData {
   concluidos: number;
   pendentes: number;
   emAndamento: number;
-  receita: number;
+  cycleTime: number;
 }
 
 interface ChartsProps {
@@ -163,12 +163,12 @@ export function Charts({ statusData, monthlyData, technicianData, serviceTypeDat
         </CardContent>
       </Card>
 
-      {/* Revenue Trend */}
+      {/* Cycle Time Trend */}
       <Card>
         <CardHeader>
-          <CardTitle>Evolução de Receita</CardTitle>
+          <CardTitle>Evolução Cycle Time</CardTitle>
           <CardDescription>
-            Receita mensal ao longo do tempo
+            Cycle Time médio mensal (em dias)
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -183,15 +183,15 @@ export function Charts({ statusData, monthlyData, technicianData, serviceTypeDat
               <YAxis 
                 stroke="hsl(var(--foreground))"
                 fontSize={12}
-                tickFormatter={formatCurrency}
+                label={{ value: 'Dias', angle: -90, position: 'insideLeft' }}
               />
               <Tooltip 
                 content={<CustomTooltip />}
-                formatter={(value: number) => [formatCurrency(value), 'Receita']}
+                formatter={(value: number) => [`${value} dias`, 'Cycle Time']}
               />
               <Line 
                 type="monotone" 
-                dataKey="receita" 
+                dataKey="cycleTime" 
                 stroke={COLORS.accent}
                 strokeWidth={3}
                 dot={{ fill: COLORS.accent, strokeWidth: 2, r: 4 }}

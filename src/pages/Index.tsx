@@ -39,9 +39,9 @@ const Index = () => {
   );
 
   // Extract unique values for filters
-  const tecnicos = [...new Set(services.map(s => s.tecnico))].filter(Boolean);
-  const tipos = [...new Set(services.map(s => s.tipo))].filter(Boolean);
-  const statusOptions = ['Concluído', 'Pendente', 'Em Andamento', 'Cancelado'];
+  const tecnicos = [...new Set(services.map(s => s["Técnico - Último Atendimento"]))].filter(Boolean);
+  const tipos = [...new Set(services.map(s => s["Tipo-Subtipo de Serviço"]))].filter(Boolean);
+  const statusOptions = ['Concluído', 'Pendente-Backlog ≤ 4 Dias', 'Pendente-Backlog > 4 Dias', 'Em Andamento'];
 
   // Load sample data on mount
   useEffect(() => {
@@ -60,7 +60,7 @@ const Index = () => {
     // Date range filter
     if (filters.dateRange.from || filters.dateRange.to) {
       filtered = filtered.filter(service => {
-        const serviceDate = new Date(service.data.split('/').reverse().join('-'));
+        const serviceDate = new Date(service["Data Criação"].split('/').reverse().join('-'));
         if (filters.dateRange.from && serviceDate < filters.dateRange.from) return false;
         if (filters.dateRange.to && serviceDate > filters.dateRange.to) return false;
         return true;
@@ -69,17 +69,17 @@ const Index = () => {
 
     // Status filter
     if (filters.status && filters.status !== "todos") {
-      filtered = filtered.filter(service => service.status === filters.status);
+      filtered = filtered.filter(service => service["Satus iCare"] === filters.status);
     }
 
     // Técnico filter
     if (filters.tecnico && filters.tecnico !== "todos") {
-      filtered = filtered.filter(service => service.tecnico === filters.tecnico);
+      filtered = filtered.filter(service => service["Técnico - Último Atendimento"] === filters.tecnico);
     }
 
     // Tipo filter
     if (filters.tipo && filters.tipo !== "todos") {
-      filtered = filtered.filter(service => service.tipo === filters.tipo);
+      filtered = filtered.filter(service => service["Tipo-Subtipo de Serviço"] === filters.tipo);
     }
 
     setFilteredServices(filtered);
@@ -124,11 +124,12 @@ const Index = () => {
   // Statistics calculations
   const stats = {
     total: filteredServices.length,
-    concluidos: filteredServices.filter(s => s.status === 'Concluído').length,
-    pendentes: filteredServices.filter(s => s.status === 'Pendente').length,
-    emAndamento: filteredServices.filter(s => s.status === 'Em Andamento').length,
-    receita: filteredServices.reduce((sum, s) => sum + s.valor, 0),
-    receitaMedia: filteredServices.length > 0 ? filteredServices.reduce((sum, s) => sum + s.valor, 0) / filteredServices.length : 0
+    concluidos: filteredServices.filter(s => s["Satus iCare"] === 'Concluído').length,
+    pendentes: filteredServices.filter(s => s["Satus iCare"].includes('Pendente')).length,
+    emAndamento: filteredServices.filter(s => s["Satus iCare"] === 'Em Andamento').length,
+    cycleTimeTotal: filteredServices.reduce((sum, s) => sum + (parseInt(s["Cycle Time"]) || 0), 0),
+    cycleTimeMedia: filteredServices.length > 0 ? 
+      filteredServices.reduce((sum, s) => sum + (parseInt(s["Cycle Time"]) || 0), 0) / filteredServices.length : 0
   };
 
   // Chart data preparation
@@ -136,33 +137,37 @@ const Index = () => {
     { name: 'Concluído', value: stats.concluidos, fill: 'hsl(142 76% 36%)' },
     { name: 'Pendente', value: stats.pendentes, fill: 'hsl(45 93% 47%)' },
     { name: 'Em Andamento', value: stats.emAndamento, fill: 'hsl(36 77% 55%)' },
-    { name: 'Cancelado', value: filteredServices.filter(s => s.status === 'Cancelado').length, fill: 'hsl(0 84% 60%)' }
+    { name: 'Outros', value: filteredServices.filter(s => 
+      !s["Satus iCare"].includes('Concluído') && 
+      !s["Satus iCare"].includes('Pendente') && 
+      !s["Satus iCare"].includes('Andamento')
+    ).length, fill: 'hsl(0 84% 60%)' }
   ];
 
   const monthlyData = Array.from({ length: 6 }, (_, i) => {
     const month = new Date(2024, i, 1).toLocaleDateString('pt-BR', { month: 'short' });
     const monthServices = filteredServices.filter(s => {
-      const serviceMonth = new Date(s.data.split('/').reverse().join('-')).getMonth();
+      const serviceMonth = new Date(s["Data Criação"].split('/').reverse().join('-')).getMonth();
       return serviceMonth === i;
     });
     
     return {
       month,
-      concluidos: monthServices.filter(s => s.status === 'Concluído').length,
-      pendentes: monthServices.filter(s => s.status === 'Pendente').length,
-      emAndamento: monthServices.filter(s => s.status === 'Em Andamento').length,
-      receita: monthServices.reduce((sum, s) => sum + s.valor, 0)
+      concluidos: monthServices.filter(s => s["Satus iCare"] === 'Concluído').length,
+      pendentes: monthServices.filter(s => s["Satus iCare"].includes('Pendente')).length,
+      emAndamento: monthServices.filter(s => s["Satus iCare"] === 'Em Andamento').length,
+      cycleTime: monthServices.reduce((sum, s) => sum + (parseInt(s["Cycle Time"]) || 0), 0)
     };
   });
 
   const technicianData = tecnicos.map(tecnico => ({
     name: tecnico,
-    value: filteredServices.filter(s => s.tecnico === tecnico).length
+    value: filteredServices.filter(s => s["Técnico - Último Atendimento"] === tecnico).length
   })).sort((a, b) => b.value - a.value).slice(0, 10);
 
   const serviceTypeData = tipos.map(tipo => ({
     name: tipo,
-    value: filteredServices.filter(s => s.tipo === tipo).length
+    value: filteredServices.filter(s => s["Tipo-Subtipo de Serviço"] === tipo).length
   }));
 
   return (
@@ -246,8 +251,8 @@ const Index = () => {
                 trend={{ value: 5, isPositive: false }}
               />
               <StatCard
-                title="Receita Total"
-                value={`R$ ${stats.receita.toLocaleString('pt-BR')}`}
+                title="Cycle Time Total"
+                value={`${stats.cycleTimeTotal} dias`}
                 icon={<TrendingUp className="h-5 w-5" />}
                 variant="warning"
                 trend={{ value: 15, isPositive: true }}
