@@ -383,7 +383,7 @@ const Index = () => {
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-muted-foreground">Total Mês Atual</p>
+                      <p className="text-sm font-medium text-muted-foreground">Total Entrantes no Mês Atual</p>
                       <p className="text-xl font-bold">{currentMonthTotal}</p>
                     </div>
                     <Users className="h-6 w-6 text-primary" />
@@ -394,7 +394,7 @@ const Index = () => {
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-muted-foreground">Total FIBRA Mês Atual</p>
+                      <p className="text-sm font-medium text-muted-foreground">FIBRA Entrantes no Mês Atual</p>
                       <p className="text-xl font-bold">{currentMonthModemFibra.length}</p>
                     </div>
                     <Users className="h-6 w-6 text-success" />
@@ -405,7 +405,7 @@ const Index = () => {
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-muted-foreground">Total PAYTV Mês Atual</p>
+                      <p className="text-sm font-medium text-muted-foreground">PAYTVEntrantes no Mês Atual</p>
                       <p className="text-xl font-bold">{currentMonthOutros.length}</p>
                     </div>
                     <Users className="h-6 w-6 text-accent" />
