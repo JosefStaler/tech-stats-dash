@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { StatCard } from "@/components/ui/stat-card";
@@ -25,9 +26,10 @@ const Index = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [filters, setFilters] = useState<FilterState>({
     dateRange: { from: undefined, to: undefined },
-    status: "todos",
-    tecnico: "todos",
-    tipo: "todos"
+    statusICare: "todos",
+    statusAtividade: "todos",
+    tipoSubtipo: "todos",
+    modelo: "todos"
   });
   const { toast } = useToast();
 
@@ -39,9 +41,10 @@ const Index = () => {
   );
 
   // Extract unique values for filters
-  const tecnicos = [...new Set(services.map(s => s["Técnico - Último Atendimento"]))].filter(Boolean);
-  const tipos = [...new Set(services.map(s => s["Tipo-Subtipo de Serviço"]))].filter(Boolean);
-  const statusOptions = ['Concluído', 'Pendente-Backlog ≤ 4 Dias', 'Pendente-Backlog > 4 Dias', 'Em Andamento'];
+  const tipoSubtipos = [...new Set(services.map(s => s["Tipo-Subtipo de Serviço"]))].filter(Boolean);
+  const modelos = [...new Set(services.map(s => s["Modelo"]))].filter(Boolean);
+  const statusICardOptions = [...new Set(services.map(s => s["Satus iCare"]))].filter(Boolean);
+  const statusAtividadeOptions = [...new Set(services.map(s => s["Status Atividade"]))].filter(Boolean);
 
   // Load sample data on mount
   useEffect(() => {
@@ -69,19 +72,24 @@ const Index = () => {
       });
     }
 
-    // Status filter
-    if (filters.status && filters.status !== "todos") {
-      filtered = filtered.filter(service => service["Satus iCare"] === filters.status);
+    // Status iCare filter
+    if (filters.statusICare && filters.statusICare !== "todos") {
+      filtered = filtered.filter(service => service["Satus iCare"] === filters.statusICare);
     }
 
-    // Técnico filter
-    if (filters.tecnico && filters.tecnico !== "todos") {
-      filtered = filtered.filter(service => service["Técnico - Último Atendimento"] === filters.tecnico);
+    // Status Atividade filter
+    if (filters.statusAtividade && filters.statusAtividade !== "todos") {
+      filtered = filtered.filter(service => service["Status Atividade"] === filters.statusAtividade);
     }
 
-    // Tipo filter
-    if (filters.tipo && filters.tipo !== "todos") {
-      filtered = filtered.filter(service => service["Tipo-Subtipo de Serviço"] === filters.tipo);
+    // Tipo-Subtipo filter
+    if (filters.tipoSubtipo && filters.tipoSubtipo !== "todos") {
+      filtered = filtered.filter(service => service["Tipo-Subtipo de Serviço"] === filters.tipoSubtipo);
+    }
+
+    // Modelo filter
+    if (filters.modelo && filters.modelo !== "todos") {
+      filtered = filtered.filter(service => service["Modelo"] === filters.modelo);
     }
 
     setFilteredServices(filtered);
@@ -131,22 +139,26 @@ const Index = () => {
     emAndamento: filteredServices.filter(s => s["Satus iCare"]?.includes('Andamento')).length,
     cycleTimeTotal: filteredServices.reduce((sum, s) => sum + (parseInt(s["Cycle Time"]) || 0), 0),
     cycleTimeMedia: filteredServices.length > 0 ? 
-      filteredServices.reduce((sum, s) => sum + (parseInt(s["Cycle Time"]) || 0), 0) / filteredServices.length : 0
+      Math.round(filteredServices.reduce((sum, s) => sum + (parseInt(s["Cycle Time"]) || 0), 0) / filteredServices.length * 10) / 10 : 0
   };
 
-  // Chart data preparation
-  const statusData = [
-    { name: 'Concluído', value: stats.concluidos, fill: 'hsl(142 76% 36%)' },
-    { name: 'Pendente', value: stats.pendentes, fill: 'hsl(45 93% 47%)' },
-    { name: 'Em Andamento', value: stats.emAndamento, fill: 'hsl(36 77% 55%)' },
-    { name: 'Outros', value: filteredServices.filter(s => {
-      const status = s["Satus iCare"] || '';
-      return !status.includes('Concluído') && 
-             !status.includes('Pendente') && 
-             !status.includes('Andamento');
-    }).length, fill: 'hsl(0 84% 60%)' }
-  ];
+  // Chart data preparation - Status iCare
+  const statusICareData = statusICardOptions.map(status => ({
+    name: status,
+    value: filteredServices.filter(s => s["Satus iCare"] === status).length,
+    fill: status?.includes('Concluído') ? 'hsl(142 76% 36%)' :
+          status?.includes('Pendente') ? 'hsl(45 93% 47%)' :
+          status?.includes('Andamento') ? 'hsl(36 77% 55%)' :
+          'hsl(210 12% 45%)'
+  }));
 
+  // Chart data preparation - Status Atividade
+  const statusAtividadeData = statusAtividadeOptions.map(status => ({
+    name: status || 'Sem Status',
+    value: filteredServices.filter(s => s["Status Atividade"] === status).length
+  }));
+
+  // Monthly data
   const monthlyData = Array.from({ length: 6 }, (_, i) => {
     const month = new Date(2024, i, 1).toLocaleDateString('pt-BR', { month: 'short' });
     const monthServices = filteredServices.filter(s => {
@@ -165,19 +177,22 @@ const Index = () => {
       concluidos: monthServices.filter(s => s["Satus iCare"]?.includes('Concluído')).length,
       pendentes: monthServices.filter(s => s["Satus iCare"]?.includes('Pendente')).length,
       emAndamento: monthServices.filter(s => s["Satus iCare"]?.includes('Andamento')).length,
-      cycleTime: monthServices.reduce((sum, s) => sum + (parseInt(s["Cycle Time"]) || 0), 0)
+      cycleTime: monthServices.length > 0 ? 
+        Math.round(monthServices.reduce((sum, s) => sum + (parseInt(s["Cycle Time"]) || 0), 0) / monthServices.length * 10) / 10 : 0
     };
   });
 
-  const technicianData = tecnicos.map(tecnico => ({
-    name: tecnico,
-    value: filteredServices.filter(s => s["Técnico - Último Atendimento"] === tecnico).length
-  })).sort((a, b) => b.value - a.value).slice(0, 10);
-
-  const serviceTypeData = tipos.map(tipo => ({
+  // Service type data
+  const tipoServicoData = tipoSubtipos.map(tipo => ({
     name: tipo,
     value: filteredServices.filter(s => s["Tipo-Subtipo de Serviço"] === tipo).length
-  }));
+  })).sort((a, b) => b.value - a.value).slice(0, 10);
+
+  // Model data
+  const modeloData = modelos.map(modelo => ({
+    name: modelo,
+    value: filteredServices.filter(s => s["Modelo"] === modelo).length
+  })).sort((a, b) => b.value - a.value).slice(0, 10);
 
   return (
     <div className="min-h-screen bg-background">
@@ -232,13 +247,14 @@ const Index = () => {
             <Filters
               filters={filters}
               onFiltersChange={setFilters}
-              tecnicos={tecnicos}
-              tipos={tipos}
-              statusOptions={statusOptions}
+              tipoSubtipos={tipoSubtipos}
+              modelos={modelos}
+              statusICardOptions={statusICardOptions}
+              statusAtividadeOptions={statusAtividadeOptions}
             />
 
             {/* Statistics Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
               <StatCard
                 title="Total de Serviços"
                 value={stats.total}
@@ -260,20 +276,28 @@ const Index = () => {
                 trend={{ value: 5, isPositive: false }}
               />
               <StatCard
-                title="Cycle Time Total"
-                value={`${stats.cycleTimeTotal} dias`}
-                icon={<TrendingUp className="h-5 w-5" />}
+                title="Pendentes"
+                value={stats.pendentes}
+                icon={<AlertTriangle className="h-5 w-5" />}
                 variant="warning"
-                trend={{ value: 15, isPositive: true }}
+                trend={{ value: 15, isPositive: false }}
+              />
+              <StatCard
+                title="Cycle Time Médio"
+                value={`${stats.cycleTimeMedia} dias`}
+                icon={<TrendingUp className="h-5 w-5" />}
+                variant="default"
+                trend={{ value: 10, isPositive: true }}
               />
             </div>
 
             {/* Charts */}
             <Charts
-              statusData={statusData}
+              statusICareData={statusICareData}
+              statusAtividadeData={statusAtividadeData}
               monthlyData={monthlyData}
-              technicianData={technicianData}
-              serviceTypeData={serviceTypeData}
+              tipoServicoData={tipoServicoData}
+              modeloData={modeloData}
             />
 
             {/* Data Table */}
@@ -287,7 +311,7 @@ const Index = () => {
                   </span>
                 </CardTitle>
                 <CardDescription>
-                  Visualização detalhada de todos os serviços técnicos
+                  Visualização detalhada de todos os serviços técnicos filtrados
                 </CardDescription>
               </CardHeader>
               <CardContent>

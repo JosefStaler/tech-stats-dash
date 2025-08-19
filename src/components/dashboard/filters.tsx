@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -14,43 +15,55 @@ export interface FilterState {
     from: Date | undefined;
     to: Date | undefined;
   };
-  status: string;
-  tecnico: string;
-  tipo: string;
+  statusICare: string;
+  statusAtividade: string;
+  tipoSubtipo: string;
+  modelo: string;
 }
 
 interface FiltersProps {
   filters: FilterState;
   onFiltersChange: (filters: FilterState) => void;
-  tecnicos: string[];
-  tipos: string[];
-  statusOptions: string[];
+  tipoSubtipos: string[];
+  modelos: string[];
+  statusICardOptions: string[];
+  statusAtividadeOptions: string[];
 }
 
-export function Filters({ filters, onFiltersChange, tecnicos, tipos, statusOptions }: FiltersProps) {
+export function Filters({ 
+  filters, 
+  onFiltersChange, 
+  tipoSubtipos, 
+  modelos, 
+  statusICardOptions, 
+  statusAtividadeOptions 
+}: FiltersProps) {
   const clearFilters = () => {
     onFiltersChange({
       dateRange: { from: undefined, to: undefined },
-      status: "todos",
-      tecnico: "todos",
-      tipo: "todos"
+      statusICare: "todos",
+      statusAtividade: "todos",
+      tipoSubtipo: "todos",
+      modelo: "todos"
     });
   };
 
   const hasActiveFilters = !!(
     filters.dateRange.from || 
     filters.dateRange.to || 
-    (filters.status && filters.status !== "todos") || 
-    (filters.tecnico && filters.tecnico !== "todos") || 
-    (filters.tipo && filters.tipo !== "todos")
+    (filters.statusICare && filters.statusICare !== "todos") || 
+    (filters.statusAtividade && filters.statusAtividade !== "todos") || 
+    (filters.tipoSubtipo && filters.tipoSubtipo !== "todos") || 
+    (filters.modelo && filters.modelo !== "todos")
   );
 
   const getActiveFiltersCount = () => {
     let count = 0;
     if (filters.dateRange.from || filters.dateRange.to) count++;
-    if (filters.status && filters.status !== "todos") count++;
-    if (filters.tecnico && filters.tecnico !== "todos") count++;
-    if (filters.tipo && filters.tipo !== "todos") count++;
+    if (filters.statusICare && filters.statusICare !== "todos") count++;
+    if (filters.statusAtividade && filters.statusAtividade !== "todos") count++;
+    if (filters.tipoSubtipo && filters.tipoSubtipo !== "todos") count++;
+    if (filters.modelo && filters.modelo !== "todos") count++;
     return count;
   };
 
@@ -60,7 +73,7 @@ export function Filters({ filters, onFiltersChange, tecnicos, tipos, statusOptio
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2">
             <Filter className="h-5 w-5 text-primary" />
-            Filtros
+            Filtros de Análise de Desempenho
             {hasActiveFilters && (
               <Badge variant="secondary" className="ml-2">
                 {getActiveFiltersCount()}
@@ -81,7 +94,7 @@ export function Filters({ filters, onFiltersChange, tecnicos, tipos, statusOptio
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
           {/* Date Range Filter */}
           <div className="space-y-2">
             <label className="text-sm font-medium">Período</label>
@@ -128,13 +141,59 @@ export function Filters({ filters, onFiltersChange, tecnicos, tipos, statusOptio
             </Popover>
           </div>
 
-          {/* Status Filter */}
+          {/* Tipo-Subtipo Filter */}
           <div className="space-y-2">
-            <label className="text-sm font-medium">Status</label>
+            <label className="text-sm font-medium">Tipo-Subtipo de Serviço</label>
             <Select
-              value={filters.status}
+              value={filters.tipoSubtipo}
               onValueChange={(value) => 
-                onFiltersChange({ ...filters, status: value })
+                onFiltersChange({ ...filters, tipoSubtipo: value })
+              }
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Todos os tipos" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="todos">Todos os tipos</SelectItem>
+                {tipoSubtipos.map((tipo) => (
+                  <SelectItem key={tipo} value={tipo}>
+                    {tipo}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Modelo Filter */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Modelo</label>
+            <Select
+              value={filters.modelo}
+              onValueChange={(value) => 
+                onFiltersChange({ ...filters, modelo: value })
+              }
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Todos os modelos" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="todos">Todos os modelos</SelectItem>
+                {modelos.map((modelo) => (
+                  <SelectItem key={modelo} value={modelo}>
+                    {modelo}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Status iCare Filter */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Status iCare</label>
+            <Select
+              value={filters.statusICare}
+              onValueChange={(value) => 
+                onFiltersChange({ ...filters, statusICare: value })
               }
             >
               <SelectTrigger>
@@ -142,7 +201,7 @@ export function Filters({ filters, onFiltersChange, tecnicos, tipos, statusOptio
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="todos">Todos os status</SelectItem>
-                {statusOptions.map((status) => (
+                {statusICardOptions.map((status) => (
                   <SelectItem key={status} value={status}>
                     {status}
                   </SelectItem>
@@ -151,46 +210,23 @@ export function Filters({ filters, onFiltersChange, tecnicos, tipos, statusOptio
             </Select>
           </div>
 
-          {/* Técnico Filter */}
+          {/* Status Atividade Filter */}
           <div className="space-y-2">
-            <label className="text-sm font-medium">Técnico</label>
+            <label className="text-sm font-medium">Status Atividade</label>
             <Select
-              value={filters.tecnico}
+              value={filters.statusAtividade}
               onValueChange={(value) => 
-                onFiltersChange({ ...filters, tecnico: value })
+                onFiltersChange({ ...filters, statusAtividade: value })
               }
             >
               <SelectTrigger>
-                <SelectValue placeholder="Todos os técnicos" />
+                <SelectValue placeholder="Todos os status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="todos">Todos os técnicos</SelectItem>
-                {tecnicos.map((tecnico) => (
-                  <SelectItem key={tecnico} value={tecnico}>
-                    {tecnico}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Tipo Filter */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Tipo de Serviço</label>
-            <Select
-              value={filters.tipo}
-              onValueChange={(value) => 
-                onFiltersChange({ ...filters, tipo: value })
-              }
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Todos os tipos" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="todos">Todos os tipos</SelectItem>
-                {tipos.map((tipo) => (
-                  <SelectItem key={tipo} value={tipo}>
-                    {tipo}
+                <SelectItem value="todos">Todos os status</SelectItem>
+                {statusAtividadeOptions.map((status) => (
+                  <SelectItem key={status} value={status}>
+                    {status}
                   </SelectItem>
                 ))}
               </SelectContent>

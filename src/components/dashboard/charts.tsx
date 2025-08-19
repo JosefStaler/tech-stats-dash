@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from "recharts";
 
@@ -25,13 +26,20 @@ interface MonthlyData {
 }
 
 interface ChartsProps {
-  statusData: ChartData[];
+  statusICareData: ChartData[];
+  statusAtividadeData: ChartData[];
   monthlyData: MonthlyData[];
-  technicianData: ChartData[];
-  serviceTypeData: ChartData[];
+  tipoServicoData: ChartData[];
+  modeloData: ChartData[];
 }
 
-export function Charts({ statusData, monthlyData, technicianData, serviceTypeData }: ChartsProps) {
+export function Charts({ 
+  statusICareData, 
+  statusAtividadeData, 
+  monthlyData, 
+  tipoServicoData, 
+  modeloData 
+}: ChartsProps) {
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       return (
@@ -48,25 +56,21 @@ export function Charts({ statusData, monthlyData, technicianData, serviceTypeDat
     return null;
   };
 
-  const formatCurrency = (value: number) => {
-    return `R$ ${value.toLocaleString('pt-BR')}`;
-  };
-
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      {/* Status Distribution */}
+      {/* Status iCare Distribution */}
       <Card>
         <CardHeader>
-          <CardTitle>Distribuição por Status</CardTitle>
+          <CardTitle>Distribuição por Status iCare</CardTitle>
           <CardDescription>
-            Porcentagem de serviços por status atual
+            Status atual dos serviços no sistema iCare
           </CardDescription>
         </CardHeader>
         <CardContent>
           <ResponsiveContainer width="100%" height={300}>
             <PieChart>
               <Pie
-                data={statusData}
+                data={statusICareData}
                 cx="50%"
                 cy="50%"
                 labelLine={false}
@@ -75,7 +79,7 @@ export function Charts({ statusData, monthlyData, technicianData, serviceTypeDat
                 fill="#8884d8"
                 dataKey="value"
               >
-                {statusData.map((entry, index) => (
+                {statusICareData.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={entry.fill || COLORS.primary} />
                 ))}
               </Pie>
@@ -85,12 +89,41 @@ export function Charts({ statusData, monthlyData, technicianData, serviceTypeDat
         </CardContent>
       </Card>
 
+      {/* Status Atividade Distribution */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Status de Atividade</CardTitle>
+          <CardDescription>
+            Status de atividade dos serviços
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={statusAtividadeData}>
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+              <XAxis 
+                dataKey="name" 
+                stroke="hsl(var(--foreground))"
+                fontSize={12}
+              />
+              <YAxis stroke="hsl(var(--foreground))" fontSize={12} />
+              <Tooltip content={<CustomTooltip />} />
+              <Bar 
+                dataKey="value" 
+                fill={COLORS.accent}
+                radius={[2, 2, 0, 0]}
+              />
+            </BarChart>
+          </ResponsiveContainer>
+        </CardContent>
+      </Card>
+
       {/* Monthly Performance */}
       <Card>
         <CardHeader>
           <CardTitle>Performance Mensal</CardTitle>
           <CardDescription>
-            Serviços concluídos vs. pendentes por mês
+            Evolução dos status ao longo do tempo
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -122,41 +155,6 @@ export function Charts({ statusData, monthlyData, technicianData, serviceTypeDat
                 fill={COLORS.accent} 
                 name="Em Andamento"
                 radius={[2, 2, 0, 0]}
-              />
-            </BarChart>
-          </ResponsiveContainer>
-        </CardContent>
-      </Card>
-
-      {/* Technician Performance */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Performance por Técnico</CardTitle>
-          <CardDescription>
-            Número de serviços realizados por técnico
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={technicianData} layout="horizontal">
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-              <XAxis 
-                type="number" 
-                stroke="hsl(var(--foreground))"
-                fontSize={12}
-              />
-              <YAxis 
-                dataKey="name" 
-                type="category" 
-                stroke="hsl(var(--foreground))"
-                fontSize={12}
-                width={100}
-              />
-              <Tooltip content={<CustomTooltip />} />
-              <Bar 
-                dataKey="value" 
-                fill={COLORS.primary}
-                radius={[0, 2, 2, 0]}
               />
             </BarChart>
           </ResponsiveContainer>
@@ -198,6 +196,73 @@ export function Charts({ statusData, monthlyData, technicianData, serviceTypeDat
                 activeDot={{ r: 6, stroke: COLORS.accent, strokeWidth: 2 }}
               />
             </LineChart>
+          </ResponsiveContainer>
+        </CardContent>
+      </Card>
+
+      {/* Service Type Distribution */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Distribuição por Tipo de Serviço</CardTitle>
+          <CardDescription>
+            Quantidade de serviços por tipo-subtipo
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={tipoServicoData} layout="horizontal">
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+              <XAxis 
+                type="number" 
+                stroke="hsl(var(--foreground))"
+                fontSize={12}
+              />
+              <YAxis 
+                dataKey="name" 
+                type="category" 
+                stroke="hsl(var(--foreground))"
+                fontSize={12}
+                width={120}
+              />
+              <Tooltip content={<CustomTooltip />} />
+              <Bar 
+                dataKey="value" 
+                fill={COLORS.primary}
+                radius={[0, 2, 2, 0]}
+              />
+            </BarChart>
+          </ResponsiveContainer>
+        </CardContent>
+      </Card>
+
+      {/* Model Distribution */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Distribuição por Modelo</CardTitle>
+          <CardDescription>
+            Quantidade de serviços por modelo de equipamento
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={modeloData}>
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+              <XAxis 
+                dataKey="name" 
+                stroke="hsl(var(--foreground))"
+                fontSize={12}
+                angle={-45}
+                textAnchor="end"
+                height={80}
+              />
+              <YAxis stroke="hsl(var(--foreground))" fontSize={12} />
+              <Tooltip content={<CustomTooltip />} />
+              <Bar 
+                dataKey="value" 
+                fill={COLORS.success}
+                radius={[2, 2, 0, 0]}
+              />
+            </BarChart>
           </ResponsiveContainer>
         </CardContent>
       </Card>
