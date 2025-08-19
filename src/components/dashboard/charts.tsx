@@ -74,8 +74,10 @@ export function Charts({
                 cx="50%"
                 cy="50%"
                 labelLine={false}
-                label={false}
-                outerRadius={80}
+                label={({ name, value, percent }) => {
+                  return `${name}: ${value} (${(percent * 100).toFixed(1)}%)`;
+                }}
+                outerRadius={70}
                 fill="#8884d8"
                 dataKey="value"
               >
@@ -83,13 +85,21 @@ export function Charts({
                   <Cell key={`cell-${index}`} fill={entry.fill || COLORS.primary} />
                 ))}
               </Pie>
-              <Tooltip content={<CustomTooltip />} />
-              <Legend 
-                verticalAlign="bottom" 
-                height={36}
-                formatter={(value, entry) => (
-                  <span style={{ color: entry.color }}>{value}</span>
-                )}
+              <Tooltip 
+                content={({ active, payload }) => {
+                  if (active && payload && payload.length) {
+                    const data = payload[0].payload;
+                    return (
+                      <div className="bg-card border border-border rounded-lg shadow-lg p-3">
+                        <p className="font-medium">{data.name}</p>
+                        <p style={{ color: payload[0].color }}>
+                          Quantidade: {data.value}
+                        </p>
+                      </div>
+                    );
+                  }
+                  return null;
+                }}
               />
             </PieChart>
           </ResponsiveContainer>
