@@ -182,25 +182,19 @@ const Index = () => {
     return serviceDate.getMonth() === referenceMonth && serviceDate.getFullYear() === referenceYear;
   });
 
-  // Statistics calculations
-  // For "Retiradas Realizadas" cards: count ALL successes regardless of creation date
-  // But for percentage calculation, use current month total from selected period
+  // Statistics calculations for cards with "Data Execução"
+  // These cards should only count services executed in the reference month
   
-  // Get services filtered only by date range (for percentage calculation base)
-  const periodFilteredServices = services.filter(service => {
-    if (filters.dateRange.from || filters.dateRange.to) {
-      const serviceDate = parseDate(service["Data Criação"]);
-      if (!serviceDate) return false;
-      if (filters.dateRange.from && serviceDate < filters.dateRange.from) return false;
-      if (filters.dateRange.to && serviceDate > filters.dateRange.to) return false;
-      return true;
-    }
-    return true; // If no date filter, consider all
+  // Filter services that have execution date in the reference month
+  const referenceMonthExecutedServices = services.filter(s => {
+    const execDate = parseDate(s["Data Execução"]);
+    if (!execDate) return false;
+    return execDate.getMonth() === referenceMonth && execDate.getFullYear() === referenceYear;
   });
 
-  // Total successes (independent of creation date, but respecting other filters except date)
-  const allSucessosTotal = services.filter(s => {
-    // Apply all filters except date filters
+  // Total successes (only from reference month executions)
+  const allSucessosTotal = referenceMonthExecutedServices.filter(s => {
+    // Apply all filters except date filters  
     let matches = isSucesso(s["Satus iCare"]);
     
     if (filters.statusICare && filters.statusICare !== "todos") {
@@ -229,8 +223,8 @@ const Index = () => {
   const referenceMonthTotal = referenceMonthServices.length;
   const sucessoPercentage = referenceMonthTotal > 0 ? Math.round((allSucessosTotal / referenceMonthTotal) * 100) : 0;
 
-  // MODEM FIBRA calculations
-  const sucessoModemFibraTotal = services.filter(s => {
+  // MODEM FIBRA calculations (only from reference month executions)
+  const sucessoModemFibraTotal = referenceMonthExecutedServices.filter(s => {
     let matches = s["Modelo"] === "MODEM FIBRA" && isSucesso(s["Satus iCare"]);
     
     // Apply non-date filters
@@ -256,8 +250,8 @@ const Index = () => {
   const referenceModemFibraTotal = referenceMonthServices.filter(s => s["Modelo"] === "MODEM FIBRA").length;
   const sucessoModemFibraPercentage = referenceModemFibraTotal > 0 ? Math.round((sucessoModemFibraTotal / referenceModemFibraTotal) * 100) : 0;
   
-  // Other models calculations
-  const sucessoOutrosTotal = services.filter(s => {
+  // Other models calculations (only from reference month executions)
+  const sucessoOutrosTotal = referenceMonthExecutedServices.filter(s => {
     let matches = s["Modelo"] !== "MODEM FIBRA" && isSucesso(s["Satus iCare"]);
     
     // Apply non-date filters
@@ -315,7 +309,7 @@ const Index = () => {
     finalizados: filteredServices.filter(s => isFinalized(s["Satus iCare"])).length,
     sucesso: allSucessosTotal,
     sucessoTrend: sucessoPercentage,
-    insucesso: filteredServices.filter(s => s["Satus iCare"]?.includes('Insucesso')).length,
+    insucesso: referenceMonthExecutedServices.filter(s => s["Satus iCare"]?.includes('Insucesso')).length,
     emAndamento: filteredServices.filter(s => s["Satus iCare"]?.includes('Andamento')).length,
     sucessoModemFibra: sucessoModemFibraTotal,
     sucessoModemFibraTrend: sucessoModemFibraPercentage,
