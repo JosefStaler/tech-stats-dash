@@ -56,6 +56,25 @@ export function Charts({
     return null;
   };
 
+  // Função para reorganizar dados alternando fatias grandes e pequenas
+  const organizeSlices = (data: ChartData[]) => {
+    const sorted = [...data].sort((a, b) => b.value - a.value);
+    const large = sorted.filter((_, index) => index % 2 === 0);
+    const small = sorted.filter((_, index) => index % 2 === 1);
+    
+    const organized: ChartData[] = [];
+    const maxLength = Math.max(large.length, small.length);
+    
+    for (let i = 0; i < maxLength; i++) {
+      if (large[i]) organized.push(large[i]);
+      if (small[i]) organized.push(small[i]);
+    }
+    
+    return organized;
+  };
+
+  const organizedStatusICareData = organizeSlices(statusICareData);
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       {/* Status iCare Distribution */}
@@ -70,7 +89,7 @@ export function Charts({
           <ResponsiveContainer width="100%" height={300}>
             <PieChart>
               <Pie
-                data={statusICareData}
+                data={organizedStatusICareData}
                 cx="50%"
                 cy="50%"
                 labelLine={false}
@@ -82,7 +101,7 @@ export function Charts({
                 fill="#8884d8"
                 dataKey="value"
               >
-                {statusICareData.map((entry, index) => (
+                {organizedStatusICareData.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={entry.fill || COLORS.primary} />
                 ))}
               </Pie>
