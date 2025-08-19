@@ -1,6 +1,5 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart, Line } from "recharts";
 
 const COLORS = {
   primary: 'hsl(218 84% 45%)',
@@ -40,21 +39,10 @@ export function Charts({
   tipoServicoData, 
   modeloData 
 }: ChartsProps) {
-  // Debug completo de todas as props
-  console.log('=== CHARTS COMPONENT DEBUG ===');
+  
+  console.log('=== CHARTS DEBUG ===');
   console.log('statusICareData:', statusICareData);
-  console.log('statusAtividadeData:', statusAtividadeData);
-  console.log('monthlyData:', monthlyData);
-  console.log('tipoServicoData:', tipoServicoData);
-  console.log('modeloData:', modeloData);
   console.log('=== END DEBUG ===');
-
-  // Dados de teste simples
-  const testData = [
-    { name: 'Finalizado', value: 50 },
-    { name: 'Pendente', value: 30 },
-    { name: 'Em Andamento', value: 20 }
-  ];
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -69,9 +57,9 @@ export function Charts({
         <CardContent>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart 
-              data={testData} 
+              data={statusICareData} 
               layout="horizontal"
-              margin={{ top: 20, right: 30, left: 80, bottom: 5 }}
+              margin={{ top: 20, right: 30, left: 100, bottom: 5 }}
             >
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis type="number" />
@@ -105,18 +93,13 @@ export function Charts({
         <CardContent>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={statusAtividadeData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-              <XAxis 
-                dataKey="name" 
-                stroke="hsl(var(--foreground))"
-                fontSize={12}
-              />
-              <YAxis stroke="hsl(var(--foreground))" fontSize={12} />
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="name" />
+              <YAxis />
               <Tooltip />
               <Bar 
                 dataKey="value" 
                 fill={COLORS.accent}
-                radius={[2, 2, 0, 0]}
               />
             </BarChart>
           </ResponsiveContainer>
@@ -134,32 +117,25 @@ export function Charts({
         <CardContent>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={monthlyData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-              <XAxis 
-                dataKey="month" 
-                stroke="hsl(var(--foreground))"
-                fontSize={12}
-              />
-              <YAxis stroke="hsl(var(--foreground))" fontSize={12} />
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="month" />
+              <YAxis />
               <Tooltip />
               <Legend />
               <Bar 
                 dataKey="finalizados" 
                 fill={COLORS.success} 
                 name="Finalizados"
-                radius={[2, 2, 0, 0]}
               />
               <Bar 
                 dataKey="pendentes" 
                 fill={COLORS.warning} 
                 name="Pendentes"
-                radius={[2, 2, 0, 0]}
               />
               <Bar 
                 dataKey="emAndamento" 
                 fill={COLORS.accent} 
                 name="Em Andamento"
-                radius={[2, 2, 0, 0]}
               />
             </BarChart>
           </ResponsiveContainer>
@@ -177,27 +153,15 @@ export function Charts({
         <CardContent>
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={monthlyData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-              <XAxis 
-                dataKey="month" 
-                stroke="hsl(var(--foreground))"
-                fontSize={12}
-              />
-              <YAxis 
-                stroke="hsl(var(--foreground))"
-                fontSize={12}
-                label={{ value: 'Dias', angle: -90, position: 'insideLeft' }}
-              />
-              <Tooltip 
-                formatter={(value: number) => [`${value} dias`, 'Cycle Time']}
-              />
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="month" />
+              <YAxis />
+              <Tooltip />
               <Line 
                 type="monotone" 
                 dataKey="cycleTime" 
                 stroke={COLORS.accent}
                 strokeWidth={3}
-                dot={{ fill: COLORS.accent, strokeWidth: 2, r: 4 }}
-                activeDot={{ r: 6, stroke: COLORS.accent, strokeWidth: 2 }}
               />
             </LineChart>
           </ResponsiveContainer>
@@ -215,24 +179,17 @@ export function Charts({
         <CardContent>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={tipoServicoData} layout="horizontal">
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-              <XAxis 
-                type="number" 
-                stroke="hsl(var(--foreground))"
-                fontSize={12}
-              />
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis type="number" />
               <YAxis 
                 dataKey="name" 
                 type="category" 
-                stroke="hsl(var(--foreground))"
-                fontSize={12}
                 width={120}
               />
               <Tooltip />
               <Bar 
                 dataKey="value" 
                 fill={COLORS.primary}
-                radius={[0, 2, 2, 0]}
               />
             </BarChart>
           </ResponsiveContainer>
@@ -250,21 +207,18 @@ export function Charts({
         <CardContent>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={modeloData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+              <CartesianGrid strokeDasharray="3 3" />
               <XAxis 
                 dataKey="name" 
-                stroke="hsl(var(--foreground))"
-                fontSize={12}
                 angle={-45}
                 textAnchor="end"
                 height={80}
               />
-              <YAxis stroke="hsl(var(--foreground))" fontSize={12} />
+              <YAxis />
               <Tooltip />
               <Bar 
                 dataKey="value" 
                 fill={COLORS.success}
-                radius={[2, 2, 0, 0]}
               />
             </BarChart>
           </ResponsiveContainer>
