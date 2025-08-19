@@ -277,19 +277,17 @@ const Index = () => {
   const referenceOutrosTotal = referenceMonthServices.filter(s => s["Modelo"] !== "MODEM FIBRA").length;
   const sucessoOutrosPercentage = referenceOutrosTotal > 0 ? Math.round((sucessoOutrosTotal / referenceOutrosTotal) * 100) : 0;
 
-  // Filter services with creation date <= reference month for backlog cards
-  const referenceMonthOrEarlierServices = services.filter(s => {
+  // Filter services with creation date equal to reference month for backlog cards
+  const referenceMonthCreationServices = services.filter(s => {
     const creationDate = parseDate(s["Data Criação"]);
     if (!creationDate) return false;
     
-    const refDate = new Date(referenceYear, referenceMonth);
-    const serviceDate = new Date(creationDate.getFullYear(), creationDate.getMonth());
-    
-    return serviceDate <= refDate;
+    return creationDate.getMonth() === referenceMonth && 
+           creationDate.getFullYear() === referenceYear;
   });
 
   // Calculate backlog count using creation date filter + other filters
-  const backlogCount = referenceMonthOrEarlierServices.filter(s => {
+  const backlogCount = referenceMonthCreationServices.filter(s => {
     const status = s["Satus iCare"];
     const isBacklog = status?.includes('Backlog ≤ 4 Dias') || 
            status?.includes('Backlog > 4 Dias') || 
@@ -309,7 +307,7 @@ const Index = () => {
   }).length;
 
   // Calculate backlog count for MODEM FIBRA
-  const backlogFibraCount = referenceMonthOrEarlierServices.filter(s => {
+  const backlogFibraCount = referenceMonthCreationServices.filter(s => {
     const status = s["Satus iCare"];
     const isBacklog = status?.includes('Backlog ≤ 4 Dias') || 
                       status?.includes('Backlog > 4 Dias') || 
@@ -326,7 +324,7 @@ const Index = () => {
   }).length;
 
   // Calculate backlog count for PAYTV (other models)
-  const backlogPaytvCount = referenceMonthOrEarlierServices.filter(s => {
+  const backlogPaytvCount = referenceMonthCreationServices.filter(s => {
     const status = s["Satus iCare"];
     const isBacklog = status?.includes('Backlog ≤ 4 Dias') || 
                       status?.includes('Backlog > 4 Dias') || 
