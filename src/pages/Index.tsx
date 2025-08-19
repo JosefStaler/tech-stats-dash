@@ -379,9 +379,7 @@ const Index = () => {
     sucessoModemFibraTrend: sucessoModemFibraPercentage,
     sucessoOutros: sucessoOutrosTotal,
     sucessoOutrosTrend: sucessoOutrosPercentage,
-    cycleTimeTotal: filteredServices.reduce((sum, s) => sum + (parseInt(s["Cycle Time"]) || 0), 0),
-    cycleTimeMedia: filteredServices.length > 0 ? 
-      Math.round(filteredServices.reduce((sum, s) => sum + (parseInt(s["Cycle Time"]) || 0), 0) / filteredServices.length * 10) / 10 : 0
+    cycleTimeTotal: filteredServices.reduce((sum, s) => sum + (parseInt(s["Cycle Time"]) || 0), 0)
   };
 
   // Chart data preparation - Status iCare agrupado
@@ -610,13 +608,6 @@ const Index = () => {
                 icon={<AlertTriangle className="h-5 w-5" />}
                 variant="warning"
                 trend={{ value: 15, isPositive: false, description: "Total de retiradas sem sucesso" }}
-              />
-              <StatCard
-                title="Cycle Time Médio"
-                value={`${stats.cycleTimeMedia} dias`}
-                icon={<TrendingUp className="h-5 w-5" />}
-                variant="default"
-                trend={{ value: 10, isPositive: true }}
               />
             </div>
 
