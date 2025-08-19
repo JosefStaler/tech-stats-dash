@@ -85,7 +85,7 @@ export function Charts({
                   }
                   return `${shortName}: ${value} (${(percent * 100).toFixed(1)}%)`;
                 }}
-                outerRadius={80}
+                outerRadius={65}
                 fill="#8884d8"
                 dataKey="value"
               >
