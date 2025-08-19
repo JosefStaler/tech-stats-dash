@@ -277,30 +277,69 @@ const Index = () => {
   const referenceOutrosTotal = referenceMonthServices.filter(s => s["Modelo"] !== "MODEM FIBRA").length;
   const sucessoOutrosPercentage = referenceOutrosTotal > 0 ? Math.round((sucessoOutrosTotal / referenceOutrosTotal) * 100) : 0;
 
-  // Calculate backlog count using the same grouping logic as the status chart
-  const backlogCount = filteredServices.filter(s => {
+  // Filter services with creation date <= reference month for backlog cards
+  const referenceMonthOrEarlierServices = services.filter(s => {
+    const creationDate = parseDate(s["Data Criação"]);
+    if (!creationDate) return false;
+    
+    const refDate = new Date(referenceYear, referenceMonth);
+    const serviceDate = new Date(creationDate.getFullYear(), creationDate.getMonth());
+    
+    return serviceDate <= refDate;
+  });
+
+  // Calculate backlog count using creation date filter + other filters
+  const backlogCount = referenceMonthOrEarlierServices.filter(s => {
     const status = s["Satus iCare"];
-    return status?.includes('Backlog ≤ 4 Dias') || 
+    const isBacklog = status?.includes('Backlog ≤ 4 Dias') || 
            status?.includes('Backlog > 4 Dias') || 
            status?.includes('Backlog > 14 Dias');
+    
+    if (!isBacklog) return false;
+    
+    // Apply other filters
+    if (filters.statusICare && filters.statusICare !== "todos") {
+      if (!s["Satus iCare"]?.includes(filters.statusICare)) return false;
+    }
+    if (filters.modelo && filters.modelo !== "todos") {
+      if (s["Modelo"] !== filters.modelo) return false;
+    }
+    
+    return true;
   }).length;
 
   // Calculate backlog count for MODEM FIBRA
-  const backlogFibraCount = filteredServices.filter(s => {
+  const backlogFibraCount = referenceMonthOrEarlierServices.filter(s => {
     const status = s["Satus iCare"];
     const isBacklog = status?.includes('Backlog ≤ 4 Dias') || 
                       status?.includes('Backlog > 4 Dias') || 
                       status?.includes('Backlog > 14 Dias');
-    return isBacklog && s["Modelo"] === "MODEM FIBRA";
+    
+    if (!isBacklog || s["Modelo"] !== "MODEM FIBRA") return false;
+    
+    // Apply other filters
+    if (filters.statusICare && filters.statusICare !== "todos") {
+      if (!s["Satus iCare"]?.includes(filters.statusICare)) return false;
+    }
+    
+    return true;
   }).length;
 
   // Calculate backlog count for PAYTV (other models)
-  const backlogPaytvCount = filteredServices.filter(s => {
+  const backlogPaytvCount = referenceMonthOrEarlierServices.filter(s => {
     const status = s["Satus iCare"];
     const isBacklog = status?.includes('Backlog ≤ 4 Dias') || 
                       status?.includes('Backlog > 4 Dias') || 
                       status?.includes('Backlog > 14 Dias');
-    return isBacklog && s["Modelo"] !== "MODEM FIBRA";
+    
+    if (!isBacklog || s["Modelo"] === "MODEM FIBRA") return false;
+    
+    // Apply other filters
+    if (filters.statusICare && filters.statusICare !== "todos") {
+      if (!s["Satus iCare"]?.includes(filters.statusICare)) return false;
+    }
+    
+    return true;
   }).length;
 
   const stats = {
