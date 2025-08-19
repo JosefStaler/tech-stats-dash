@@ -75,10 +75,13 @@ export function Charts({
                 cy="50%"
                 labelLine={false}
                 label={({ name, value, percent }) => {
-                  let shortName = name.includes('-') ? name.substring(name.indexOf('-') + 1) : name;
-                  // Se ainda tem hífen, pega apenas a última parte
-                  if (shortName.includes('-')) {
-                    shortName = shortName.substring(shortName.lastIndexOf('-') + 1);
+                  // Lógica específica para cada tipo de nome
+                  let shortName = name;
+                  if (name.startsWith('Ret. Parcial-')) {
+                    shortName = name.replace('Ret. Parcial-', '');
+                  } else if (name.includes('-')) {
+                    const parts = name.split('-');
+                    shortName = parts[parts.length - 1];
                   }
                   return `${shortName}: ${value} (${(percent * 100).toFixed(1)}%)`;
                 }}
@@ -90,7 +93,22 @@ export function Charts({
                   <Cell key={`cell-${index}`} fill={entry.fill || COLORS.primary} />
                 ))}
               </Pie>
-              <Tooltip />
+              <Tooltip 
+                content={({ active, payload }) => {
+                  if (active && payload && payload.length) {
+                    const data = payload[0].payload;
+                    return (
+                      <div className="bg-card border border-border rounded-lg shadow-lg p-3">
+                        <p className="font-medium">{data.name}</p>
+                        <p style={{ color: payload[0].color }}>
+                          Quantidade: {data.value}
+                        </p>
+                      </div>
+                    );
+                  }
+                  return null;
+                }}
+              />
             </PieChart>
           </ResponsiveContainer>
         </CardContent>
