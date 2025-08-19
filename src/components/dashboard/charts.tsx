@@ -1,5 +1,5 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, LabelList } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LabelList } from "recharts";
 
 interface ChartData {
   name: string;
@@ -42,11 +42,12 @@ export function Charts(props: ChartsProps) {
   // Calcular total para percentuais
   const total = chartData.reduce((sum, item) => sum + item.value, 0);
 
-  // Função para renderizar labels customizados
-  const renderCustomLabel = (entry: any) => {
-    const percentage = total > 0 ? ((entry.value / total) * 100).toFixed(1) : '0';
-    return `${entry.value} (${percentage}%)`;
-  };
+  // Adicionar dados processados com percentual
+  const chartDataWithPercentage = chartData.map(item => ({
+    ...item,
+    percentage: total > 0 ? ((item.value / total) * 100).toFixed(1) : '0',
+    label: `${item.value} (${total > 0 ? ((item.value / total) * 100).toFixed(1) : '0'}%)`
+  }));
 
   // Tooltip customizado
   const CustomTooltip = ({ active, payload, label }: any) => {
@@ -74,8 +75,8 @@ export function Charts(props: ChartsProps) {
         <CardContent>
           <ResponsiveContainer width="100%" height={350}>
             <BarChart 
-              data={chartData}
-              margin={{ top: 20, right: 30, left: 20, bottom: 60 }}
+              data={chartDataWithPercentage}
+              margin={{ top: 50, right: 30, left: 20, bottom: 60 }}
             >
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis 
@@ -89,7 +90,7 @@ export function Charts(props: ChartsProps) {
               <YAxis />
               <Tooltip content={<CustomTooltip />} />
               <Bar dataKey="value" fill="#3b82f6">
-                <LabelList dataKey="value" content={renderCustomLabel} position="top" />
+                <LabelList dataKey="label" position="top" style={{ fontSize: '12px', fill: 'currentColor' }} />
               </Bar>
             </BarChart>
           </ResponsiveContainer>
