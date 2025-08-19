@@ -197,10 +197,20 @@ const Index = () => {
 
   // Retiradas Realizadas calculations - separating Modem Fibra from others
   
+  // Debug logs to check data
+  console.log('Total services:', services.length);
+  console.log('Current month services:', currentMonthServices.length);
+  console.log('Services with Modem Fibra:', services.filter(s => s["Modelo"] === "Modem Fibra").length);
+  console.log('Current month Modem Fibra:', currentMonthServices.filter(s => s["Modelo"] === "Modem Fibra").length);
+  console.log('Sample service:', services[0]);
+  
   // Modem Fibra calculations - using all services, not just filtered
   const sucessoModemFibra = services.filter(s => s["Modelo"] === "Modem Fibra" && isSucesso(s["Satus iCare"])).length;
   const currentMonthModemFibra = currentMonthServices.filter(s => s["Modelo"] === "Modem Fibra").length;
   const sucessoModemFibraPercentage = currentMonthModemFibra > 0 ? Math.round((sucessoModemFibra / currentMonthModemFibra) * 100) : 0;
+  
+  console.log('Sucesso Modem Fibra:', sucessoModemFibra);
+  console.log('Sucesso Modem Fibra Percentage:', sucessoModemFibraPercentage);
   
   // Other models calculations - using all services, not just filtered
   const sucessoOutros = services.filter(s => s["Modelo"] !== "Modem Fibra" && isSucesso(s["Satus iCare"])).length;
