@@ -18,7 +18,7 @@ import {
   BarChart3,
   Download
 } from "lucide-react";
-import { parseExcelFile, generateSampleData } from "@/lib/excel-utils";
+import { parseExcelFile } from "@/lib/excel-utils";
 
 const Index = () => {
   const [services, setServices] = useState<ServiceData[]>([]);
@@ -47,15 +47,6 @@ const Index = () => {
   const statusICardOptions = [...new Set(services.map(s => s["Satus iCare"]))].filter(Boolean);
   const statusAtividadeOptions = [...new Set(services.map(s => s["Status Atividade"]))].filter(Boolean);
 
-  // Load sample data on mount
-  useEffect(() => {
-    const sampleData = generateSampleData();
-    setServices(sampleData);
-    toast({
-      title: "Dados de exemplo carregados",
-      description: "Carregue sua planilha para visualizar seus dados reais.",
-    });
-  }, [toast]);
 
   // Helper function to parse dates that might be Excel serial numbers
   const parseDate = (dateValue: any): Date | null => {
@@ -158,14 +149,6 @@ const Index = () => {
     }
   };
 
-  const handleLoadSample = () => {
-    const sampleData = generateSampleData();
-    setServices(sampleData);
-    toast({
-      title: "Dados de exemplo carregados",
-      description: `${sampleData.length} serviços de exemplo foram carregados.`,
-    });
-  };
 
   // Function to check if service is finalized
   const isFinalized = (status: string | undefined) => {
@@ -366,30 +349,8 @@ const Index = () => {
 
       <div className="container mx-auto px-6 py-8 space-y-8">
         {/* File Upload Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2">
-            <FileUpload onFileUpload={handleFileUpload} />
-          </div>
-          <Card className="bg-gradient-secondary border-border/50">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Download className="h-5 w-5 text-primary" />
-                Dados de Exemplo
-              </CardTitle>
-              <CardDescription>
-                Experimente o dashboard com dados simulados
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button 
-                onClick={handleLoadSample}
-                variant="outline"
-                className="w-full"
-              >
-                Carregar Dados de Exemplo
-              </Button>
-            </CardContent>
-          </Card>
+        <div className="w-full">
+          <FileUpload onFileUpload={handleFileUpload} />
         </div>
 
         {services.length > 0 && (
