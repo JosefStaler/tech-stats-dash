@@ -167,6 +167,14 @@ const Index = () => {
     return status.includes('Sucesso-Reuso') || status.includes('Sucesso-Reversa');
   };
 
+  // Get reference month name and create variables for display
+  const monthNames = [
+    "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+    "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+  ];
+  const referenceMonthName = monthNames[referenceMonth];
+  const displayPeriod = `${referenceMonthName}/${referenceYear}`;
+
   // Get period services based on reference month for percentage calculations
   const referenceMonthServices = services.filter(s => {
     const serviceDate = parseDate(s["Data Criação"]);
@@ -440,6 +448,16 @@ const Index = () => {
 
         {services.length > 0 && (
           <>
+            {/* Month Selector */}
+            <MonthSelector 
+              selectedMonth={referenceMonth}
+              selectedYear={referenceYear}
+              onMonthChange={(month, year) => {
+                setReferenceMonth(month);
+                setReferenceYear(year);
+              }}
+            />
+
             {/* Filters */}
             <Filters
               filters={filters}
@@ -456,7 +474,7 @@ const Index = () => {
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-muted-foreground">Total Entrantes no Mês de Referência</p>
+                      <p className="text-sm font-medium text-muted-foreground">Total Entrantes em {displayPeriod}</p>
                       <p className="text-xl font-bold">{referenceMonthServices.length}</p>
                     </div>
                     <Users className="h-6 w-6 text-primary" />
@@ -467,7 +485,7 @@ const Index = () => {
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-muted-foreground">FIBRA Entrantes no Mês de Referência</p>
+                      <p className="text-sm font-medium text-muted-foreground">FIBRA Entrantes em {displayPeriod}</p>
                       <p className="text-xl font-bold">{referenceMonthServices.filter(s => s["Modelo"] === "MODEM FIBRA").length}</p>
                     </div>
                     <Users className="h-6 w-6 text-success" />
@@ -478,7 +496,7 @@ const Index = () => {
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-muted-foreground">PAYTV Entrantes no Mês de Referência</p>
+                      <p className="text-sm font-medium text-muted-foreground">PAYTV Entrantes em {displayPeriod}</p>
                       <p className="text-xl font-bold">{referenceMonthServices.filter(s => s["Modelo"] !== "MODEM FIBRA").length}</p>
                     </div>
                     <Users className="h-6 w-6 text-accent" />
