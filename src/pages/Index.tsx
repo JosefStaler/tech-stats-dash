@@ -207,8 +207,17 @@ const Index = () => {
   const currentMonthOutros = currentMonthServices.filter(s => s["Modelo"] !== "MODEM FIBRA");
   const sucessoOutrosPercentage = currentMonthOutros.length > 0 ? Math.round((sucessoOutrosTotal / currentMonthOutros.length) * 100) : 0;
 
+  // Calculate backlog count using the same grouping logic as the status chart
+  const backlogCount = filteredServices.filter(s => {
+    const status = s["Satus iCare"];
+    return status?.includes('Backlog ≤ 4 Dias') || 
+           status?.includes('Backlog > 4 Dias') || 
+           status?.includes('Backlog > 14 Dias');
+  }).length;
+
   const stats = {
     total: filteredServices.length,
+    backlog: backlogCount,
     finalizados: filteredServices.filter(s => isFinalized(s["Satus iCare"])).length,
     sucesso: sucessoCount,
     sucessoTrend: sucessoPercentage,
@@ -417,10 +426,10 @@ const Index = () => {
             {/* Statistics Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
               <StatCard
-                title="Total de Serviços"
-                value={stats.total}
+                title="Backlog Total"
+                value={stats.backlog}
                 icon={<FileSpreadsheet className="h-5 w-5" />}
-                trend={{ value: 12, isPositive: true }}
+                trend={{ value: 12, isPositive: true, description: "Total de Retiradas em Backlog" }}
               />
               <StatCard
                 title="Retiradas Realizadas"
