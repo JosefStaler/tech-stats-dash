@@ -56,6 +56,10 @@ export function Charts({
     return null;
   };
 
+  // Debug dos dados
+  console.log('statusICareData:', statusICareData);
+  console.log('statusICareData filtered:', statusICareData.filter(item => item.value > 0));
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       {/* Status iCare Distribution */}
@@ -69,52 +73,26 @@ export function Charts({
         <CardContent>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart 
-              data={statusICareData.filter(item => item.value > 0)} 
+              data={statusICareData} 
               layout="horizontal"
-              margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+              margin={{ top: 20, right: 30, left: 80, bottom: 5 }}
             >
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-              <XAxis 
-                type="number" 
-                stroke="hsl(var(--foreground))"
-                fontSize={12}
-              />
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis type="number" />
               <YAxis 
                 dataKey="name" 
                 type="category" 
-                stroke="hsl(var(--foreground))"
-                fontSize={10}
                 width={150}
-                tick={{ fontSize: 10 }}
                 tickFormatter={(value) => {
-                  const shortName = value.split('-').pop() || value;
-                  return shortName.length > 15 ? shortName.substring(0, 15) + '...' : shortName;
+                  const parts = value.split('-');
+                  return parts[parts.length - 1] || value;
                 }}
               />
-              <Tooltip 
-                content={({ active, payload, label }) => {
-                  if (active && payload && payload.length) {
-                    const data = payload[0].payload;
-                    return (
-                      <div className="bg-card border border-border rounded-lg shadow-lg p-3">
-                        <p className="font-medium">{data.name}</p>
-                        <p style={{ color: payload[0].color }}>
-                          Quantidade: {data.value}
-                        </p>
-                      </div>
-                    );
-                  }
-                  return null;
-                }}
-              />
+              <Tooltip />
               <Bar 
                 dataKey="value" 
-                radius={[0, 2, 2, 0]}
-              >
-                {statusICareData.filter(item => item.value > 0).map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.fill || COLORS.primary} />
-                ))}
-              </Bar>
+                fill={COLORS.primary}
+              />
             </BarChart>
           </ResponsiveContainer>
         </CardContent>
