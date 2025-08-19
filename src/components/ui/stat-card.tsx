@@ -59,7 +59,14 @@ export function StatCard({ title, value, icon, trend, variant = "default", class
         </div>
       </CardHeader>
       <CardContent>
-        <div className="text-2xl font-bold">{value}</div>
+        <div className="flex items-center gap-2">
+          <div className="text-2xl font-bold">{value}</div>
+          {trend && (
+            <div className="text-2xl font-bold text-success">
+              ({trend.value}%)
+            </div>
+          )}
+        </div>
         {trend && (
           <p className={cn(
             "text-xs flex items-center mt-1",
@@ -68,7 +75,7 @@ export function StatCard({ title, value, icon, trend, variant = "default", class
             <span className="mr-1">
               {trend.isPositive ? "↗" : "↘"}
             </span>
-            {Math.abs(trend.value)}% em relação ao mês anterior
+            em relação às retiradas entrantes
           </p>
         )}
       </CardContent>
