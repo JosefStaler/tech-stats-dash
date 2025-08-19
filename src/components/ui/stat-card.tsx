@@ -75,7 +75,7 @@ export function StatCard({ title, value, icon, trend, variant = "default", class
             <span className="mr-1">
               {trend.isPositive ? "↗" : "↘"}
             </span>
-            em relação às retiradas entrantes
+            Total de retiradas sem sucesso
           </p>
         )}
       </CardContent>

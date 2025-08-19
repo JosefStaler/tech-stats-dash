@@ -212,7 +212,7 @@ const Index = () => {
     finalizados: filteredServices.filter(s => isFinalized(s["Satus iCare"])).length,
     sucesso: sucessoCount,
     sucessoTrend: sucessoPercentage,
-    pendentes: filteredServices.filter(s => s["Satus iCare"]?.includes('Pendente')).length,
+    insucesso: filteredServices.filter(s => s["Satus iCare"]?.includes('Insucesso')).length,
     emAndamento: filteredServices.filter(s => s["Satus iCare"]?.includes('Andamento')).length,
     sucessoModemFibra: sucessoModemFibraTotal,
     sucessoModemFibraTrend: sucessoModemFibraPercentage,
@@ -405,7 +405,7 @@ const Index = () => {
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-muted-foreground">PAYTVEntrantes no Mês Atual</p>
+                      <p className="text-sm font-medium text-muted-foreground">PAYTV Entrantes no Mês Atual</p>
                       <p className="text-xl font-bold">{currentMonthOutros.length}</p>
                     </div>
                     <Users className="h-6 w-6 text-accent" />
@@ -444,8 +444,8 @@ const Index = () => {
                 trend={{ value: stats.sucessoOutrosTrend, isPositive: true }}
               />
               <StatCard
-                title="Pendentes"
-                value={stats.pendentes}
+                title="Total Insucesso"
+                value={stats.insucesso}
                 icon={<AlertTriangle className="h-5 w-5" />}
                 variant="warning"
                 trend={{ value: 15, isPositive: false }}
