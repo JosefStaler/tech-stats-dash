@@ -426,10 +426,9 @@ const Index = () => {
             {/* Statistics Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
               <StatCard
-                title="Backlog Total"
+                title="Backlog de Retiradas TOTAL"
                 value={stats.backlog}
                 icon={<FileSpreadsheet className="h-5 w-5" />}
-                trend={{ value: 12, isPositive: true, description: "Total de Retiradas em Backlog" }}
               />
               <StatCard
                 title="Retiradas Realizadas"
