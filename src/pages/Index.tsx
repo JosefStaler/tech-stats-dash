@@ -131,10 +131,18 @@ const Index = () => {
     });
   };
 
+  // Function to check if service is finalized
+  const isFinalized = (status: string | undefined) => {
+    if (!status) return false;
+    return status.includes('Finalizado-Sucesso-Reuso') || 
+           status.includes('Executado-Sucesso-Reversa') || 
+           status.includes('Finalizado-Insucesso');
+  };
+
   // Statistics calculations
   const stats = {
     total: filteredServices.length,
-    concluidos: filteredServices.filter(s => s["Satus iCare"]?.includes('Concluído')).length,
+    finalizados: filteredServices.filter(s => isFinalized(s["Satus iCare"])).length,
     pendentes: filteredServices.filter(s => s["Satus iCare"]?.includes('Pendente')).length,
     emAndamento: filteredServices.filter(s => s["Satus iCare"]?.includes('Andamento')).length,
     cycleTimeTotal: filteredServices.reduce((sum, s) => sum + (parseInt(s["Cycle Time"]) || 0), 0),
@@ -146,7 +154,7 @@ const Index = () => {
   const statusICareData = statusICardOptions.map(status => ({
     name: status,
     value: filteredServices.filter(s => s["Satus iCare"] === status).length,
-    fill: status?.includes('Concluído') ? 'hsl(142 76% 36%)' :
+    fill: isFinalized(status) ? 'hsl(142 76% 36%)' :
           status?.includes('Pendente') ? 'hsl(45 93% 47%)' :
           status?.includes('Andamento') ? 'hsl(36 77% 55%)' :
           'hsl(210 12% 45%)'
@@ -174,7 +182,7 @@ const Index = () => {
     
     return {
       month,
-      concluidos: monthServices.filter(s => s["Satus iCare"]?.includes('Concluído')).length,
+      finalizados: monthServices.filter(s => isFinalized(s["Satus iCare"])).length,
       pendentes: monthServices.filter(s => s["Satus iCare"]?.includes('Pendente')).length,
       emAndamento: monthServices.filter(s => s["Satus iCare"]?.includes('Andamento')).length,
       cycleTime: monthServices.length > 0 ? 
@@ -262,8 +270,8 @@ const Index = () => {
                 trend={{ value: 12, isPositive: true }}
               />
               <StatCard
-                title="Serviços Concluídos"
-                value={stats.concluidos}
+                title="Serviços Finalizados"
+                value={stats.finalizados}
                 icon={<CheckCircle className="h-5 w-5" />}
                 variant="success"
                 trend={{ value: 8, isPositive: true }}

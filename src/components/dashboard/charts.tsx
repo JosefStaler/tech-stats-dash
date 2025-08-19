@@ -19,7 +19,7 @@ interface ChartData {
 
 interface MonthlyData {
   month: string;
-  concluidos: number;
+  finalizados: number;
   pendentes: number;
   emAndamento: number;
   cycleTime: number;
@@ -139,9 +139,9 @@ export function Charts({
               <Tooltip content={<CustomTooltip />} />
               <Legend />
               <Bar 
-                dataKey="concluidos" 
+                dataKey="finalizados" 
                 fill={COLORS.success} 
-                name="Concluídos"
+                name="Finalizados"
                 radius={[2, 2, 0, 0]}
               />
               <Bar 
