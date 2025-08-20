@@ -642,7 +642,7 @@ const Index = () => {
                 trend={{ isPositive: true, description: "Retiradas de Receptores em Backlog", hideValue: true }}
               />
               <StatCard
-                title="Retiradas Realizadas"
+                title="Retiradas Realizadas TOTAL"
                 value={stats.sucesso}
                 icon={<CheckCircle className="h-5 w-5" />}
                 variant="success"
