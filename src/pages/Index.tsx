@@ -367,28 +367,20 @@ const Index = () => {
     return true;
   }).length;
 
-  // Cálculos de Insucesso (Status Backlog agrupados)
+  // Cálculos de Insucesso (Status iCare "Insucesso")
   const insucessoTotal = filteredServices.filter(s => {
     const status = s["Satus iCare"];
-    return status?.includes('Backlog ≤ 4 Dias') || 
-           status?.includes('Backlog > 4 Dias') || 
-           status?.includes('Backlog > 14 Dias');
+    return status?.includes('Insucesso');
   }).length;
 
   const insucessoFibra = filteredServices.filter(s => {
     const status = s["Satus iCare"];
-    const isBacklog = status?.includes('Backlog ≤ 4 Dias') || 
-                      status?.includes('Backlog > 4 Dias') || 
-                      status?.includes('Backlog > 14 Dias');
-    return isBacklog && s["Modelo"] === "MODEM FIBRA";
+    return status?.includes('Insucesso') && s["Modelo"] === "MODEM FIBRA";
   }).length;
 
   const insucessoPaytv = filteredServices.filter(s => {
     const status = s["Satus iCare"];
-    const isBacklog = status?.includes('Backlog ≤ 4 Dias') || 
-                      status?.includes('Backlog > 4 Dias') || 
-                      status?.includes('Backlog > 14 Dias');
-    return isBacklog && s["Modelo"] !== "MODEM FIBRA";
+    return status?.includes('Insucesso') && s["Modelo"] !== "MODEM FIBRA";
   }).length;
 
   // Percentuais de Insucesso em relação ao total de retiradas entrantes do mês
