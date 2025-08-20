@@ -1,5 +1,5 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LabelList } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LabelList, LineChart, Line } from "recharts";
 
 interface ChartData {
   name: string;
@@ -15,6 +15,12 @@ interface MonthlyData {
   cycleTime: number;
 }
 
+interface BacklogEvolutionData {
+  day: string;
+  backlog: number;
+  date: string;
+}
+
 interface ChartsProps {
   statusICareData: ChartData[];
   statusICareOriginalData: ChartData[];
@@ -22,6 +28,9 @@ interface ChartsProps {
   monthlyData: MonthlyData[];
   tipoServicoData: ChartData[];
   modeloData: ChartData[];
+  backlogEvolutionData: BacklogEvolutionData[];
+  referenceMonthName: string;
+  referenceYear: number;
 }
 
 export function Charts(props: ChartsProps) {
@@ -67,103 +76,151 @@ export function Charts(props: ChartsProps) {
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Status no iCare</CardTitle>
+            <CardDescription>Status atual no iCare</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={350}>
+              <BarChart 
+                data={chartDataWithPercentage}
+                margin={{ top: 50, right: 30, left: 20, bottom: 60 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis 
+                  dataKey="name" 
+                  angle={-45}
+                  textAnchor="end"
+                  height={80}
+                  interval={0}
+                  tick={{ fontSize: 12 }}
+                />
+                <YAxis />
+                <Tooltip content={<CustomTooltip />} />
+                <Bar dataKey="value" fill="#3b82f6">
+                  <LabelList dataKey="label" position="top" style={{ fontSize: '12px', fill: 'currentColor' }} />
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader>
+            <CardTitle>Status iCare Detalhado</CardTitle>
+            <CardDescription>Status detalhado no iCare</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {(() => {
+              // Usar dados originais sem agrupamento
+              const originalData = props.statusICareOriginalData && props.statusICareOriginalData.length > 0 
+                ? props.statusICareOriginalData.filter(item => item.value > 0)
+                : [
+                    { name: 'Sucesso-Reuso', value: 25 },
+                    { name: 'Sucesso-Reversa', value: 20 },
+                    { name: 'Backlog ≤ 4 Dias', value: 15 },
+                    { name: 'Backlog > 4 Dias', value: 10 },
+                    { name: 'Insucesso', value: 8 },
+                    { name: 'Cancelado', value: 5 }
+                  ];
+
+              const originalTotal = originalData.reduce((sum, item) => sum + item.value, 0);
+              
+              const originalDataWithPercentage = originalData.map(item => ({
+                ...item,
+                percentage: originalTotal > 0 ? ((item.value / originalTotal) * 100).toFixed(1) : '0',
+                label: `${item.value} (${originalTotal > 0 ? ((item.value / originalTotal) * 100).toFixed(1) : '0'}%)`
+              }));
+
+              const OriginalCustomTooltip = ({ active, payload, label }: any) => {
+                if (active && payload && payload.length) {
+                  const value = payload[0].value;
+                  const percentage = originalTotal > 0 ? ((value / originalTotal) * 100).toFixed(1) : '0';
+                  return (
+                    <div className="bg-background border border-border rounded-lg p-3 shadow-lg">
+                      <p className="font-medium">{`${label}`}</p>
+                      <p className="text-primary">{`Quantidade: ${value}`}</p>
+                      <p className="text-muted-foreground">{`Percentual: ${percentage}%`}</p>
+                    </div>
+                  );
+                }
+                return null;
+              };
+
+              return (
+                <ResponsiveContainer width="100%" height={350}>
+                  <BarChart 
+                    data={originalDataWithPercentage}
+                    margin={{ top: 50, right: 30, left: 20, bottom: 60 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis 
+                      dataKey="name" 
+                      angle={-45}
+                      textAnchor="end"
+                      height={80}
+                      interval={0}
+                      tick={{ fontSize: 12 }}
+                    />
+                    <YAxis />
+                    <Tooltip content={<OriginalCustomTooltip />} />
+                    <Bar dataKey="value" fill="#10b981">
+                      <LabelList dataKey="label" position="top" style={{ fontSize: '12px', fill: 'currentColor' }} />
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              );
+            })()}
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Backlog Evolution Chart */}
       <Card>
         <CardHeader>
-          <CardTitle>Status no iCare</CardTitle>
-          <CardDescription>Status atual no iCare</CardDescription>
+          <CardTitle>Evolução do Backlog - {props.referenceMonthName} {props.referenceYear}</CardTitle>
+          <CardDescription>Evolução diária do backlog considerando os status "Backlog" agrupados e todas as datas anteriores à data de medição</CardDescription>
         </CardHeader>
         <CardContent>
-          <ResponsiveContainer width="100%" height={350}>
-            <BarChart 
-              data={chartDataWithPercentage}
-              margin={{ top: 50, right: 30, left: 20, bottom: 60 }}
+          <ResponsiveContainer width="100%" height={400}>
+            <LineChart 
+              data={props.backlogEvolutionData}
+              margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
             >
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis 
-                dataKey="name" 
-                angle={-45}
-                textAnchor="end"
-                height={80}
-                interval={0}
+                dataKey="date" 
                 tick={{ fontSize: 12 }}
+                interval={Math.floor(props.backlogEvolutionData.length / 10)} // Show every nth label to avoid overcrowding
               />
               <YAxis />
-              <Tooltip content={<CustomTooltip />} />
-              <Bar dataKey="value" fill="#3b82f6">
-                <LabelList dataKey="label" position="top" style={{ fontSize: '12px', fill: 'currentColor' }} />
-              </Bar>
-            </BarChart>
+              <Tooltip 
+                content={({ active, payload, label }) => {
+                  if (active && payload && payload.length) {
+                    const value = payload[0].value;
+                    return (
+                      <div className="bg-background border border-border rounded-lg p-3 shadow-lg">
+                        <p className="font-medium">{`Data: ${label}`}</p>
+                        <p className="text-primary">{`Backlog: ${value} serviços`}</p>
+                      </div>
+                    );
+                  }
+                  return null;
+                }}
+              />
+              <Line 
+                type="monotone" 
+                dataKey="backlog" 
+                stroke="hsl(45 93% 47%)" 
+                strokeWidth={3}
+                dot={{ fill: 'hsl(45 93% 47%)', strokeWidth: 2, r: 4 }}
+                activeDot={{ r: 6, stroke: 'hsl(45 93% 47%)', strokeWidth: 2 }}
+              />
+            </LineChart>
           </ResponsiveContainer>
-        </CardContent>
-      </Card>
-      
-      <Card>
-        <CardHeader>
-          <CardTitle>Status iCare Detalhado</CardTitle>
-          <CardDescription>Status detalhado no iCare</CardDescription>
-        </CardHeader>
-        <CardContent>
-          {(() => {
-            // Usar dados originais sem agrupamento
-            const originalData = props.statusICareOriginalData && props.statusICareOriginalData.length > 0 
-              ? props.statusICareOriginalData.filter(item => item.value > 0)
-              : [
-                  { name: 'Sucesso-Reuso', value: 25 },
-                  { name: 'Sucesso-Reversa', value: 20 },
-                  { name: 'Backlog ≤ 4 Dias', value: 15 },
-                  { name: 'Backlog > 4 Dias', value: 10 },
-                  { name: 'Insucesso', value: 8 },
-                  { name: 'Cancelado', value: 5 }
-                ];
-
-            const originalTotal = originalData.reduce((sum, item) => sum + item.value, 0);
-            
-            const originalDataWithPercentage = originalData.map(item => ({
-              ...item,
-              percentage: originalTotal > 0 ? ((item.value / originalTotal) * 100).toFixed(1) : '0',
-              label: `${item.value} (${originalTotal > 0 ? ((item.value / originalTotal) * 100).toFixed(1) : '0'}%)`
-            }));
-
-            const OriginalCustomTooltip = ({ active, payload, label }: any) => {
-              if (active && payload && payload.length) {
-                const value = payload[0].value;
-                const percentage = originalTotal > 0 ? ((value / originalTotal) * 100).toFixed(1) : '0';
-                return (
-                  <div className="bg-background border border-border rounded-lg p-3 shadow-lg">
-                    <p className="font-medium">{`${label}`}</p>
-                    <p className="text-primary">{`Quantidade: ${value}`}</p>
-                    <p className="text-muted-foreground">{`Percentual: ${percentage}%`}</p>
-                  </div>
-                );
-              }
-              return null;
-            };
-
-            return (
-              <ResponsiveContainer width="100%" height={350}>
-                <BarChart 
-                  data={originalDataWithPercentage}
-                  margin={{ top: 50, right: 30, left: 20, bottom: 60 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis 
-                    dataKey="name" 
-                    angle={-45}
-                    textAnchor="end"
-                    height={80}
-                    interval={0}
-                    tick={{ fontSize: 12 }}
-                  />
-                  <YAxis />
-                  <Tooltip content={<OriginalCustomTooltip />} />
-                  <Bar dataKey="value" fill="#10b981">
-                    <LabelList dataKey="label" position="top" style={{ fontSize: '12px', fill: 'currentColor' }} />
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            );
-          })()}
         </CardContent>
       </Card>
     </div>

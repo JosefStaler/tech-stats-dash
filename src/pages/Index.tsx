@@ -537,6 +537,40 @@ const Index = () => {
     value: filteredServices.filter(s => s["Modelo"] === modelo).length
   })).sort((a, b) => b.value - a.value).slice(0, 10);
 
+  // Backlog evolution data - Day by day for reference month
+  const backlogEvolutionData = (() => {
+    const daysInMonth = new Date(referenceYear, referenceMonth + 1, 0).getDate();
+    const evolutionData = [];
+    
+    for (let day = 1; day <= daysInMonth; day++) {
+      const measurementDate = new Date(referenceYear, referenceMonth, day);
+      
+      // Count services that are in backlog as of this measurement date
+      const backlogCount = services.filter(service => {
+        const status = service["Satus iCare"];
+        const isBacklogStatus = status?.includes('Backlog ≤ 4 Dias') || 
+                               status?.includes('Backlog > 4 Dias') || 
+                               status?.includes('Backlog > 14 Dias');
+        
+        if (!isBacklogStatus) return false;
+        
+        // Check if service creation date is before or equal to measurement date
+        const creationDate = parseDate(service["Data Criação"]);
+        if (!creationDate) return false;
+        
+        return creationDate <= measurementDate;
+      }).length;
+      
+      evolutionData.push({
+        day: day.toString().padStart(2, '0'),
+        backlog: backlogCount,
+        date: measurementDate.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })
+      });
+    }
+    
+    return evolutionData;
+  })();
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -717,8 +751,6 @@ const Index = () => {
             </div>
 
             {/* Charts */}
-
-            {/* Charts */}
             <Charts
               statusICareData={statusICareData}
               statusICareOriginalData={statusICareOriginalData}
@@ -726,6 +758,9 @@ const Index = () => {
               monthlyData={monthlyData}
               tipoServicoData={tipoServicoData}
               modeloData={modeloData}
+              backlogEvolutionData={backlogEvolutionData}
+              referenceMonthName={referenceMonthName}
+              referenceYear={referenceYear}
             />
 
             {/* Data Table */}
