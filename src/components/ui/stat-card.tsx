@@ -11,6 +11,7 @@ interface StatCardProps {
     isPositive: boolean;
     description?: string;
     hideValue?: boolean;
+    percentageColor?: string;
   };
   variant?: "default" | "success" | "warning" | "accent" | "danger" | "amber";
   className?: string;
@@ -72,7 +73,10 @@ export function StatCard({ title, value, icon, trend, variant = "default", class
         <div className="flex items-center gap-2">
           <div className="text-2xl font-bold">{value}</div>
           {trend && !trend.hideValue && trend.value !== undefined && (
-            <div className="text-2xl font-bold text-success">
+            <div className={cn(
+              "text-2xl font-bold",
+              trend.percentageColor || "text-success"
+            )}>
               ({trend.value}%)
             </div>
           )}
