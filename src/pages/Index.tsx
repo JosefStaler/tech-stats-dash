@@ -367,6 +367,38 @@ const Index = () => {
     return true;
   }).length;
 
+  // Cálculos de Insucesso (Status Backlog agrupados)
+  const insucessoTotal = filteredServices.filter(s => {
+    const status = s["Satus iCare"];
+    return status?.includes('Backlog ≤ 4 Dias') || 
+           status?.includes('Backlog > 4 Dias') || 
+           status?.includes('Backlog > 14 Dias');
+  }).length;
+
+  const insucessoFibra = filteredServices.filter(s => {
+    const status = s["Satus iCare"];
+    const isBacklog = status?.includes('Backlog ≤ 4 Dias') || 
+                      status?.includes('Backlog > 4 Dias') || 
+                      status?.includes('Backlog > 14 Dias');
+    return isBacklog && s["Modelo"] === "MODEM FIBRA";
+  }).length;
+
+  const insucessoPaytv = filteredServices.filter(s => {
+    const status = s["Satus iCare"];
+    const isBacklog = status?.includes('Backlog ≤ 4 Dias') || 
+                      status?.includes('Backlog > 4 Dias') || 
+                      status?.includes('Backlog > 14 Dias');
+    return isBacklog && s["Modelo"] !== "MODEM FIBRA";
+  }).length;
+
+  // Percentuais de Insucesso em relação ao total de retiradas entrantes do mês
+  const insucessoTotalPercentage = referenceMonthServices.length > 0 ? 
+    Math.round((insucessoTotal / referenceMonthServices.length) * 100) : 0;
+  const insucessoFibraPercentage = referenceMonthServices.length > 0 ? 
+    Math.round((insucessoFibra / referenceMonthServices.length) * 100) : 0;
+  const insucessoPaytvPercentage = referenceMonthServices.length > 0 ? 
+    Math.round((insucessoPaytv / referenceMonthServices.length) * 100) : 0;
+
   const stats = {
     total: filteredServices.length,
     backlog: backlogCount,
@@ -379,7 +411,13 @@ const Index = () => {
     sucessoModemFibraTrend: sucessoModemFibraPercentage,
     sucessoOutros: sucessoOutrosTotal,
     sucessoOutrosTrend: sucessoOutrosPercentage,
-    cycleTimeTotal: filteredServices.reduce((sum, s) => sum + (parseInt(s["Cycle Time"]) || 0), 0)
+    cycleTimeTotal: filteredServices.reduce((sum, s) => sum + (parseInt(s["Cycle Time"]) || 0), 0),
+    insucessoTotal,
+    insucessoTotalTrend: insucessoTotalPercentage,
+    insucessoFibra,
+    insucessoFibraTrend: insucessoFibraPercentage,
+    insucessoPaytv,
+    insucessoPaytvTrend: insucessoPaytvPercentage
   };
 
   // Chart data preparation - Status iCare agrupado
@@ -603,11 +641,25 @@ const Index = () => {
                 trend={{ value: stats.sucessoOutrosTrend, isPositive: true }}
               />
               <StatCard
-                title="Total Insucesso"
-                value={stats.insucesso}
+                title="Retiradas Insucesso TOTAL"
+                value={stats.insucessoTotal}
                 icon={<AlertTriangle className="h-5 w-5" />}
-                variant="warning"
-                trend={{ value: 15, isPositive: false, description: "Total de retiradas sem sucesso" }}
+                variant="danger"
+                trend={{ value: stats.insucessoTotalTrend, isPositive: false, description: "Em relação às retiradas entrantes" }}
+              />
+              <StatCard
+                title="Retiradas Insucesso FIBRA"
+                value={stats.insucessoFibra}
+                icon={<AlertTriangle className="h-5 w-5" />}
+                variant="danger"
+                trend={{ value: stats.insucessoFibraTrend, isPositive: false, description: "Em relação às retiradas entrantes" }}
+              />
+              <StatCard
+                title="Retiradas Insucesso PAYTV"
+                value={stats.insucessoPaytv}
+                icon={<AlertTriangle className="h-5 w-5" />}
+                variant="danger"
+                trend={{ value: stats.insucessoPaytvTrend, isPositive: false, description: "Em relação às retiradas entrantes" }}
               />
             </div>
 

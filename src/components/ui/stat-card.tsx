@@ -12,7 +12,7 @@ interface StatCardProps {
     description?: string;
     hideValue?: boolean;
   };
-  variant?: "default" | "success" | "warning" | "accent";
+  variant?: "default" | "success" | "warning" | "accent" | "danger";
   className?: string;
 }
 
@@ -25,6 +25,8 @@ export function StatCard({ title, value, icon, trend, variant = "default", class
         return "border-warning/20 bg-gradient-to-br from-warning/5 to-warning/10";
       case "accent":
         return "border-accent/20 bg-gradient-to-br from-accent/5 to-accent/10";
+      case "danger":
+        return "border-destructive/20 bg-gradient-to-br from-destructive/5 to-destructive/10";
       default:
         return "border-primary/20 bg-gradient-card";
     }
@@ -38,6 +40,8 @@ export function StatCard({ title, value, icon, trend, variant = "default", class
         return "text-warning bg-warning/10";
       case "accent":
         return "text-accent bg-accent/10";
+      case "danger":
+        return "text-destructive bg-destructive/10";
       default:
         return "text-primary bg-primary/10";
     }
@@ -77,7 +81,7 @@ export function StatCard({ title, value, icon, trend, variant = "default", class
             <span className="mr-1">
               {trend.isPositive ? "↗" : "↘"}
             </span>
-            {trend.description || "em relação às retiradas entrantes"}
+            {trend.description || "Em relação às retiradas entrantes"}
           </p>
         )}
       </CardContent>
