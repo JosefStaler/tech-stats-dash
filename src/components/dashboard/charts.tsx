@@ -1,5 +1,5 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LabelList, LineChart, Line } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LabelList, LineChart, Line, Legend } from "recharts";
 
 interface ChartData {
   name: string;
@@ -18,6 +18,7 @@ interface MonthlyData {
 interface BacklogEvolutionData {
   day: string;
   backlog: number;
+  retiradas: number;
   date: string;
 }
 
@@ -181,8 +182,8 @@ export function Charts(props: ChartsProps) {
       {/* Backlog Evolution Chart */}
       <Card>
         <CardHeader>
-          <CardTitle>Evolução do Backlog - {props.referenceMonthName} {props.referenceYear}</CardTitle>
-          <CardDescription>Evolução diária do backlog considerando os status "Backlog" agrupados e todas as datas anteriores à data de medição</CardDescription>
+          <CardTitle>Evolução do Backlog e Retiradas Realizadas - {props.referenceMonthName} {props.referenceYear}</CardTitle>
+          <CardDescription>Evolução diária do backlog e quantidade de retiradas realizadas por dia</CardDescription>
         </CardHeader>
         <CardContent>
           <ResponsiveContainer width="100%" height={400}>
@@ -200,15 +201,23 @@ export function Charts(props: ChartsProps) {
               <Tooltip 
                 content={({ active, payload, label }) => {
                   if (active && payload && payload.length) {
-                    const value = payload[0].value;
+                    const backlog = payload.find(p => p.dataKey === 'backlog')?.value || 0;
+                    const retiradas = payload.find(p => p.dataKey === 'retiradas')?.value || 0;
                     return (
                       <div className="bg-background border border-border rounded-lg p-3 shadow-lg">
                         <p className="font-medium">{`Data: ${label}`}</p>
-                        <p className="text-primary">{`Backlog: ${value} serviços`}</p>
+                        <p className="text-amber-600">{`Backlog: ${backlog} serviços`}</p>
+                        <p className="text-green-600">{`Retiradas: ${retiradas} serviços`}</p>
                       </div>
                     );
                   }
                   return null;
+                }}
+              />
+              <Legend 
+                wrapperStyle={{ 
+                  paddingTop: '20px',
+                  fontSize: '14px'
                 }}
               />
               <Line 
@@ -218,11 +227,27 @@ export function Charts(props: ChartsProps) {
                 strokeWidth={3}
                 dot={{ fill: 'hsl(45 93% 47%)', strokeWidth: 2, r: 4 }}
                 activeDot={{ r: 6, stroke: 'hsl(45 93% 47%)', strokeWidth: 2 }}
+                name="Backlog"
               >
                 <LabelList 
                   dataKey="backlog" 
                   position="top" 
-                  style={{ fontSize: '12px', fill: 'hsl(45 93% 47%)', fontWeight: 'bold' }} 
+                  style={{ fontSize: '11px', fill: 'hsl(45 93% 47%)', fontWeight: 'bold' }} 
+                />
+              </Line>
+              <Line 
+                type="monotone" 
+                dataKey="retiradas" 
+                stroke="hsl(142 76% 36%)" 
+                strokeWidth={3}
+                dot={{ fill: 'hsl(142 76% 36%)', strokeWidth: 2, r: 4 }}
+                activeDot={{ r: 6, stroke: 'hsl(142 76% 36%)', strokeWidth: 2 }}
+                name="Retiradas Realizadas"
+              >
+                <LabelList 
+                  dataKey="retiradas" 
+                  position="bottom" 
+                  style={{ fontSize: '11px', fill: 'hsl(142 76% 36%)', fontWeight: 'bold' }} 
                 />
               </Line>
             </LineChart>

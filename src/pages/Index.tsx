@@ -572,9 +572,26 @@ const Index = () => {
         return creationDate <= measurementDate;
       }).length;
       
+      // Count successful withdrawals executed on this specific day
+      const retirasRealizadas = services.filter(service => {
+        const execDate = parseDate(service["Data Execução"]);
+        if (!execDate) return false;
+        
+        // Check if execution date matches this day
+        const isSameDay = execDate.getDate() === day && 
+                         execDate.getMonth() === referenceMonth && 
+                         execDate.getFullYear() === referenceYear;
+        
+        if (!isSameDay) return false;
+        
+        // Check if service has success status
+        return isSucesso(service["Satus iCare"]);
+      }).length;
+      
       evolutionData.push({
         day: day.toString().padStart(2, '0'),
         backlog: backlogCount,
+        retiradas: retirasRealizadas,
         date: measurementDate.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })
       });
     }
