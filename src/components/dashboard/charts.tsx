@@ -206,8 +206,8 @@ export function Charts(props: ChartsProps) {
                     return (
                       <div className="bg-background border border-border rounded-lg p-3 shadow-lg">
                         <p className="font-medium">{`Data: ${label}`}</p>
-                        <p className="text-amber-600">{`Backlog: ${backlog} serviços`}</p>
-                        <p className="text-green-600">{`Retiradas: ${retiradas} serviços`}</p>
+                        <p className="text-amber-600">{`Backlog: ${backlog} itens`}</p>
+                        <p className="text-green-600">{`Retiradas: ${retiradas} itens`}</p>
                       </div>
                     );
                   }
