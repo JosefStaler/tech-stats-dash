@@ -656,27 +656,6 @@ const Index = () => {
                 trend={{ value: stats.sucessoModemFibraTrend, isPositive: true }}
               />
               <StatCard
-                title="Retiradas Canceladas TOTAL"
-                value={stats.canceladasTotal}
-                icon={<AlertTriangle className="h-5 w-5" />}
-                variant="amber"
-                trend={{ value: stats.canceladasTotalTrend, isPositive: false, description: "Em relação às retiradas entrantes" }}
-              />
-              <StatCard
-                title="Retiradas Canceladas FIBRA"
-                value={stats.canceladasFibra}
-                icon={<AlertTriangle className="h-5 w-5" />}
-                variant="amber"
-                trend={{ value: stats.canceladasFibraTrend, isPositive: false, description: "Em relação às retiradas entrantes" }}
-              />
-              <StatCard
-                title="Retiradas Canceladas PAYTV"
-                value={stats.canceladasPaytv}
-                icon={<AlertTriangle className="h-5 w-5" />}
-                variant="amber"
-                trend={{ value: stats.canceladasPaytvTrend, isPositive: false, description: "Em relação às retiradas entrantes" }}
-              />
-              <StatCard
                 title="Retiradas Realizadas PAYTV"
                 value={stats.sucessoOutros}
                 icon={<CheckCircle className="h-5 w-5" />}
@@ -704,7 +683,30 @@ const Index = () => {
                 variant="danger"
                 trend={{ value: stats.insucessoPaytvTrend, isPositive: false, description: "Em relação às retiradas entrantes" }}
               />
+              <StatCard
+                title="Retiradas Canceladas TOTAL"
+                value={stats.canceladasTotal}
+                icon={<AlertTriangle className="h-5 w-5" />}
+                variant="amber"
+                trend={{ value: stats.canceladasTotalTrend, isPositive: false, description: "Em relação às retiradas entrantes" }}
+              />
+              <StatCard
+                title="Retiradas Canceladas FIBRA"
+                value={stats.canceladasFibra}
+                icon={<AlertTriangle className="h-5 w-5" />}
+                variant="amber"
+                trend={{ value: stats.canceladasFibraTrend, isPositive: false, description: "Em relação às retiradas entrantes" }}
+              />
+              <StatCard
+                title="Retiradas Canceladas PAYTV"
+                value={stats.canceladasPaytv}
+                icon={<AlertTriangle className="h-5 w-5" />}
+                variant="amber"
+                trend={{ value: stats.canceladasPaytvTrend, isPositive: false, description: "Em relação às retiradas entrantes" }}
+              />
             </div>
+
+            {/* Charts */}
 
             {/* Charts */}
             <Charts
