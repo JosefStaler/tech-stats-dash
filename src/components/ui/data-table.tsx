@@ -58,11 +58,11 @@ export function DataTable({ data, currentPage, totalPages, onPageChange }: DataT
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data.map((service) => (
-              <TableRow 
-                key={service.OS}
-                className="hover:bg-muted/50 transition-colors"
-              >
+          {data.map((service, index) => (
+            <TableRow 
+              key={`${service.OS}-${service.OS_Item}-${index}`}
+              className="hover:bg-muted/50 transition-colors"
+            >
                 <TableCell className="font-mono text-sm">{service.OS}</TableCell>
                 <TableCell>{service["Tipo-Subtipo de Serviço"]}</TableCell>
                 <TableCell className="text-muted-foreground">{service["Data Criação"]}</TableCell>
