@@ -218,7 +218,13 @@ export function Charts(props: ChartsProps) {
                 strokeWidth={3}
                 dot={{ fill: 'hsl(45 93% 47%)', strokeWidth: 2, r: 4 }}
                 activeDot={{ r: 6, stroke: 'hsl(45 93% 47%)', strokeWidth: 2 }}
-              />
+              >
+                <LabelList 
+                  dataKey="backlog" 
+                  position="top" 
+                  style={{ fontSize: '12px', fill: 'hsl(45 93% 47%)', fontWeight: 'bold' }} 
+                />
+              </Line>
             </LineChart>
           </ResponsiveContainer>
         </CardContent>
