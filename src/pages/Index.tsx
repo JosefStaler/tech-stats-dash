@@ -539,10 +539,21 @@ const Index = () => {
 
   // Backlog evolution data - Day by day for reference month
   const backlogEvolutionData = (() => {
+    const today = new Date();
+    const currentMonth = today.getMonth();
+    const currentYear = today.getFullYear();
+    const currentDay = today.getDate();
+    
     const daysInMonth = new Date(referenceYear, referenceMonth + 1, 0).getDate();
+    
+    // If analyzing current month, limit to current day, otherwise show full month
+    const maxDay = (referenceMonth === currentMonth && referenceYear === currentYear) 
+      ? currentDay 
+      : daysInMonth;
+    
     const evolutionData = [];
     
-    for (let day = 1; day <= daysInMonth; day++) {
+    for (let day = 1; day <= maxDay; day++) {
       const measurementDate = new Date(referenceYear, referenceMonth, day);
       
       // Count services that are in backlog as of this measurement date
