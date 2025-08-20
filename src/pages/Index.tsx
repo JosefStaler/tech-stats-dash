@@ -586,124 +586,134 @@ const Index = () => {
 
             {/* Small Total Cards - Current Month */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <Card className="bg-gradient-card border-border/50">
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-muted-foreground">Total Entrantes em {displayPeriod}</p>
-                      <p className="text-xl font-bold">{referenceMonthServices.length}</p>
+              <div className="space-y-4">
+                <Card className="bg-gradient-card border-border/50">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-muted-foreground">Total Entrantes em {displayPeriod}</p>
+                        <p className="text-xl font-bold">{referenceMonthServices.length}</p>
+                      </div>
+                      <Users className="h-6 w-6 text-primary" />
                     </div>
-                    <Users className="h-6 w-6 text-primary" />
-                  </div>
-                </CardContent>
-              </Card>
-              <Card className="bg-gradient-card border-border/50">
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-muted-foreground">FIBRA Entrantes em {displayPeriod}</p>
-                      <p className="text-xl font-bold">{referenceMonthServices.filter(s => s["Modelo"] === "MODEM FIBRA").length}</p>
+                  </CardContent>
+                </Card>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <StatCard
+                    title="Backlog de Retiradas TOTAL"
+                    value={stats.backlog}
+                    icon={<FileSpreadsheet className="h-5 w-5" />}
+                    trend={{ isPositive: true, description: "Total de Retiradas em Backlog", hideValue: true }}
+                  />
+                  <StatCard
+                    title="Retiradas Realizadas TOTAL"
+                    value={stats.sucesso}
+                    icon={<CheckCircle className="h-5 w-5" />}
+                    variant="success"
+                    trend={{ value: stats.sucessoTrend, isPositive: true }}
+                  />
+                  <StatCard
+                    title="Retiradas Insucesso TOTAL"
+                    value={stats.insucessoTotal}
+                    icon={<AlertTriangle className="h-5 w-5" />}
+                    variant="danger"
+                    trend={{ value: stats.insucessoTotalTrend, isPositive: false, description: "Em relação às retiradas entrantes", percentageColor: "text-destructive" }}
+                  />
+                  <StatCard
+                    title="Retiradas Canceladas TOTAL"
+                    value={stats.canceladasTotal}
+                    icon={<AlertTriangle className="h-5 w-5" />}
+                    variant="amber"
+                    trend={{ value: stats.canceladasTotalTrend, isPositive: false, description: "Em relação às retiradas entrantes", percentageColor: "text-amber-600" }}
+                  />
+                </div>
+              </div>
+              
+              <div className="space-y-4">
+                <Card className="bg-gradient-card border-border/50">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-muted-foreground">FIBRA Entrantes em {displayPeriod}</p>
+                        <p className="text-xl font-bold">{referenceMonthServices.filter(s => s["Modelo"] === "MODEM FIBRA").length}</p>
+                      </div>
+                      <Users className="h-6 w-6 text-success" />
                     </div>
-                    <Users className="h-6 w-6 text-success" />
-                  </div>
-                </CardContent>
-              </Card>
-              <Card className="bg-gradient-card border-border/50">
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-muted-foreground">PAYTV Entrantes em {displayPeriod}</p>
-                      <p className="text-xl font-bold">{referenceMonthServices.filter(s => s["Modelo"] !== "MODEM FIBRA").length}</p>
+                  </CardContent>
+                </Card>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <StatCard
+                    title="Backlog de Retiradas FIBRA"
+                    value={backlogFibraCount}
+                    icon={<FileSpreadsheet className="h-5 w-5" />}
+                    trend={{ isPositive: true, description: "Retiradas de Modem em Backlog", hideValue: true }}
+                  />
+                  <StatCard
+                    title="Retiradas Realizadas FIBRA"
+                    value={stats.sucessoModemFibra}
+                    icon={<CheckCircle className="h-5 w-5" />}
+                    variant="success"
+                    trend={{ value: stats.sucessoModemFibraTrend, isPositive: true }}
+                  />
+                  <StatCard
+                    title="Retiradas Insucesso FIBRA"
+                    value={stats.insucessoFibra}
+                    icon={<AlertTriangle className="h-5 w-5" />}
+                    variant="danger"
+                    trend={{ value: stats.insucessoFibraTrend, isPositive: false, description: "Em relação às retiradas entrantes", percentageColor: "text-destructive" }}
+                  />
+                  <StatCard
+                    title="Retiradas Canceladas FIBRA"
+                    value={stats.canceladasFibra}
+                    icon={<AlertTriangle className="h-5 w-5" />}
+                    variant="amber"
+                    trend={{ value: stats.canceladasFibraTrend, isPositive: false, description: "Em relação às retiradas entrantes", percentageColor: "text-amber-600" }}
+                  />
+                </div>
+              </div>
+              
+              <div className="space-y-4">
+                <Card className="bg-gradient-card border-border/50">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-muted-foreground">PAYTV Entrantes em {displayPeriod}</p>
+                        <p className="text-xl font-bold">{referenceMonthServices.filter(s => s["Modelo"] !== "MODEM FIBRA").length}</p>
+                      </div>
+                      <Users className="h-6 w-6 text-accent" />
                     </div>
-                    <Users className="h-6 w-6 text-accent" />
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Statistics Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6">
-              <StatCard
-                title="Backlog de Retiradas TOTAL"
-                value={stats.backlog}
-                icon={<FileSpreadsheet className="h-5 w-5" />}
-                trend={{ isPositive: true, description: "Total de Retiradas em Backlog", hideValue: true }}
-              />
-              <StatCard
-                title="Retiradas Realizadas TOTAL"
-                value={stats.sucesso}
-                icon={<CheckCircle className="h-5 w-5" />}
-                variant="success"
-                trend={{ value: stats.sucessoTrend, isPositive: true }}
-              />
-              <StatCard
-                title="Retiradas Insucesso TOTAL"
-                value={stats.insucessoTotal}
-                icon={<AlertTriangle className="h-5 w-5" />}
-                variant="danger"
-                trend={{ value: stats.insucessoTotalTrend, isPositive: false, description: "Em relação às retiradas entrantes", percentageColor: "text-destructive" }}
-              />
-              <StatCard
-                title="Retiradas Canceladas TOTAL"
-                value={stats.canceladasTotal}
-                icon={<AlertTriangle className="h-5 w-5" />}
-                variant="amber"
-                trend={{ value: stats.canceladasTotalTrend, isPositive: false, description: "Em relação às retiradas entrantes", percentageColor: "text-amber-600" }}
-              />
-              <StatCard
-                title="Backlog de Retiradas FIBRA"
-                value={backlogFibraCount}
-                icon={<FileSpreadsheet className="h-5 w-5" />}
-                trend={{ isPositive: true, description: "Retiradas de Modem em Backlog", hideValue: true }}
-              />
-              <StatCard
-                title="Retiradas Realizadas FIBRA"
-                value={stats.sucessoModemFibra}
-                icon={<CheckCircle className="h-5 w-5" />}
-                variant="success"
-                trend={{ value: stats.sucessoModemFibraTrend, isPositive: true }}
-              />
-              <StatCard
-                title="Retiradas Insucesso FIBRA"
-                value={stats.insucessoFibra}
-                icon={<AlertTriangle className="h-5 w-5" />}
-                variant="danger"
-                trend={{ value: stats.insucessoFibraTrend, isPositive: false, description: "Em relação às retiradas entrantes", percentageColor: "text-destructive" }}
-              />
-              <StatCard
-                title="Retiradas Canceladas FIBRA"
-                value={stats.canceladasFibra}
-                icon={<AlertTriangle className="h-5 w-5" />}
-                variant="amber"
-                trend={{ value: stats.canceladasFibraTrend, isPositive: false, description: "Em relação às retiradas entrantes", percentageColor: "text-amber-600" }}
-              />
-              <StatCard
-                title="Backlog de Retiradas PAYTV"
-                value={backlogPaytvCount}
-                icon={<FileSpreadsheet className="h-5 w-5" />}
-                trend={{ isPositive: true, description: "Retiradas de Receptores em Backlog", hideValue: true }}
-              />
-              <StatCard
-                title="Retiradas Realizadas PAYTV"
-                value={stats.sucessoOutros}
-                icon={<CheckCircle className="h-5 w-5" />}
-                variant="success"
-                trend={{ value: stats.sucessoOutrosTrend, isPositive: true }}
-              />
-              <StatCard
-                title="Retiradas Insucesso PAYTV"
-                value={stats.insucessoPaytv}
-                icon={<AlertTriangle className="h-5 w-5" />}
-                variant="danger"
-                trend={{ value: stats.insucessoPaytvTrend, isPositive: false, description: "Em relação às retiradas entrantes", percentageColor: "text-destructive" }}
-              />
-              <StatCard
-                title="Retiradas Canceladas PAYTV"
-                value={stats.canceladasPaytv}
-                icon={<AlertTriangle className="h-5 w-5" />}
-                variant="amber"
-                trend={{ value: stats.canceladasPaytvTrend, isPositive: false, description: "Em relação às retiradas entrantes", percentageColor: "text-amber-600" }}
-              />
+                  </CardContent>
+                </Card>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <StatCard
+                    title="Backlog de Retiradas PAYTV"
+                    value={backlogPaytvCount}
+                    icon={<FileSpreadsheet className="h-5 w-5" />}
+                    trend={{ isPositive: true, description: "Retiradas de Receptores em Backlog", hideValue: true }}
+                  />
+                  <StatCard
+                    title="Retiradas Realizadas PAYTV"
+                    value={stats.sucessoOutros}
+                    icon={<CheckCircle className="h-5 w-5" />}
+                    variant="success"
+                    trend={{ value: stats.sucessoOutrosTrend, isPositive: true }}
+                  />
+                  <StatCard
+                    title="Retiradas Insucesso PAYTV"
+                    value={stats.insucessoPaytv}
+                    icon={<AlertTriangle className="h-5 w-5" />}
+                    variant="danger"
+                    trend={{ value: stats.insucessoPaytvTrend, isPositive: false, description: "Em relação às retiradas entrantes", percentageColor: "text-destructive" }}
+                  />
+                  <StatCard
+                    title="Retiradas Canceladas PAYTV"
+                    value={stats.canceladasPaytv}
+                    icon={<AlertTriangle className="h-5 w-5" />}
+                    variant="amber"
+                    trend={{ value: stats.canceladasPaytvTrend, isPositive: false, description: "Em relação às retiradas entrantes", percentageColor: "text-amber-600" }}
+                  />
+                </div>
+              </div>
             </div>
 
             {/* Charts */}
