@@ -391,6 +391,30 @@ const Index = () => {
   const insucessoPaytvPercentage = referenceMonthServices.length > 0 ? 
     Math.round((insucessoPaytv / referenceMonthServices.length) * 100) : 0;
 
+  // Cálculos de Canceladas (Status iCare "Cancelado")
+  const canceladasTotal = filteredServices.filter(s => {
+    const status = s["Satus iCare"];
+    return status?.includes('Cancelado');
+  }).length;
+
+  const canceladasFibra = filteredServices.filter(s => {
+    const status = s["Satus iCare"];
+    return status?.includes('Cancelado') && s["Modelo"] === "MODEM FIBRA";
+  }).length;
+
+  const canceladasPaytv = filteredServices.filter(s => {
+    const status = s["Satus iCare"];
+    return status?.includes('Cancelado') && s["Modelo"] !== "MODEM FIBRA";
+  }).length;
+
+  // Percentuais de Canceladas em relação ao total de retiradas entrantes do mês
+  const canceladasTotalPercentage = referenceMonthServices.length > 0 ? 
+    Math.round((canceladasTotal / referenceMonthServices.length) * 100) : 0;
+  const canceladasFibraPercentage = referenceMonthServices.length > 0 ? 
+    Math.round((canceladasFibra / referenceMonthServices.length) * 100) : 0;
+  const canceladasPaytvPercentage = referenceMonthServices.length > 0 ? 
+    Math.round((canceladasPaytv / referenceMonthServices.length) * 100) : 0;
+
   const stats = {
     total: filteredServices.length,
     backlog: backlogCount,
@@ -409,7 +433,13 @@ const Index = () => {
     insucessoFibra,
     insucessoFibraTrend: insucessoFibraPercentage,
     insucessoPaytv,
-    insucessoPaytvTrend: insucessoPaytvPercentage
+    insucessoPaytvTrend: insucessoPaytvPercentage,
+    canceladasTotal,
+    canceladasTotalTrend: canceladasTotalPercentage,
+    canceladasFibra,
+    canceladasFibraTrend: canceladasFibraPercentage,
+    canceladasPaytv,
+    canceladasPaytvTrend: canceladasPaytvPercentage
   };
 
   // Chart data preparation - Status iCare agrupado
@@ -624,6 +654,27 @@ const Index = () => {
                 icon={<CheckCircle className="h-5 w-5" />}
                 variant="success"
                 trend={{ value: stats.sucessoModemFibraTrend, isPositive: true }}
+              />
+              <StatCard
+                title="Retiradas Canceladas TOTAL"
+                value={stats.canceladasTotal}
+                icon={<AlertTriangle className="h-5 w-5" />}
+                variant="amber"
+                trend={{ value: stats.canceladasTotalTrend, isPositive: false, description: "Em relação às retiradas entrantes" }}
+              />
+              <StatCard
+                title="Retiradas Canceladas FIBRA"
+                value={stats.canceladasFibra}
+                icon={<AlertTriangle className="h-5 w-5" />}
+                variant="amber"
+                trend={{ value: stats.canceladasFibraTrend, isPositive: false, description: "Em relação às retiradas entrantes" }}
+              />
+              <StatCard
+                title="Retiradas Canceladas PAYTV"
+                value={stats.canceladasPaytv}
+                icon={<AlertTriangle className="h-5 w-5" />}
+                variant="amber"
+                trend={{ value: stats.canceladasPaytvTrend, isPositive: false, description: "Em relação às retiradas entrantes" }}
               />
               <StatCard
                 title="Retiradas Realizadas PAYTV"

@@ -12,7 +12,7 @@ interface StatCardProps {
     description?: string;
     hideValue?: boolean;
   };
-  variant?: "default" | "success" | "warning" | "accent" | "danger";
+  variant?: "default" | "success" | "warning" | "accent" | "danger" | "amber";
   className?: string;
 }
 
@@ -27,6 +27,8 @@ export function StatCard({ title, value, icon, trend, variant = "default", class
         return "border-accent/20 bg-gradient-to-br from-accent/5 to-accent/10";
       case "danger":
         return "border-destructive/20 bg-gradient-to-br from-destructive/5 to-destructive/10";
+      case "amber":
+        return "border-amber-500/20 bg-gradient-to-br from-amber-500/5 to-amber-500/10";
       default:
         return "border-primary/20 bg-gradient-card";
     }
@@ -42,6 +44,8 @@ export function StatCard({ title, value, icon, trend, variant = "default", class
         return "text-accent bg-accent/10";
       case "danger":
         return "text-destructive bg-destructive/10";
+      case "amber":
+        return "text-amber-600 bg-amber-500/10";
       default:
         return "text-primary bg-primary/10";
     }
