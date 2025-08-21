@@ -340,7 +340,7 @@ export function Charts(props: ChartsProps) {
                   <ResponsiveContainer width="100%" height={280}>
                     <BarChart 
                       data={chartDataWithPercentage}
-                      margin={{ top: 40, right: 20, left: 20, bottom: 40 }}
+                      margin={{ top: 40, right: 20, left: 20, bottom: 20 }}
                     >
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis 
@@ -408,7 +408,7 @@ export function Charts(props: ChartsProps) {
                   <ResponsiveContainer width="100%" height={320}>
                     <BarChart 
                       data={chartDataWithPercentage}
-                      margin={{ top: 30, right: 20, left: 20, bottom: 70 }}
+                      margin={{ top: 30, right: 20, left: 20, bottom: 50 }}
                     >
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis 
