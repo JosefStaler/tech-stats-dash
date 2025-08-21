@@ -709,7 +709,15 @@ const Index = () => {
       const originalStatus = service["Status iCare"] || 'Outros';
       
       // Group all backlog types into a single "Backlog" category
-      const status = originalStatus.includes('Backlog') ? 'Backlog' : originalStatus;
+      // Group all success types into a single "Sucesso" category
+      let status;
+      if (originalStatus.includes('Backlog')) {
+        status = 'Backlog';
+      } else if (originalStatus.includes('Sucesso')) {
+        status = 'Sucesso';
+      } else {
+        status = originalStatus;
+      }
       
       if (!acc[tecnico]) {
         acc[tecnico] = {};
@@ -728,8 +736,7 @@ const Index = () => {
           value: count,
           tecnico,
           status,
-          fill: status.includes('Sucesso-Reuso') ? 'hsl(159 84% 39%)' :
-                status.includes('Sucesso-Reversa') ? 'hsl(142 76% 36%)' :
+          fill: status === 'Sucesso' ? 'hsl(142 76% 36%)' :
                 status === 'Backlog' ? 'hsl(45 93% 47%)' :
                 status.includes('Insucesso') ? 'hsl(0 84% 60%)' :
                 status.includes('Cancelado') ? 'hsl(210 12% 45%)' :
