@@ -718,7 +718,7 @@ const Index = () => {
                     value={stats.sucessoModemFibra}
                     icon={<CheckCircle className="h-5 w-5" />}
                     variant="success"
-                    trend={{ value: stats.sucessoModemFibraTrend, isPositive: true, description: "Em relação às retiradas entrantes menos itens cancelados" }}
+                    trend={{ value: stats.sucessoModemFibraTrend, isPositive: true, description: "Retiradas entrantes menos itens cancelados" }}
                   />
                   <StatCard
                     title="Retiradas Insucesso FIBRA"
@@ -761,7 +761,7 @@ const Index = () => {
                     value={stats.sucessoOutros}
                     icon={<CheckCircle className="h-5 w-5" />}
                     variant="success"
-                    trend={{ value: stats.sucessoOutrosTrend, isPositive: true, description: "Em relação às retiradas entrantes menos itens cancelados" }}
+                    trend={{ value: stats.sucessoOutrosTrend, isPositive: true, description: "Retiradas entrantes menos itens cancelados" }}
                   />
                   <StatCard
                     title="Retiradas Insucesso PAYTV"
