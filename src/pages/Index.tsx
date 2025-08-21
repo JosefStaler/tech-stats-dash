@@ -704,8 +704,20 @@ const Index = () => {
     
     const filteredByTecnico = getFilteredByTecnico();
     
+    // Helper function to format technician names
+    const formatTecnicoName = (name: string) => {
+      if (!name || name === 'Sem Técnico') return name;
+      
+      const words = name.trim().split(' ').filter(word => word.length > 0);
+      if (words.length <= 3) return name;
+      
+      // Show first two names and last name
+      return `${words[0]} ${words[1]} ${words[words.length - 1]}`;
+    };
+    
     const statusByTecnico = filteredByTecnico.reduce((acc, service) => {
-      const tecnico = service["Técnico - Último Atendimento"] || 'Sem Técnico';
+      const originalTecnico = service["Técnico - Último Atendimento"] || 'Sem Técnico';
+      const tecnico = formatTecnicoName(originalTecnico);
       const originalStatus = service["Status iCare"] || 'Outros';
       
       // Group all backlog types into a single "Backlog" category
