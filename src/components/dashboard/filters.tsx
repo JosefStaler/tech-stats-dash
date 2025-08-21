@@ -23,6 +23,7 @@ export interface FilterState {
   statusAtividade: string;
   tipoSubtipo: string;
   modelo: string;
+  tecnicoUltimoAtendimento: string;
 }
 
 interface FiltersProps {
@@ -32,6 +33,7 @@ interface FiltersProps {
   modelos: string[];
   statusICardOptions: string[];
   statusAtividadeOptions: string[];
+  tecnicoUltimoAtendimentoOptions: string[];
 }
 
 export function Filters({ 
@@ -40,7 +42,8 @@ export function Filters({
   tipoSubtipos, 
   modelos, 
   statusICardOptions, 
-  statusAtividadeOptions 
+  statusAtividadeOptions,
+  tecnicoUltimoAtendimentoOptions
 }: FiltersProps) {
   const clearFilters = () => {
     onFiltersChange({
@@ -49,7 +52,8 @@ export function Filters({
       statusICare: "todos",
       statusAtividade: "todos",
       tipoSubtipo: "todos",
-      modelo: "todos"
+      modelo: "todos",
+      tecnicoUltimoAtendimento: "todos"
     });
   };
 
@@ -61,7 +65,8 @@ export function Filters({
     (filters.statusICare && filters.statusICare !== "todos") || 
     (filters.statusAtividade && filters.statusAtividade !== "todos") || 
     (filters.tipoSubtipo && filters.tipoSubtipo !== "todos") || 
-    (filters.modelo && filters.modelo !== "todos")
+    (filters.modelo && filters.modelo !== "todos") ||
+    (filters.tecnicoUltimoAtendimento && filters.tecnicoUltimoAtendimento !== "todos")
   );
 
   const getActiveFiltersCount = () => {
@@ -72,6 +77,7 @@ export function Filters({
     if (filters.statusAtividade && filters.statusAtividade !== "todos") count++;
     if (filters.tipoSubtipo && filters.tipoSubtipo !== "todos") count++;
     if (filters.modelo && filters.modelo !== "todos") count++;
+    if (filters.tecnicoUltimoAtendimento && filters.tecnicoUltimoAtendimento !== "todos") count++;
     return count;
   };
 
@@ -264,23 +270,25 @@ export function Filters({
             </Select>
           </div>
 
-          {/* Status Atividade Filter */}
+          {/* Técnico - Último Atendimento Filter */}
           <div className="space-y-2">
-            <label className="text-sm font-medium">Status Atividade</label>
+            <label className="text-sm font-medium">Técnico - Último Atendimento</label>
             <Select
-              value={filters.statusAtividade}
+              value={filters.tecnicoUltimoAtendimento}
               onValueChange={(value) => 
-                onFiltersChange({ ...filters, statusAtividade: value })
+                onFiltersChange({ ...filters, tecnicoUltimoAtendimento: value })
               }
             >
               <SelectTrigger>
-                <SelectValue placeholder="Todos os status" />
+                <SelectValue placeholder="Todos os técnicos" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="todos">Todos os status</SelectItem>
-                {statusAtividadeOptions.map((status) => (
-                  <SelectItem key={status} value={status}>
-                    {status}
+                <SelectItem value="todos">Todos os técnicos</SelectItem>
+                <SelectItem value="preenchido">Apenas preenchidos</SelectItem>
+                <SelectItem value="vazio">Apenas vazios</SelectItem>
+                {tecnicoUltimoAtendimentoOptions.map((tecnico) => (
+                  <SelectItem key={tecnico} value={tecnico}>
+                    {tecnico}
                   </SelectItem>
                 ))}
               </SelectContent>

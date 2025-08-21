@@ -34,6 +34,9 @@ interface ChartsProps {
   combinedBacklogEvolutionData: CombinedBacklogEvolutionData[];
   referenceMonthName: string;
   referenceYear: number;
+  statusICareWithTecnicoData: ChartData[];
+  statusICareDetailedByTecnicoData: ChartData[];
+  tecnicoFilter: string;
 }
 
 export function Charts(props: ChartsProps) {
@@ -268,6 +271,147 @@ export function Charts(props: ChartsProps) {
           </ResponsiveContainer>
         </CardContent>
       </Card>
+
+      {/* Show new charts only when technician filter is active */}
+      {props.tecnicoFilter && props.tecnicoFilter !== "todos" && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Status no iCare - Com Técnico</CardTitle>
+              <CardDescription>Status filtrado por técnico - último atendimento preenchido</CardDescription>
+            </CardHeader>
+            <CardContent>
+              {(() => {
+                const chartData = props.statusICareWithTecnicoData && props.statusICareWithTecnicoData.length > 0 
+                  ? props.statusICareWithTecnicoData.filter(item => item.value > 0)
+                  : [];
+
+                if (chartData.length === 0) {
+                  return (
+                    <div className="flex items-center justify-center h-[350px] text-muted-foreground">
+                      Nenhum dado encontrado para o filtro selecionado
+                    </div>
+                  );
+                }
+
+                const total = chartData.reduce((sum, item) => sum + item.value, 0);
+                const chartDataWithPercentage = chartData.map(item => ({
+                  ...item,
+                  percentage: total > 0 ? ((item.value / total) * 100).toFixed(1) : '0',
+                  label: `${item.value} (${total > 0 ? ((item.value / total) * 100).toFixed(1) : '0'}%)`
+                }));
+
+                const CustomTooltipTecnico = ({ active, payload, label }: any) => {
+                  if (active && payload && payload.length) {
+                    const value = payload[0].value;
+                    const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : '0';
+                    return (
+                      <div className="bg-background border border-border rounded-lg p-3 shadow-lg">
+                        <p className="font-medium">{`${label}`}</p>
+                        <p className="text-primary">{`Quantidade: ${value}`}</p>
+                        <p className="text-muted-foreground">{`Percentual: ${percentage}%`}</p>
+                      </div>
+                    );
+                  }
+                  return null;
+                };
+
+                return (
+                  <ResponsiveContainer width="100%" height={350}>
+                    <BarChart 
+                      data={chartDataWithPercentage}
+                      margin={{ top: 50, right: 30, left: 20, bottom: 60 }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis 
+                        dataKey="name" 
+                        angle={-45}
+                        textAnchor="end"
+                        height={80}
+                        interval={0}
+                        tick={{ fontSize: 12 }}
+                      />
+                      <YAxis />
+                      <Tooltip content={<CustomTooltipTecnico />} />
+                      <Bar dataKey="value" fill="#9333ea">
+                        <LabelList dataKey="label" position="top" style={{ fontSize: '12px', fill: 'currentColor' }} />
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                );
+              })()}
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader>
+              <CardTitle>Status Detalhado por Técnico</CardTitle>
+              <CardDescription>Status detalhado separado por técnico - último atendimento</CardDescription>
+            </CardHeader>
+            <CardContent>
+              {(() => {
+                const chartData = props.statusICareDetailedByTecnicoData && props.statusICareDetailedByTecnicoData.length > 0 
+                  ? props.statusICareDetailedByTecnicoData.filter(item => item.value > 0).slice(0, 20) // Limit to top 20 entries
+                  : [];
+
+                if (chartData.length === 0) {
+                  return (
+                    <div className="flex items-center justify-center h-[350px] text-muted-foreground">
+                      Nenhum dado encontrado para o filtro selecionado
+                    </div>
+                  );
+                }
+
+                const total = chartData.reduce((sum, item) => sum + item.value, 0);
+                const chartDataWithPercentage = chartData.map(item => ({
+                  ...item,
+                  percentage: total > 0 ? ((item.value / total) * 100).toFixed(1) : '0',
+                  label: `${item.value} (${total > 0 ? ((item.value / total) * 100).toFixed(1) : '0'}%)`
+                }));
+
+                const DetailedCustomTooltip = ({ active, payload, label }: any) => {
+                  if (active && payload && payload.length) {
+                    const value = payload[0].value;
+                    const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : '0';
+                    return (
+                      <div className="bg-background border border-border rounded-lg p-3 shadow-lg">
+                        <p className="font-medium">{`${label}`}</p>
+                        <p className="text-primary">{`Quantidade: ${value}`}</p>
+                        <p className="text-muted-foreground">{`Percentual: ${percentage}%`}</p>
+                      </div>
+                    );
+                  }
+                  return null;
+                };
+
+                return (
+                  <ResponsiveContainer width="100%" height={350}>
+                    <BarChart 
+                      data={chartDataWithPercentage}
+                      margin={{ top: 50, right: 30, left: 20, bottom: 100 }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis 
+                        dataKey="name" 
+                        angle={-45}
+                        textAnchor="end"
+                        height={120}
+                        interval={0}
+                        tick={{ fontSize: 10 }}
+                      />
+                      <YAxis />
+                      <Tooltip content={<DetailedCustomTooltip />} />
+                      <Bar dataKey="value" fill="#ec4899">
+                        <LabelList dataKey="label" position="top" style={{ fontSize: '10px', fill: 'currentColor' }} />
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                );
+              })()}
+            </CardContent>
+          </Card>
+        </div>
+      )}
     </div>
   );
 }

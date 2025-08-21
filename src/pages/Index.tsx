@@ -33,7 +33,8 @@ const Index = () => {
     statusICare: "todos",
     statusAtividade: "todos",
     tipoSubtipo: "todos",
-    modelo: "todos"
+    modelo: "todos",
+    tecnicoUltimoAtendimento: "todos"
   });
   const { toast } = useToast();
 
@@ -49,6 +50,7 @@ const Index = () => {
   const modelos = [...new Set(services.map(s => s["Modelo"]))].filter(Boolean);
   const statusICardOptions = [...new Set(services.map(s => s["Status iCare"]))].filter(Boolean);
   const statusAtividadeOptions = [];
+  const tecnicoUltimoAtendimentoOptions = [...new Set(services.map(s => s["Técnico - Último Atendimento"]))].filter(Boolean);
 
 
   // Helper function to parse dates that might be Excel serial numbers
@@ -649,6 +651,87 @@ const Index = () => {
     return evolutionData;
   })();
 
+  // Filter services by "Técnico - Último Atendimento" for the new charts
+  const getFilteredByTecnico = (baseFilter?: (service: any) => boolean) => {
+    let filtered = filteredServices;
+    
+    if (filters.tecnicoUltimoAtendimento === "preenchido") {
+      filtered = filtered.filter(s => s["Técnico - Último Atendimento"] && s["Técnico - Último Atendimento"].trim() !== '');
+    } else if (filters.tecnicoUltimoAtendimento === "vazio") {
+      filtered = filtered.filter(s => !s["Técnico - Último Atendimento"] || s["Técnico - Último Atendimento"].trim() === '');
+    } else if (filters.tecnicoUltimoAtendimento !== "todos") {
+      filtered = filtered.filter(s => s["Técnico - Último Atendimento"] === filters.tecnicoUltimoAtendimento);
+    }
+    
+    if (baseFilter) {
+      filtered = filtered.filter(baseFilter);
+    }
+    
+    return filtered;
+  };
+
+  // Chart data for Status iCare filtered by "Técnico - Último Atendimento"
+  const statusICareWithTecnicoData = (() => {
+    const filteredByTecnico = getFilteredByTecnico(s => s["Técnico - Último Atendimento"] && s["Técnico - Último Atendimento"].trim() !== '');
+    
+    const groupedStatusCounts = filteredByTecnico.reduce((acc, service) => {
+      const groupedStatus = getGroupedStatus(service["Status iCare"]);
+      acc[groupedStatus] = (acc[groupedStatus] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+
+    return Object.entries(groupedStatusCounts).map(([status, count]) => ({
+      name: status,
+      value: count,
+      fill: status === 'Sucesso' ? 'hsl(142 76% 36%)' :
+            status === 'Backlog' ? 'hsl(45 93% 47%)' :
+            status === 'Insucesso' ? 'hsl(0 84% 60%)' :
+            status === 'Cancelado' ? 'hsl(210 12% 45%)' :
+            'hsl(210 12% 45%)'
+    }));
+  })();
+
+  // Chart data for Status iCare detailed separated by "Técnico - Último Atendimento"
+  const statusICareDetailedByTecnicoData = (() => {
+    const filteredByTecnico = getFilteredByTecnico(s => s["Técnico - Último Atendimento"] && s["Técnico - Último Atendimento"].trim() !== '');
+    
+    const statusByTecnico = filteredByTecnico.reduce((acc, service) => {
+      const tecnico = service["Técnico - Último Atendimento"] || 'Sem Técnico';
+      const status = service["Status iCare"] || 'Outros';
+      
+      if (!acc[tecnico]) {
+        acc[tecnico] = {};
+      }
+      acc[tecnico][status] = (acc[tecnico][status] || 0) + 1;
+      
+      return acc;
+    }, {} as Record<string, Record<string, number>>);
+
+    // Convert to chart format - show each technician as a separate data point with status counts
+    const result = [];
+    for (const [tecnico, statusCounts] of Object.entries(statusByTecnico)) {
+      for (const [status, count] of Object.entries(statusCounts)) {
+        result.push({
+          name: `${tecnico} - ${status}`,
+          value: count,
+          tecnico,
+          status,
+          fill: status.includes('Sucesso-Reuso') ? 'hsl(159 84% 39%)' :
+                status.includes('Sucesso-Reversa') ? 'hsl(142 76% 36%)' :
+                status.includes('Backlog ≤ 4 Dias') ? 'hsl(54 91% 55%)' :
+                status.includes('Backlog > 4 Dias') ? 'hsl(45 93% 47%)' :
+                status.includes('Backlog > 30 Dias') ? 'hsl(35 91% 40%)' :
+                status.includes('Backlog > 60 Dias') ? 'hsl(25 91% 35%)' :
+                status.includes('Insucesso') ? 'hsl(0 84% 60%)' :
+                status.includes('Cancelado') ? 'hsl(210 12% 45%)' :
+                'hsl(210 12% 45%)'
+        });
+      }
+    }
+    
+    return result.sort((a, b) => b.value - a.value);
+  })();
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -694,6 +777,7 @@ const Index = () => {
               modelos={modelos}
               statusICardOptions={statusICardOptions}
               statusAtividadeOptions={statusAtividadeOptions}
+              tecnicoUltimoAtendimentoOptions={tecnicoUltimoAtendimentoOptions}
             />
 
             {/* Small Total Cards - Current Month */}
@@ -839,6 +923,9 @@ const Index = () => {
               combinedBacklogEvolutionData={combinedBacklogEvolutionData}
               referenceMonthName={referenceMonthName}
               referenceYear={referenceYear}
+              statusICareWithTecnicoData={statusICareWithTecnicoData}
+              statusICareDetailedByTecnicoData={statusICareDetailedByTecnicoData}
+              tecnicoFilter={filters.tecnicoUltimoAtendimento}
             />
 
             {/* Data Table */}
