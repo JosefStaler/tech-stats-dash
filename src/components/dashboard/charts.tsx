@@ -90,10 +90,10 @@ export function Charts(props: ChartsProps) {
             <CardDescription>Status atual no iCare</CardDescription>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={350}>
+            <ResponsiveContainer width="100%" height={280}>
               <BarChart 
                 data={chartDataWithPercentage}
-                margin={{ top: 50, right: 30, left: 20, bottom: 60 }}
+                margin={{ top: 40, right: 20, left: 20, bottom: 40 }}
               >
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis 
@@ -159,10 +159,10 @@ export function Charts(props: ChartsProps) {
               };
 
               return (
-                <ResponsiveContainer width="100%" height={350}>
+                <ResponsiveContainer width="100%" height={280}>
                   <BarChart 
                     data={originalDataWithPercentage}
-                    margin={{ top: 50, right: 30, left: 20, bottom: 60 }}
+                    margin={{ top: 40, right: 20, left: 20, bottom: 40 }}
                   >
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis 
@@ -317,10 +317,10 @@ export function Charts(props: ChartsProps) {
                 };
 
                 return (
-                  <ResponsiveContainer width="100%" height={350}>
+                  <ResponsiveContainer width="100%" height={280}>
                     <BarChart 
                       data={chartDataWithPercentage}
-                      margin={{ top: 50, right: 30, left: 20, bottom: 60 }}
+                      margin={{ top: 40, right: 20, left: 20, bottom: 40 }}
                     >
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis 
@@ -385,10 +385,10 @@ export function Charts(props: ChartsProps) {
                 };
 
                 return (
-                  <ResponsiveContainer width="100%" height={350}>
+                  <ResponsiveContainer width="100%" height={300}>
                     <BarChart 
                       data={chartDataWithPercentage}
-                      margin={{ top: 50, right: 30, left: 20, bottom: 100 }}
+                      margin={{ top: 40, right: 20, left: 20, bottom: 80 }}
                     >
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis 
