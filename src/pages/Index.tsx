@@ -706,7 +706,10 @@ const Index = () => {
     
     const statusByTecnico = filteredByTecnico.reduce((acc, service) => {
       const tecnico = service["Técnico - Último Atendimento"] || 'Sem Técnico';
-      const status = service["Status iCare"] || 'Outros';
+      const originalStatus = service["Status iCare"] || 'Outros';
+      
+      // Group all backlog types into a single "Backlog" category
+      const status = originalStatus.includes('Backlog') ? 'Backlog' : originalStatus;
       
       if (!acc[tecnico]) {
         acc[tecnico] = {};
@@ -727,10 +730,7 @@ const Index = () => {
           status,
           fill: status.includes('Sucesso-Reuso') ? 'hsl(159 84% 39%)' :
                 status.includes('Sucesso-Reversa') ? 'hsl(142 76% 36%)' :
-                status.includes('Backlog ≤ 4 Dias') ? 'hsl(54 91% 55%)' :
-                status.includes('Backlog > 4 Dias') ? 'hsl(45 93% 47%)' :
-                status.includes('Backlog > 30 Dias') ? 'hsl(35 91% 40%)' :
-                status.includes('Backlog > 60 Dias') ? 'hsl(25 91% 35%)' :
+                status === 'Backlog' ? 'hsl(45 93% 47%)' :
                 status.includes('Insucesso') ? 'hsl(0 84% 60%)' :
                 status.includes('Cancelado') ? 'hsl(210 12% 45%)' :
                 'hsl(210 12% 45%)'
