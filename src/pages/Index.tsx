@@ -47,8 +47,8 @@ const Index = () => {
   // Extract unique values for filters
   const tipoSubtipos = [...new Set(services.map(s => s["Tipo-Subtipo de Serviço"]))].filter(Boolean);
   const modelos = [...new Set(services.map(s => s["Modelo"]))].filter(Boolean);
-  const statusICardOptions = [...new Set(services.map(s => s["Satus iCare"]))].filter(Boolean);
-  const statusAtividadeOptions = [...new Set(services.map(s => s["Status Atividade"]))].filter(Boolean);
+  const statusICardOptions = [...new Set(services.map(s => s["Status iCare"]))].filter(Boolean);
+  const statusAtividadeOptions = [];
 
 
   // Helper function to parse dates that might be Excel serial numbers
@@ -104,7 +104,7 @@ const Index = () => {
 
     // Status iCare filter
     if (filters.statusICare && filters.statusICare !== "todos") {
-      filtered = filtered.filter(service => service["Satus iCare"] === filters.statusICare);
+      filtered = filtered.filter(service => service["Status iCare"] === filters.statusICare);
     }
 
     // Status Atividade filter
@@ -195,10 +195,10 @@ const Index = () => {
   // Total successes (only from reference month executions)
   const allSucessosTotal = referenceMonthExecutedServices.filter(s => {
     // Apply all filters except date filters  
-    let matches = isSucesso(s["Satus iCare"]);
+    let matches = isSucesso(s["Status iCare"]);
     
     if (filters.statusICare && filters.statusICare !== "todos") {
-      matches = matches && s["Satus iCare"] === filters.statusICare;
+      matches = matches && s["Status iCare"] === filters.statusICare;
     }
     if (filters.statusAtividade && filters.statusAtividade !== "todos") {
       matches = matches && s["Status Atividade"] === filters.statusAtividade;
@@ -225,11 +225,11 @@ const Index = () => {
 
   // MODEM FIBRA calculations (only from reference month executions)
   const sucessoModemFibraTotal = referenceMonthExecutedServices.filter(s => {
-    let matches = s["Modelo"] === "MODEM FIBRA" && isSucesso(s["Satus iCare"]);
+    let matches = s["Modelo"] === "MODEM FIBRA" && isSucesso(s["Status iCare"]);
     
     // Apply non-date filters
     if (filters.statusICare && filters.statusICare !== "todos") {
-      matches = matches && s["Satus iCare"] === filters.statusICare;
+      matches = matches && s["Status iCare"] === filters.statusICare;
     }
     if (filters.statusAtividade && filters.statusAtividade !== "todos") {
       matches = matches && s["Status Atividade"] === filters.statusAtividade;
@@ -252,11 +252,11 @@ const Index = () => {
   
   // Other models calculations (only from reference month executions)
   const sucessoOutrosTotal = referenceMonthExecutedServices.filter(s => {
-    let matches = s["Modelo"] !== "MODEM FIBRA" && isSucesso(s["Satus iCare"]);
+    let matches = s["Modelo"] !== "MODEM FIBRA" && isSucesso(s["Status iCare"]);
     
     // Apply non-date filters
     if (filters.statusICare && filters.statusICare !== "todos") {
-      matches = matches && s["Satus iCare"] === filters.statusICare;
+      matches = matches && s["Status iCare"] === filters.statusICare;
     }
     if (filters.statusAtividade && filters.statusAtividade !== "todos") {
       matches = matches && s["Status Atividade"] === filters.statusAtividade;
@@ -295,25 +295,23 @@ const Index = () => {
   // Calculate backlog count for all eligible services
   const backlogCount = eligibleBacklogServices.filter(s => {
     // Check if service has backlog status
-    const status = s["Satus iCare"];
+    const status = s["Status iCare"];
     const isBacklog = status?.includes('Backlog ≤ 4 Dias') || 
                       status?.includes('Backlog > 4 Dias') || 
-                      status?.includes('Backlog > 14 Dias');
+                      status?.includes('Backlog > 30 Dias') ||
+                      status?.includes('Backlog > 60 Dias');
     
     if (!isBacklog) return false;
     
     // Apply other filters
     if (filters.statusICare && filters.statusICare !== "todos") {
-      if (!s["Satus iCare"]?.includes(filters.statusICare)) return false;
+      if (!s["Status iCare"]?.includes(filters.statusICare)) return false;
     }
     if (filters.modelo && filters.modelo !== "todos") {
       if (s["Modelo"] !== filters.modelo) return false;
     }
     if (filters.tipoSubtipo && filters.tipoSubtipo !== "todos") {
       if (s["Tipo-Subtipo de Serviço"] !== filters.tipoSubtipo) return false;
-    }
-    if (filters.statusAtividade && filters.statusAtividade !== "todos") {
-      if (s["Status da Atividade"] !== filters.statusAtividade) return false;
     }
     
     return true;
@@ -322,22 +320,20 @@ const Index = () => {
   // Calculate backlog count for MODEM FIBRA
   const backlogFibraCount = eligibleBacklogServices.filter(s => {
     // Check if service has backlog status and is MODEM FIBRA
-    const status = s["Satus iCare"];
+    const status = s["Status iCare"];
     const isBacklog = status?.includes('Backlog ≤ 4 Dias') || 
                       status?.includes('Backlog > 4 Dias') || 
-                      status?.includes('Backlog > 14 Dias');
+                      status?.includes('Backlog > 30 Dias') ||
+                      status?.includes('Backlog > 60 Dias');
     
     if (!isBacklog || s["Modelo"] !== "MODEM FIBRA") return false;
     
     // Apply other filters
     if (filters.statusICare && filters.statusICare !== "todos") {
-      if (!s["Satus iCare"]?.includes(filters.statusICare)) return false;
+      if (!s["Status iCare"]?.includes(filters.statusICare)) return false;
     }
     if (filters.tipoSubtipo && filters.tipoSubtipo !== "todos") {
       if (s["Tipo-Subtipo de Serviço"] !== filters.tipoSubtipo) return false;
-    }
-    if (filters.statusAtividade && filters.statusAtividade !== "todos") {
-      if (s["Status da Atividade"] !== filters.statusAtividade) return false;
     }
     
     return true;
@@ -346,22 +342,20 @@ const Index = () => {
   // Calculate backlog count for PAYTV (other models)
   const backlogPaytvCount = eligibleBacklogServices.filter(s => {
     // Check if service has backlog status and is not MODEM FIBRA
-    const status = s["Satus iCare"];
+    const status = s["Status iCare"];
     const isBacklog = status?.includes('Backlog ≤ 4 Dias') || 
                       status?.includes('Backlog > 4 Dias') || 
-                      status?.includes('Backlog > 14 Dias');
+                      status?.includes('Backlog > 30 Dias') ||
+                      status?.includes('Backlog > 60 Dias');
     
     if (!isBacklog || s["Modelo"] === "MODEM FIBRA") return false;
     
     // Apply other filters
     if (filters.statusICare && filters.statusICare !== "todos") {
-      if (!s["Satus iCare"]?.includes(filters.statusICare)) return false;
+      if (!s["Status iCare"]?.includes(filters.statusICare)) return false;
     }
     if (filters.tipoSubtipo && filters.tipoSubtipo !== "todos") {
       if (s["Tipo-Subtipo de Serviço"] !== filters.tipoSubtipo) return false;
-    }
-    if (filters.statusAtividade && filters.statusAtividade !== "todos") {
-      if (s["Status da Atividade"] !== filters.statusAtividade) return false;
     }
     
     return true;
@@ -369,17 +363,17 @@ const Index = () => {
 
   // Cálculos de Insucesso (Status iCare "Insucesso")
   const insucessoTotal = filteredServices.filter(s => {
-    const status = s["Satus iCare"];
+    const status = s["Status iCare"];
     return status?.includes('Insucesso');
   }).length;
 
   const insucessoFibra = filteredServices.filter(s => {
-    const status = s["Satus iCare"];
+    const status = s["Status iCare"];
     return status?.includes('Insucesso') && s["Modelo"] === "MODEM FIBRA";
   }).length;
 
   const insucessoPaytv = filteredServices.filter(s => {
-    const status = s["Satus iCare"];
+    const status = s["Status iCare"];
     return status?.includes('Insucesso') && s["Modelo"] !== "MODEM FIBRA";
   }).length;
 
@@ -393,17 +387,17 @@ const Index = () => {
 
   // Cálculos de Canceladas (Status iCare "Cancelado")
   const canceladasTotal = filteredServices.filter(s => {
-    const status = s["Satus iCare"];
+    const status = s["Status iCare"];
     return status?.includes('Cancelado');
   }).length;
 
   const canceladasFibra = filteredServices.filter(s => {
-    const status = s["Satus iCare"];
+    const status = s["Status iCare"];
     return status?.includes('Cancelado') && s["Modelo"] === "MODEM FIBRA";
   }).length;
 
   const canceladasPaytv = filteredServices.filter(s => {
-    const status = s["Satus iCare"];
+    const status = s["Status iCare"];
     return status?.includes('Cancelado') && s["Modelo"] !== "MODEM FIBRA";
   }).length;
 
@@ -418,11 +412,11 @@ const Index = () => {
   const stats = {
     total: filteredServices.length,
     backlog: backlogCount,
-    finalizados: filteredServices.filter(s => isFinalized(s["Satus iCare"])).length,
+    finalizados: filteredServices.filter(s => isFinalized(s["Status iCare"])).length,
     sucesso: allSucessosTotal,
     sucessoTrend: sucessoPercentage,
-    insucesso: referenceMonthExecutedServices.filter(s => s["Satus iCare"]?.includes('Insucesso')).length,
-    emAndamento: filteredServices.filter(s => s["Satus iCare"]?.includes('Andamento')).length,
+    insucesso: referenceMonthExecutedServices.filter(s => s["Status iCare"]?.includes('Insucesso')).length,
+    emAndamento: filteredServices.filter(s => s["Status iCare"]?.includes('Andamento')).length,
     sucessoModemFibra: sucessoModemFibraTotal,
     sucessoModemFibraTrend: sucessoModemFibraPercentage,
     sucessoOutros: sucessoOutrosTotal,
@@ -447,7 +441,8 @@ const Index = () => {
     if (status?.includes('Sucesso-Reuso') || status?.includes('Sucesso-Reversa')) {
       return 'Sucesso';
     }
-    if (status?.includes('Backlog ≤ 4 Dias') || status?.includes('Backlog > 4 Dias') || status?.includes('Backlog > 14 Dias')) {
+    if (status?.includes('Backlog ≤ 4 Dias') || status?.includes('Backlog > 4 Dias') || 
+        status?.includes('Backlog > 30 Dias') || status?.includes('Backlog > 60 Dias')) {
       return 'Backlog';
     }
     if (status?.includes('Insucesso')) {
@@ -460,7 +455,7 @@ const Index = () => {
   };
 
   const groupedStatusCounts = filteredServices.reduce((acc, service) => {
-    const groupedStatus = getGroupedStatus(service["Satus iCare"]);
+    const groupedStatus = getGroupedStatus(service["Status iCare"]);
     acc[groupedStatus] = (acc[groupedStatus] || 0) + 1;
     return acc;
   }, {} as Record<string, number>);
@@ -477,7 +472,7 @@ const Index = () => {
 
   // Chart data preparation - Status iCare original (não agrupado)
   const originalStatusCounts = filteredServices.reduce((acc, service) => {
-    const status = service["Satus iCare"] || 'Outros';
+    const status = service["Status iCare"] || 'Outros';
     acc[status] = (acc[status] || 0) + 1;
     return acc;
   }, {} as Record<string, number>);
@@ -489,7 +484,8 @@ const Index = () => {
           status.includes('Sucesso-Reversa') ? 'hsl(142 76% 36%)' :
           status.includes('Backlog ≤ 4 Dias') ? 'hsl(54 91% 55%)' :
           status.includes('Backlog > 4 Dias') ? 'hsl(45 93% 47%)' :
-          status.includes('Backlog > 14 Dias') ? 'hsl(35 91% 40%)' :
+          status.includes('Backlog > 30 Dias') ? 'hsl(35 91% 40%)' :
+          status.includes('Backlog > 60 Dias') ? 'hsl(25 91% 35%)' :
           status.includes('Insucesso') ? 'hsl(0 84% 60%)' :
           status.includes('Cancelado') ? 'hsl(210 12% 45%)' :
           'hsl(210 12% 45%)'
@@ -517,9 +513,9 @@ const Index = () => {
     
     return {
       month,
-      finalizados: monthServices.filter(s => isFinalized(s["Satus iCare"])).length,
-      pendentes: monthServices.filter(s => s["Satus iCare"]?.includes('Pendente')).length,
-      emAndamento: monthServices.filter(s => s["Satus iCare"]?.includes('Andamento')).length,
+      finalizados: monthServices.filter(s => isFinalized(s["Status iCare"])).length,
+      pendentes: monthServices.filter(s => s["Status iCare"]?.includes('Pendente')).length,
+      emAndamento: monthServices.filter(s => s["Status iCare"]?.includes('Andamento')).length,
       cycleTime: monthServices.length > 0 ? 
         Math.round(monthServices.reduce((sum, s) => sum + (parseInt(s["Cycle Time"]) || 0), 0) / monthServices.length * 10) / 10 : 0
     };
@@ -558,10 +554,11 @@ const Index = () => {
       
       // Count services that are in backlog as of this measurement date
       const backlogCount = services.filter(service => {
-        const status = service["Satus iCare"];
+        const status = service["Status iCare"];
         const isBacklogStatus = status?.includes('Backlog ≤ 4 Dias') || 
                                status?.includes('Backlog > 4 Dias') || 
-                               status?.includes('Backlog > 14 Dias');
+                               status?.includes('Backlog > 30 Dias') ||
+                               status?.includes('Backlog > 60 Dias');
         
         if (!isBacklogStatus) return false;
         
@@ -585,7 +582,7 @@ const Index = () => {
         if (!isSameDay) return false;
         
         // Check if service has success status
-        return isSucesso(service["Satus iCare"]);
+        return isSucesso(service["Status iCare"]);
       }).length;
       
       evolutionData.push({

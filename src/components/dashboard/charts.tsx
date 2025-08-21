@@ -124,6 +124,8 @@ export function Charts(props: ChartsProps) {
                     { name: 'Sucesso-Reversa', value: 20 },
                     { name: 'Backlog ≤ 4 Dias', value: 15 },
                     { name: 'Backlog > 4 Dias', value: 10 },
+                    { name: 'Backlog > 30 Dias', value: 8 },
+                    { name: 'Backlog > 60 Dias', value: 5 },
                     { name: 'Insucesso', value: 8 },
                     { name: 'Cancelado', value: 5 }
                   ];

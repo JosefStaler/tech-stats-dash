@@ -5,17 +5,14 @@ export interface ServiceData {
   "OS_Item": string;
   "Tipo-Subtipo de Serviço": string;
   "Data Criação": string;
-  "Data Agend.": string;
-  "Data Exec.": string;
-  "Cycle Time": string;
+  "Data Execução": string;
   "Município": string;
   "Bairro": string;
   "Conta": string;
   "Cliente": string;
   "NDS": string;
   "Modelo": string;
-  "Satus iCare": string;
-  "Status Atividade": string;
+  "Status iCare": string;
   "Último Atendimento": string;
   "Técnico - Último Atendimento": string;
   "Tipo - Último Atendimento": string;
@@ -38,8 +35,7 @@ export async function parseExcelFile(file: File): Promise<{ success: boolean; da
     const processedData = jsonData.map(row => ({
       ...row,
       "Data Criação": parseDate(row["Data Criação"]),
-      "Data Agend.": parseDate(row["Data Agend."]),
-      "Data Exec.": parseDate(row["Data Exec."]),
+      "Data Execução": parseDate(row["Data Execução"]),
       "Último Atendimento": parseDate(row["Último Atendimento"])
     }));
 

@@ -15,17 +15,14 @@ export interface ServiceData {
   "OS_Item": string;
   "Tipo-Subtipo de Serviço": string;
   "Data Criação": string;
-  "Data Agend.": string;
-  "Data Exec.": string;
-  "Cycle Time": string;
+  "Data Execução": string;
   "Município": string;
   "Bairro": string;
   "Conta": string;
   "Cliente": string;
   "NDS": string;
   "Modelo": string;
-  "Satus iCare": string;
-  "Status Atividade": string;
+  "Status iCare": string;
   "Último Atendimento": string;
   "Técnico - Último Atendimento": string;
   "Tipo - Último Atendimento": string;
@@ -48,7 +45,7 @@ export function DataTable({ data, currentPage, totalPages, onPageChange }: DataT
               <TableHead className="font-semibold">OS</TableHead>
               <TableHead className="font-semibold">Tipo-Subtipo</TableHead>
               <TableHead className="font-semibold">Data Criação</TableHead>
-              <TableHead className="font-semibold">Data Agend.</TableHead>
+              <TableHead className="font-semibold">Data Execução</TableHead>
               <TableHead className="font-semibold">Cliente</TableHead>
               <TableHead className="font-semibold">Município</TableHead>
               <TableHead className="font-semibold">Bairro</TableHead>
@@ -66,17 +63,17 @@ export function DataTable({ data, currentPage, totalPages, onPageChange }: DataT
                 <TableCell className="font-mono text-sm">{service.OS}</TableCell>
                 <TableCell>{service["Tipo-Subtipo de Serviço"]}</TableCell>
                 <TableCell className="text-muted-foreground">{service["Data Criação"]}</TableCell>
-                <TableCell className="text-muted-foreground">{service["Data Agend."]}</TableCell>
+                <TableCell className="text-muted-foreground">{service["Data Execução"]}</TableCell>
                 <TableCell className="font-medium">{service.Cliente}</TableCell>
                 <TableCell>{service.Município}</TableCell>
                 <TableCell>{service.Bairro}</TableCell>
                 <TableCell>
                   <Badge variant={
-                    (service["Satus iCare"] || '').includes("Concluído") ? "success" :
-                    (service["Satus iCare"] || '').includes("Pendente") ? "destructive" :
-                    (service["Satus iCare"] || '').includes("Andamento") ? "accent" : "secondary"
+                    (service["Status iCare"] || '').includes("Sucesso") ? "success" :
+                    (service["Status iCare"] || '').includes("Backlog") ? "destructive" :
+                    (service["Status iCare"] || '').includes("Insucesso") ? "accent" : "secondary"
                   }>
-                    {service["Satus iCare"] || 'N/A'}
+                    {service["Status iCare"] || 'N/A'}
                   </Badge>
                 </TableCell>
                 <TableCell>{service["Técnico - Último Atendimento"]}</TableCell>
