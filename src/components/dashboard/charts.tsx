@@ -90,7 +90,7 @@ export function Charts(props: ChartsProps) {
             <CardDescription>Status atual no iCare</CardDescription>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={280}>
+            <ResponsiveContainer width="100%" height={320}>
               <BarChart 
                 data={chartDataWithPercentage}
                 margin={{ top: 40, right: 20, left: 20, bottom: 40 }}
@@ -337,7 +337,7 @@ export function Charts(props: ChartsProps) {
                 };
 
                 return (
-                  <ResponsiveContainer width="100%" height={280}>
+                  <ResponsiveContainer width="100%" height={320}>
                     <BarChart 
                       data={chartDataWithPercentage}
                       margin={{ top: 40, right: 20, left: 20, bottom: 20 }}
