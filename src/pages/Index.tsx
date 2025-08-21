@@ -391,12 +391,12 @@ const Index = () => {
     return status?.includes('Cancelado');
   }).length;
 
-  const canceladasFibra = filteredServices.filter(s => {
+  const canceladasFibra = referenceMonthServices.filter(s => {
     const status = s["Status iCare"];
     return status?.includes('Cancelado') && s["Modelo"] === "MODEM FIBRA";
   }).length;
 
-  const canceladasPaytv = filteredServices.filter(s => {
+  const canceladasPaytv = referenceMonthServices.filter(s => {
     const status = s["Status iCare"];
     return status?.includes('Cancelado') && s["Modelo"] !== "MODEM FIBRA";
   }).length;
@@ -678,13 +678,13 @@ const Index = () => {
                     variant="danger"
                     trend={{ value: stats.insucessoTotalTrend, isPositive: false, description: "Em relação às retiradas entrantes", percentageColor: "text-destructive" }}
                   />
-                  <StatCard
-                    title="Retiradas Canceladas TOTAL"
-                    value={stats.canceladasTotal}
-                    icon={<AlertTriangle className="h-5 w-5" />}
-                    variant="amber"
-                    trend={{ value: stats.canceladasTotalTrend, isPositive: false, description: "Em relação às retiradas entrantes", percentageColor: "text-amber-600" }}
-                  />
+                   <StatCard
+                     title="Retiradas Canceladas TOTAL"
+                     value={stats.canceladasTotal}
+                     icon={<AlertTriangle className="h-5 w-5" />}
+                     variant="amber"
+                     trend={{ value: stats.canceladasTotalTrend, isPositive: false, description: "Total de retiradas canceladas", percentageColor: "text-amber-600" }}
+                   />
                 </div>
               </div>
               
@@ -721,13 +721,13 @@ const Index = () => {
                     variant="danger"
                     trend={{ value: stats.insucessoFibraTrend, isPositive: false, description: "Em relação às retiradas entrantes", percentageColor: "text-destructive" }}
                   />
-                  <StatCard
-                    title="Retiradas Canceladas FIBRA"
-                    value={stats.canceladasFibra}
-                    icon={<AlertTriangle className="h-5 w-5" />}
-                    variant="amber"
-                    trend={{ value: stats.canceladasFibraTrend, isPositive: false, description: "Em relação às retiradas entrantes", percentageColor: "text-amber-600" }}
-                  />
+                   <StatCard
+                     title="Retiradas Canceladas FIBRA"
+                     value={stats.canceladasFibra}
+                     icon={<AlertTriangle className="h-5 w-5" />}
+                     variant="amber"
+                     trend={{ value: stats.canceladasFibraTrend, isPositive: false, description: "Em relação às retiradas entrantes", percentageColor: "text-amber-600" }}
+                   />
                 </div>
               </div>
               
@@ -764,13 +764,13 @@ const Index = () => {
                     variant="danger"
                     trend={{ value: stats.insucessoPaytvTrend, isPositive: false, description: "Em relação às retiradas entrantes", percentageColor: "text-destructive" }}
                   />
-                  <StatCard
-                    title="Retiradas Canceladas PAYTV"
-                    value={stats.canceladasPaytv}
-                    icon={<AlertTriangle className="h-5 w-5" />}
-                    variant="amber"
-                    trend={{ value: stats.canceladasPaytvTrend, isPositive: false, description: "Em relação às retiradas entrantes", percentageColor: "text-amber-600" }}
-                  />
+                   <StatCard
+                     title="Retiradas Canceladas PAYTV"
+                     value={stats.canceladasPaytv}
+                     icon={<AlertTriangle className="h-5 w-5" />}
+                     variant="amber"
+                     trend={{ value: stats.canceladasPaytvTrend, isPositive: false, description: "Em relação às retiradas entrantes", percentageColor: "text-amber-600" }}
+                   />
                 </div>
               </div>
             </div>
