@@ -50,7 +50,6 @@ export function DataTable({ data, currentPage, totalPages, onPageChange }: DataT
               <TableHead className="font-semibold">Município</TableHead>
               <TableHead className="font-semibold">Bairro</TableHead>
               <TableHead className="font-semibold">Status iCare</TableHead>
-              <TableHead className="font-semibold">Técnico</TableHead>
               <TableHead className="font-semibold">Modelo</TableHead>
             </TableRow>
           </TableHeader>
@@ -76,7 +75,6 @@ export function DataTable({ data, currentPage, totalPages, onPageChange }: DataT
                     {service["Status iCare"] || 'N/A'}
                   </Badge>
                 </TableCell>
-                <TableCell>{service["Técnico - Último Atendimento"]}</TableCell>
                 <TableCell>{service.Modelo}</TableCell>
               </TableRow>
             ))}

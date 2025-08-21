@@ -22,6 +22,13 @@ interface BacklogEvolutionData {
   date: string;
 }
 
+interface BacklogWithPreviousServiceData {
+  day: string;
+  backlogWithPrevious: number;
+  sucessoWithPrevious: number;
+  date: string;
+}
+
 interface ChartsProps {
   statusICareData: ChartData[];
   statusICareOriginalData: ChartData[];
@@ -30,6 +37,7 @@ interface ChartsProps {
   tipoServicoData: ChartData[];
   modeloData: ChartData[];
   backlogEvolutionData: BacklogEvolutionData[];
+  backlogWithPreviousServiceData: BacklogWithPreviousServiceData[];
   referenceMonthName: string;
   referenceYear: number;
 }
@@ -250,6 +258,82 @@ export function Charts(props: ChartsProps) {
                   dataKey="retiradas" 
                   position="bottom" 
                   style={{ fontSize: '11px', fill: 'hsl(142 76% 36%)', fontWeight: 'bold' }} 
+                />
+              </Line>
+            </LineChart>
+          </ResponsiveContainer>
+        </CardContent>
+      </Card>
+
+      {/* Backlog with Previous Service Evolution Chart */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Evolução do Backlog com Atendimento Anterior - {props.referenceMonthName} {props.referenceYear}</CardTitle>
+          <CardDescription>Evolução diária do backlog com atendimento anterior e quantidade de sucessos com atendimento anterior por dia</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <ResponsiveContainer width="100%" height={400}>
+            <LineChart 
+              data={props.backlogWithPreviousServiceData}
+              margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis 
+                dataKey="date" 
+                tick={{ fontSize: 12 }}
+                interval={Math.floor(props.backlogWithPreviousServiceData.length / 10)} // Show every nth label to avoid overcrowding
+              />
+              <YAxis />
+              <Tooltip 
+                content={({ active, payload, label }) => {
+                  if (active && payload && payload.length) {
+                    const backlogWithPrevious = payload.find(p => p.dataKey === 'backlogWithPrevious')?.value || 0;
+                    const sucessoWithPrevious = payload.find(p => p.dataKey === 'sucessoWithPrevious')?.value || 0;
+                    return (
+                      <div className="bg-background border border-border rounded-lg p-3 shadow-lg">
+                        <p className="font-medium">{`Data: ${label}`}</p>
+                        <p className="text-orange-600">{`Backlog c/ Atend. Anterior: ${backlogWithPrevious} itens`}</p>
+                        <p className="text-blue-600">{`Sucesso c/ Atend. Anterior: ${sucessoWithPrevious} itens`}</p>
+                      </div>
+                    );
+                  }
+                  return null;
+                }}
+              />
+              <Legend 
+                wrapperStyle={{ 
+                  paddingTop: '20px',
+                  fontSize: '14px'
+                }}
+              />
+              <Line 
+                type="monotone" 
+                dataKey="backlogWithPrevious" 
+                stroke="hsl(25 95% 53%)" 
+                strokeWidth={3}
+                dot={{ fill: 'hsl(25 95% 53%)', strokeWidth: 2, r: 4 }}
+                activeDot={{ r: 6, stroke: 'hsl(25 95% 53%)', strokeWidth: 2 }}
+                name="Backlog c/ Atend. Anterior"
+              >
+                <LabelList 
+                  dataKey="backlogWithPrevious" 
+                  position="top" 
+                  style={{ fontSize: '11px', fill: 'hsl(25 95% 53%)', fontWeight: 'bold' }} 
+                />
+              </Line>
+              <Line 
+                type="monotone" 
+                dataKey="sucessoWithPrevious" 
+                stroke="hsl(217 91% 60%)" 
+                strokeWidth={3}
+                dot={{ fill: 'hsl(217 91% 60%)', strokeWidth: 2, r: 4 }}
+                activeDot={{ r: 6, stroke: 'hsl(217 91% 60%)', strokeWidth: 2 }}
+                name="Sucesso c/ Atend. Anterior"
+              >
+                <LabelList 
+                  dataKey="sucessoWithPrevious" 
+                  position="bottom" 
+                  style={{ fontSize: '11px', fill: 'hsl(217 91% 60%)', fontWeight: 'bold' }} 
                 />
               </Line>
             </LineChart>

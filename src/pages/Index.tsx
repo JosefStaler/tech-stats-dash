@@ -602,6 +602,81 @@ const Index = () => {
     return evolutionData;
   })();
 
+  // Backlog with previous service evolution data
+  const backlogWithPreviousServiceData = (() => {
+    const today = new Date();
+    const currentMonth = today.getMonth();
+    const currentYear = today.getFullYear();
+    const currentDay = today.getDate();
+    
+    const daysInMonth = new Date(referenceYear, referenceMonth + 1, 0).getDate();
+    
+    // If analyzing current month, limit to current day, otherwise show full month
+    const maxDay = (referenceMonth === currentMonth && referenceYear === currentYear) 
+      ? currentDay 
+      : daysInMonth;
+    
+    const evolutionData = [];
+    
+    for (let day = 1; day <= maxDay; day++) {
+      const measurementDate = new Date(referenceYear, referenceMonth, day);
+      
+      // Count services that are in backlog with previous service as of this measurement date
+      const backlogWithPreviousCount = services.filter(service => {
+        const status = service["Status iCare"];
+        const isBacklogStatus = status?.includes('Backlog ≤ 4 Dias') || 
+                               status?.includes('Backlog > 4 Dias') || 
+                               status?.includes('Backlog > 30 Dias') ||
+                               status?.includes('Backlog > 60 Dias');
+        
+        if (!isBacklogStatus) return false;
+        
+        // Check if "Técnico - Último Atendimento" is filled
+        const hasLastService = service["Técnico - Último Atendimento"] && 
+                              service["Técnico - Último Atendimento"].trim() !== '';
+        
+        if (!hasLastService) return false;
+        
+        // Check if service creation date is before or equal to measurement date
+        const creationDate = parseDate(service["Data Criação"]);
+        if (!creationDate) return false;
+        
+        return creationDate <= measurementDate;
+      }).length;
+      
+      // Count successful withdrawals with previous service executed on this specific day
+      const sucessoWithPreviousCount = services.filter(service => {
+        const execDate = parseDate(service["Data Execução"]);
+        if (!execDate) return false;
+        
+        // Check if execution date matches this day
+        const isSameDay = execDate.getDate() === day && 
+                         execDate.getMonth() === referenceMonth && 
+                         execDate.getFullYear() === referenceYear;
+        
+        if (!isSameDay) return false;
+        
+        // Check if service has success status
+        if (!isSucesso(service["Status iCare"])) return false;
+        
+        // Check if "Técnico - Último Atendimento" is filled
+        const hasLastService = service["Técnico - Último Atendimento"] && 
+                              service["Técnico - Último Atendimento"].trim() !== '';
+        
+        return hasLastService;
+      }).length;
+      
+      evolutionData.push({
+        day: day.toString().padStart(2, '0'),
+        backlogWithPrevious: backlogWithPreviousCount,
+        sucessoWithPrevious: sucessoWithPreviousCount,
+        date: measurementDate.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })
+      });
+    }
+    
+    return evolutionData;
+  })();
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -790,6 +865,7 @@ const Index = () => {
               tipoServicoData={tipoServicoData}
               modeloData={modeloData}
               backlogEvolutionData={backlogEvolutionData}
+              backlogWithPreviousServiceData={backlogWithPreviousServiceData}
               referenceMonthName={referenceMonthName}
               referenceYear={referenceYear}
             />
