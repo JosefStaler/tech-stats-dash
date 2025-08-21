@@ -36,7 +36,7 @@ interface ChartsProps {
   referenceYear: number;
   statusICareWithTecnicoData: ChartData[];
   statusICareDetailedByTecnicoData: ChartData[];
-  tecnicoFilter: string;
+  tecnicoFilter: string[];
 }
 
 export function Charts(props: ChartsProps) {
@@ -273,7 +273,7 @@ export function Charts(props: ChartsProps) {
       </Card>
 
       {/* Show new charts only when technician filter is active */}
-      {props.tecnicoFilter && props.tecnicoFilter !== "todos" && (
+      {props.tecnicoFilter && props.tecnicoFilter.length > 0 && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <Card>
             <CardHeader>

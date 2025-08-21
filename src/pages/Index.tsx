@@ -34,7 +34,7 @@ const Index = () => {
     statusAtividade: "todos",
     tipoSubtipo: "todos",
     modelo: "todos",
-    tecnicoUltimoAtendimento: "todos"
+    tecnicoUltimoAtendimento: []
   });
   const { toast } = useToast();
 
@@ -655,12 +655,17 @@ const Index = () => {
   const getFilteredByTecnico = (baseFilter?: (service: any) => boolean) => {
     let filtered = filteredServices;
     
-    if (filters.tecnicoUltimoAtendimento === "preenchido") {
-      filtered = filtered.filter(s => s["Técnico - Último Atendimento"] && s["Técnico - Último Atendimento"].trim() !== '');
-    } else if (filters.tecnicoUltimoAtendimento === "vazio") {
-      filtered = filtered.filter(s => !s["Técnico - Último Atendimento"] || s["Técnico - Último Atendimento"].trim() === '');
-    } else if (filters.tecnicoUltimoAtendimento !== "todos") {
-      filtered = filtered.filter(s => s["Técnico - Último Atendimento"] === filters.tecnicoUltimoAtendimento);
+    if (filters.tecnicoUltimoAtendimento.length > 0) {
+      filtered = filtered.filter(s => {
+        const tecnicoValue = s["Técnico - Último Atendimento"];
+        const hasValue = tecnicoValue && tecnicoValue.trim() !== '';
+        
+        return filters.tecnicoUltimoAtendimento.some(filter => {
+          if (filter === "preenchido") return hasValue;
+          if (filter === "vazio") return !hasValue;
+          return tecnicoValue === filter;
+        });
+      });
     }
     
     if (baseFilter) {
@@ -672,7 +677,9 @@ const Index = () => {
 
   // Chart data for Status iCare filtered by "Técnico - Último Atendimento"
   const statusICareWithTecnicoData = (() => {
-    const filteredByTecnico = getFilteredByTecnico(s => s["Técnico - Último Atendimento"] && s["Técnico - Último Atendimento"].trim() !== '');
+    if (filters.tecnicoUltimoAtendimento.length === 0) return [];
+    
+    const filteredByTecnico = getFilteredByTecnico();
     
     const groupedStatusCounts = filteredByTecnico.reduce((acc, service) => {
       const groupedStatus = getGroupedStatus(service["Status iCare"]);
@@ -693,7 +700,9 @@ const Index = () => {
 
   // Chart data for Status iCare detailed separated by "Técnico - Último Atendimento"
   const statusICareDetailedByTecnicoData = (() => {
-    const filteredByTecnico = getFilteredByTecnico(s => s["Técnico - Último Atendimento"] && s["Técnico - Último Atendimento"].trim() !== '');
+    if (filters.tecnicoUltimoAtendimento.length === 0) return [];
+    
+    const filteredByTecnico = getFilteredByTecnico();
     
     const statusByTecnico = filteredByTecnico.reduce((acc, service) => {
       const tecnico = service["Técnico - Último Atendimento"] || 'Sem Técnico';

@@ -9,6 +9,7 @@ import { CalendarIcon, Filter, X } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export interface FilterState {
   dateRange: {
@@ -23,7 +24,7 @@ export interface FilterState {
   statusAtividade: string;
   tipoSubtipo: string;
   modelo: string;
-  tecnicoUltimoAtendimento: string;
+  tecnicoUltimoAtendimento: string[];
 }
 
 interface FiltersProps {
@@ -53,7 +54,7 @@ export function Filters({
       statusAtividade: "todos",
       tipoSubtipo: "todos",
       modelo: "todos",
-      tecnicoUltimoAtendimento: "todos"
+      tecnicoUltimoAtendimento: []
     });
   };
 
@@ -66,7 +67,7 @@ export function Filters({
     (filters.statusAtividade && filters.statusAtividade !== "todos") || 
     (filters.tipoSubtipo && filters.tipoSubtipo !== "todos") || 
     (filters.modelo && filters.modelo !== "todos") ||
-    (filters.tecnicoUltimoAtendimento && filters.tecnicoUltimoAtendimento !== "todos")
+    (filters.tecnicoUltimoAtendimento && filters.tecnicoUltimoAtendimento.length > 0)
   );
 
   const getActiveFiltersCount = () => {
@@ -77,7 +78,7 @@ export function Filters({
     if (filters.statusAtividade && filters.statusAtividade !== "todos") count++;
     if (filters.tipoSubtipo && filters.tipoSubtipo !== "todos") count++;
     if (filters.modelo && filters.modelo !== "todos") count++;
-    if (filters.tecnicoUltimoAtendimento && filters.tecnicoUltimoAtendimento !== "todos") count++;
+    if (filters.tecnicoUltimoAtendimento && filters.tecnicoUltimoAtendimento.length > 0) count++;
     return count;
   };
 
@@ -108,7 +109,7 @@ export function Filters({
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {/* Data Criação Filter */}
           <div className="space-y-2">
             <label className="text-sm font-medium">Data Criação</label>
@@ -270,29 +271,109 @@ export function Filters({
             </Select>
           </div>
 
-          {/* Técnico - Último Atendimento Filter */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Técnico - Último Atendimento</label>
-            <Select
-              value={filters.tecnicoUltimoAtendimento}
-              onValueChange={(value) => 
-                onFiltersChange({ ...filters, tecnicoUltimoAtendimento: value })
-              }
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Todos os técnicos" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="todos">Todos os técnicos</SelectItem>
-                <SelectItem value="preenchido">Apenas preenchidos</SelectItem>
-                <SelectItem value="vazio">Apenas vazios</SelectItem>
-                {tecnicoUltimoAtendimentoOptions.map((tecnico) => (
-                  <SelectItem key={tecnico} value={tecnico}>
+          {/* Técnicos - Apenas Gráfico Filter */}
+          <div className="space-y-2 col-span-2 bg-gradient-to-r from-purple-50 via-pink-50 to-indigo-50 dark:from-purple-950/20 dark:via-pink-950/20 dark:to-indigo-950/20 p-4 rounded-lg border-2 border-purple-200 dark:border-purple-800">
+            <label className="text-sm font-semibold text-purple-800 dark:text-purple-200 flex items-center gap-2">
+              <Filter className="h-4 w-4" />
+              Técnicos - Apenas Gráfico
+              <Badge variant="secondary" className="bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200">
+                Específico
+              </Badge>
+            </label>
+            <div className="space-y-2 max-h-32 overflow-y-auto">
+              <div className="flex items-center space-x-2">
+                <Checkbox 
+                  id="preenchido"
+                  checked={filters.tecnicoUltimoAtendimento.includes("preenchido")}
+                  onCheckedChange={(checked) => {
+                    if (checked) {
+                      onFiltersChange({ 
+                        ...filters, 
+                        tecnicoUltimoAtendimento: [...filters.tecnicoUltimoAtendimento, "preenchido"]
+                      });
+                    } else {
+                      onFiltersChange({ 
+                        ...filters, 
+                        tecnicoUltimoAtendimento: filters.tecnicoUltimoAtendimento.filter(t => t !== "preenchido")
+                      });
+                    }
+                  }}
+                />
+                <label htmlFor="preenchido" className="text-sm text-purple-700 dark:text-purple-300 font-medium">
+                  Apenas preenchidos
+                </label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Checkbox 
+                  id="vazio"
+                  checked={filters.tecnicoUltimoAtendimento.includes("vazio")}
+                  onCheckedChange={(checked) => {
+                    if (checked) {
+                      onFiltersChange({ 
+                        ...filters, 
+                        tecnicoUltimoAtendimento: [...filters.tecnicoUltimoAtendimento, "vazio"]
+                      });
+                    } else {
+                      onFiltersChange({ 
+                        ...filters, 
+                        tecnicoUltimoAtendimento: filters.tecnicoUltimoAtendimento.filter(t => t !== "vazio")
+                      });
+                    }
+                  }}
+                />
+                <label htmlFor="vazio" className="text-sm text-purple-700 dark:text-purple-300 font-medium">
+                  Apenas vazios
+                </label>
+              </div>
+              {tecnicoUltimoAtendimentoOptions.map((tecnico) => (
+                <div key={tecnico} className="flex items-center space-x-2">
+                  <Checkbox 
+                    id={tecnico}
+                    checked={filters.tecnicoUltimoAtendimento.includes(tecnico)}
+                    onCheckedChange={(checked) => {
+                      if (checked) {
+                        onFiltersChange({ 
+                          ...filters, 
+                          tecnicoUltimoAtendimento: [...filters.tecnicoUltimoAtendimento, tecnico]
+                        });
+                      } else {
+                        onFiltersChange({ 
+                          ...filters, 
+                          tecnicoUltimoAtendimento: filters.tecnicoUltimoAtendimento.filter(t => t !== tecnico)
+                        });
+                      }
+                    }}
+                  />
+                  <label htmlFor={tecnico} className="text-sm text-purple-700 dark:text-purple-300">
                     {tecnico}
-                  </SelectItem>
+                  </label>
+                </div>
+              ))}
+            </div>
+            {filters.tecnicoUltimoAtendimento.length > 0 && (
+              <div className="flex flex-wrap gap-1 mt-2">
+                {filters.tecnicoUltimoAtendimento.map((tecnico) => (
+                  <Badge 
+                    key={tecnico} 
+                    variant="secondary" 
+                    className="bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200 text-xs"
+                  >
+                    {tecnico === "preenchido" ? "Preenchidos" : 
+                     tecnico === "vazio" ? "Vazios" : 
+                     tecnico}
+                    <button
+                      onClick={() => onFiltersChange({ 
+                        ...filters, 
+                        tecnicoUltimoAtendimento: filters.tecnicoUltimoAtendimento.filter(t => t !== tecnico)
+                      })}
+                      className="ml-1 hover:text-purple-600"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </Badge>
                 ))}
-              </SelectContent>
-            </Select>
+              </div>
+            )}
           </div>
         </div>
       </CardContent>
