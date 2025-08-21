@@ -15,15 +15,10 @@ interface MonthlyData {
   cycleTime: number;
 }
 
-interface BacklogEvolutionData {
+interface CombinedBacklogEvolutionData {
   day: string;
   backlog: number;
   retiradas: number;
-  date: string;
-}
-
-interface BacklogWithPreviousServiceData {
-  day: string;
   backlogWithPrevious: number;
   sucessoWithPrevious: number;
   date: string;
@@ -36,8 +31,7 @@ interface ChartsProps {
   monthlyData: MonthlyData[];
   tipoServicoData: ChartData[];
   modeloData: ChartData[];
-  backlogEvolutionData: BacklogEvolutionData[];
-  backlogWithPreviousServiceData: BacklogWithPreviousServiceData[];
+  combinedBacklogEvolutionData: CombinedBacklogEvolutionData[];
   referenceMonthName: string;
   referenceYear: number;
 }
@@ -189,23 +183,23 @@ export function Charts(props: ChartsProps) {
         </Card>
       </div>
 
-      {/* Backlog Evolution Chart */}
+      {/* Combined Backlog Evolution Chart */}
       <Card>
         <CardHeader>
           <CardTitle>Evolução do Backlog e Retiradas Realizadas - {props.referenceMonthName} {props.referenceYear}</CardTitle>
-          <CardDescription>Evolução diária do backlog e quantidade de retiradas realizadas por dia</CardDescription>
+          <CardDescription>Evolução diária completa incluindo backlog total, retiradas realizadas, backlog com atendimento anterior e sucessos com atendimento anterior</CardDescription>
         </CardHeader>
         <CardContent>
-          <ResponsiveContainer width="100%" height={400}>
+          <ResponsiveContainer width="100%" height={500}>
             <LineChart 
-              data={props.backlogEvolutionData}
+              data={props.combinedBacklogEvolutionData}
               margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
             >
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis 
                 dataKey="date" 
                 tick={{ fontSize: 12 }}
-                interval={Math.floor(props.backlogEvolutionData.length / 10)} // Show every nth label to avoid overcrowding
+                interval={Math.floor(props.combinedBacklogEvolutionData.length / 10)} // Show every nth label to avoid overcrowding
               />
               <YAxis />
               <Tooltip 
@@ -213,11 +207,15 @@ export function Charts(props: ChartsProps) {
                   if (active && payload && payload.length) {
                     const backlog = payload.find(p => p.dataKey === 'backlog')?.value || 0;
                     const retiradas = payload.find(p => p.dataKey === 'retiradas')?.value || 0;
+                    const backlogWithPrevious = payload.find(p => p.dataKey === 'backlogWithPrevious')?.value || 0;
+                    const sucessoWithPrevious = payload.find(p => p.dataKey === 'sucessoWithPrevious')?.value || 0;
                     return (
                       <div className="bg-background border border-border rounded-lg p-3 shadow-lg">
                         <p className="font-medium">{`Data: ${label}`}</p>
-                        <p className="text-amber-600">{`Backlog: ${backlog} itens`}</p>
-                        <p className="text-green-600">{`Retiradas: ${retiradas} itens`}</p>
+                        <p className="text-amber-600">{`Backlog Total: ${backlog} itens`}</p>
+                        <p className="text-green-600">{`Retiradas Realizadas: ${retiradas} itens`}</p>
+                        <p className="text-orange-600">{`Backlog c/ Atendimento Anterior: ${backlogWithPrevious} itens`}</p>
+                        <p className="text-blue-600">{`Sucesso c/ Atendimento Anterior: ${sucessoWithPrevious} itens`}</p>
                       </div>
                     );
                   }
@@ -234,108 +232,38 @@ export function Charts(props: ChartsProps) {
                 type="monotone" 
                 dataKey="backlog" 
                 stroke="hsl(45 93% 47%)" 
-                strokeWidth={3}
-                dot={{ fill: 'hsl(45 93% 47%)', strokeWidth: 2, r: 4 }}
-                activeDot={{ r: 6, stroke: 'hsl(45 93% 47%)', strokeWidth: 2 }}
-                name="Backlog"
-              >
-                <LabelList 
-                  dataKey="backlog" 
-                  position="top" 
-                  style={{ fontSize: '11px', fill: 'hsl(45 93% 47%)', fontWeight: 'bold' }} 
-                />
-              </Line>
+                strokeWidth={2}
+                dot={{ fill: 'hsl(45 93% 47%)', strokeWidth: 2, r: 3 }}
+                activeDot={{ r: 5, stroke: 'hsl(45 93% 47%)', strokeWidth: 2 }}
+                name="Backlog Total"
+              />
               <Line 
                 type="monotone" 
                 dataKey="retiradas" 
                 stroke="hsl(142 76% 36%)" 
-                strokeWidth={3}
-                dot={{ fill: 'hsl(142 76% 36%)', strokeWidth: 2, r: 4 }}
-                activeDot={{ r: 6, stroke: 'hsl(142 76% 36%)', strokeWidth: 2 }}
+                strokeWidth={2}
+                dot={{ fill: 'hsl(142 76% 36%)', strokeWidth: 2, r: 3 }}
+                activeDot={{ r: 5, stroke: 'hsl(142 76% 36%)', strokeWidth: 2 }}
                 name="Retiradas Realizadas"
-              >
-                <LabelList 
-                  dataKey="retiradas" 
-                  position="bottom" 
-                  style={{ fontSize: '11px', fill: 'hsl(142 76% 36%)', fontWeight: 'bold' }} 
-                />
-              </Line>
-            </LineChart>
-          </ResponsiveContainer>
-        </CardContent>
-      </Card>
-
-      {/* Backlog with Previous Service Evolution Chart */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Evolução do Backlog com Atendimento Anterior - {props.referenceMonthName} {props.referenceYear}</CardTitle>
-          <CardDescription>Evolução diária do backlog com atendimento anterior e quantidade de sucessos com atendimento anterior por dia</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <ResponsiveContainer width="100%" height={400}>
-            <LineChart 
-              data={props.backlogWithPreviousServiceData}
-              margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
-            >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis 
-                dataKey="date" 
-                tick={{ fontSize: 12 }}
-                interval={Math.floor(props.backlogWithPreviousServiceData.length / 10)} // Show every nth label to avoid overcrowding
-              />
-              <YAxis />
-              <Tooltip 
-                content={({ active, payload, label }) => {
-                  if (active && payload && payload.length) {
-                    const backlogWithPrevious = payload.find(p => p.dataKey === 'backlogWithPrevious')?.value || 0;
-                    const sucessoWithPrevious = payload.find(p => p.dataKey === 'sucessoWithPrevious')?.value || 0;
-                    return (
-                      <div className="bg-background border border-border rounded-lg p-3 shadow-lg">
-                        <p className="font-medium">{`Data: ${label}`}</p>
-                        <p className="text-orange-600">{`Backlog c/ Atend. Anterior: ${backlogWithPrevious} itens`}</p>
-                        <p className="text-blue-600">{`Sucesso c/ Atend. Anterior: ${sucessoWithPrevious} itens`}</p>
-                      </div>
-                    );
-                  }
-                  return null;
-                }}
-              />
-              <Legend 
-                wrapperStyle={{ 
-                  paddingTop: '20px',
-                  fontSize: '14px'
-                }}
               />
               <Line 
                 type="monotone" 
                 dataKey="backlogWithPrevious" 
                 stroke="hsl(25 95% 53%)" 
-                strokeWidth={3}
-                dot={{ fill: 'hsl(25 95% 53%)', strokeWidth: 2, r: 4 }}
-                activeDot={{ r: 6, stroke: 'hsl(25 95% 53%)', strokeWidth: 2 }}
-                name="Backlog c/ Atend. Anterior"
-              >
-                <LabelList 
-                  dataKey="backlogWithPrevious" 
-                  position="top" 
-                  style={{ fontSize: '11px', fill: 'hsl(25 95% 53%)', fontWeight: 'bold' }} 
-                />
-              </Line>
+                strokeWidth={2}
+                dot={{ fill: 'hsl(25 95% 53%)', strokeWidth: 2, r: 3 }}
+                activeDot={{ r: 5, stroke: 'hsl(25 95% 53%)', strokeWidth: 2 }}
+                name="Backlog c/ Atendimento Anterior"
+              />
               <Line 
                 type="monotone" 
                 dataKey="sucessoWithPrevious" 
                 stroke="hsl(217 91% 60%)" 
-                strokeWidth={3}
-                dot={{ fill: 'hsl(217 91% 60%)', strokeWidth: 2, r: 4 }}
-                activeDot={{ r: 6, stroke: 'hsl(217 91% 60%)', strokeWidth: 2 }}
-                name="Sucesso c/ Atend. Anterior"
-              >
-                <LabelList 
-                  dataKey="sucessoWithPrevious" 
-                  position="bottom" 
-                  style={{ fontSize: '11px', fill: 'hsl(217 91% 60%)', fontWeight: 'bold' }} 
-                />
-              </Line>
+                strokeWidth={2}
+                dot={{ fill: 'hsl(217 91% 60%)', strokeWidth: 2, r: 3 }}
+                activeDot={{ r: 5, stroke: 'hsl(217 91% 60%)', strokeWidth: 2 }}
+                name="Sucesso c/ Atendimento Anterior"
+              />
             </LineChart>
           </ResponsiveContainer>
         </CardContent>

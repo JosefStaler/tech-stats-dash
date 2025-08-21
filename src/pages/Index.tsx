@@ -539,8 +539,8 @@ const Index = () => {
     value: filteredServices.filter(s => s["Modelo"] === modelo).length
   })).sort((a, b) => b.value - a.value).slice(0, 10);
 
-  // Backlog evolution data - Day by day for reference month
-  const backlogEvolutionData = (() => {
+  // Combined backlog evolution data with all metrics
+  const combinedBacklogEvolutionData = (() => {
     const today = new Date();
     const currentMonth = today.getMonth();
     const currentYear = today.getFullYear();
@@ -590,37 +590,7 @@ const Index = () => {
         // Check if service has success status
         return isSucesso(service["Status iCare"]);
       }).length;
-      
-      evolutionData.push({
-        day: day.toString().padStart(2, '0'),
-        backlog: backlogCount,
-        retiradas: retirasRealizadas,
-        date: measurementDate.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })
-      });
-    }
-    
-    return evolutionData;
-  })();
 
-  // Backlog with previous service evolution data
-  const backlogWithPreviousServiceData = (() => {
-    const today = new Date();
-    const currentMonth = today.getMonth();
-    const currentYear = today.getFullYear();
-    const currentDay = today.getDate();
-    
-    const daysInMonth = new Date(referenceYear, referenceMonth + 1, 0).getDate();
-    
-    // If analyzing current month, limit to current day, otherwise show full month
-    const maxDay = (referenceMonth === currentMonth && referenceYear === currentYear) 
-      ? currentDay 
-      : daysInMonth;
-    
-    const evolutionData = [];
-    
-    for (let day = 1; day <= maxDay; day++) {
-      const measurementDate = new Date(referenceYear, referenceMonth, day);
-      
       // Count services that are in backlog with previous service as of this measurement date
       const backlogWithPreviousCount = services.filter(service => {
         const status = service["Status iCare"];
@@ -668,6 +638,8 @@ const Index = () => {
       
       evolutionData.push({
         day: day.toString().padStart(2, '0'),
+        backlog: backlogCount,
+        retiradas: retirasRealizadas,
         backlogWithPrevious: backlogWithPreviousCount,
         sucessoWithPrevious: sucessoWithPreviousCount,
         date: measurementDate.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })
@@ -864,8 +836,7 @@ const Index = () => {
               monthlyData={monthlyData}
               tipoServicoData={tipoServicoData}
               modeloData={modeloData}
-              backlogEvolutionData={backlogEvolutionData}
-              backlogWithPreviousServiceData={backlogWithPreviousServiceData}
+              combinedBacklogEvolutionData={combinedBacklogEvolutionData}
               referenceMonthName={referenceMonthName}
               referenceYear={referenceYear}
             />
