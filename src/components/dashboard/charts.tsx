@@ -121,19 +121,39 @@ export function Charts(props: ChartsProps) {
           </CardHeader>
           <CardContent>
             {(() => {
+              // Define a ordem desejada para os dados
+              const desiredOrder = [
+                'Backlog > 60 Dias',
+                'Backlog > 30 Dias', 
+                'Backlog > 4 Dias',
+                'Backlog ≤ 4 Dias',
+                'Sucesso-Reuso',
+                'Sucesso-Reversa',
+                'Insucesso',
+                'Cancelado'
+              ];
+
               // Usar dados originais sem agrupamento
-              const originalData = props.statusICareOriginalData && props.statusICareOriginalData.length > 0 
+              let originalData = props.statusICareOriginalData && props.statusICareOriginalData.length > 0 
                 ? props.statusICareOriginalData.filter(item => item.value > 0)
                 : [
+                    { name: 'Backlog > 60 Dias', value: 5 },
+                    { name: 'Backlog > 30 Dias', value: 8 },
+                    { name: 'Backlog > 4 Dias', value: 10 },
+                    { name: 'Backlog ≤ 4 Dias', value: 15 },
                     { name: 'Sucesso-Reuso', value: 25 },
                     { name: 'Sucesso-Reversa', value: 20 },
-                    { name: 'Backlog ≤ 4 Dias', value: 15 },
-                    { name: 'Backlog > 4 Dias', value: 10 },
-                    { name: 'Backlog > 30 Dias', value: 8 },
-                    { name: 'Backlog > 60 Dias', value: 5 },
                     { name: 'Insucesso', value: 8 },
                     { name: 'Cancelado', value: 5 }
                   ];
+
+              // Ordenar os dados conforme a ordem desejada
+              originalData = originalData.sort((a, b) => {
+                const indexA = desiredOrder.indexOf(a.name);
+                const indexB = desiredOrder.indexOf(b.name);
+                // Se não encontrar na lista, coloca no final
+                return (indexA === -1 ? 999 : indexA) - (indexB === -1 ? 999 : indexB);
+              });
 
               const originalTotal = originalData.reduce((sum, item) => sum + item.value, 0);
               
