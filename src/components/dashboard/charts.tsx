@@ -274,7 +274,7 @@ export function Charts(props: ChartsProps) {
 
       {/* Show new charts only when technician filter is active */}
       {props.tecnicoFilter && props.tecnicoFilter.length > 0 && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_2fr] gap-6">
           <Card>
             <CardHeader>
               <CardTitle>Status no iCare - Com Técnico</CardTitle>
