@@ -182,6 +182,12 @@ const Index = () => {
     return serviceDate.getMonth() === referenceMonth && serviceDate.getFullYear() === referenceYear;
   });
 
+  // Get period services excluding cancelled items for entrance counting
+  const referenceMonthServicesExcludingCancelled = referenceMonthServices.filter(s => {
+    const status = s["Status iCare"];
+    return !status?.includes('Cancelado');
+  });
+
   // Statistics calculations for cards with "Data Execução"
   // These cards should only count services executed in the reference month
   
@@ -247,7 +253,7 @@ const Index = () => {
     return matches;
   }).length;
   
-  const referenceModemFibraTotal = referenceMonthServices.filter(s => s["Modelo"] === "MODEM FIBRA").length;
+  const referenceModemFibraTotal = referenceMonthServicesExcludingCancelled.filter(s => s["Modelo"] === "MODEM FIBRA").length;
   const sucessoModemFibraPercentage = referenceModemFibraTotal > 0 ? Math.round((sucessoModemFibraTotal / referenceModemFibraTotal) * 100) : 0;
   
   // Other models calculations (only from reference month executions)
@@ -274,7 +280,7 @@ const Index = () => {
     return matches;
   }).length;
   
-  const referenceOutrosTotal = referenceMonthServices.filter(s => s["Modelo"] !== "MODEM FIBRA").length;
+  const referenceOutrosTotal = referenceMonthServicesExcludingCancelled.filter(s => s["Modelo"] !== "MODEM FIBRA").length;
   const sucessoOutrosPercentage = referenceOutrosTotal > 0 ? Math.round((sucessoOutrosTotal / referenceOutrosTotal) * 100) : 0;
 
   // Filter services excluding those with creation date > reference month or > max filter date
@@ -694,7 +700,7 @@ const Index = () => {
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">FIBRA Entrantes em {displayPeriod}</p>
-                        <p className="text-xl font-bold">{referenceMonthServices.filter(s => s["Modelo"] === "MODEM FIBRA").length}</p>
+                        <p className="text-xl font-bold">{referenceMonthServicesExcludingCancelled.filter(s => s["Modelo"] === "MODEM FIBRA").length}</p>
                       </div>
                       <Users className="h-6 w-6 text-success" />
                     </div>
@@ -712,7 +718,7 @@ const Index = () => {
                     value={stats.sucessoModemFibra}
                     icon={<CheckCircle className="h-5 w-5" />}
                     variant="success"
-                    trend={{ value: stats.sucessoModemFibraTrend, isPositive: true }}
+                    trend={{ value: stats.sucessoModemFibraTrend, isPositive: true, description: "Em relação às retiradas entrantes menos itens cancelados" }}
                   />
                   <StatCard
                     title="Retiradas Insucesso FIBRA"
@@ -737,7 +743,7 @@ const Index = () => {
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">PAYTV Entrantes em {displayPeriod}</p>
-                        <p className="text-xl font-bold">{referenceMonthServices.filter(s => s["Modelo"] !== "MODEM FIBRA").length}</p>
+                        <p className="text-xl font-bold">{referenceMonthServicesExcludingCancelled.filter(s => s["Modelo"] !== "MODEM FIBRA").length}</p>
                       </div>
                       <Users className="h-6 w-6 text-accent" />
                     </div>
@@ -755,7 +761,7 @@ const Index = () => {
                     value={stats.sucessoOutros}
                     icon={<CheckCircle className="h-5 w-5" />}
                     variant="success"
-                    trend={{ value: stats.sucessoOutrosTrend, isPositive: true }}
+                    trend={{ value: stats.sucessoOutrosTrend, isPositive: true, description: "Em relação às retiradas entrantes menos itens cancelados" }}
                   />
                   <StatCard
                     title="Retiradas Insucesso PAYTV"
