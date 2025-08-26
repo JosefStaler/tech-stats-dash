@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "./card";
-import { cn } from "@/lib/utils";
+import { cn } from "../../lib/utils";
 
 interface StatCardProps {
   title: string;
@@ -15,80 +15,82 @@ interface StatCardProps {
   };
   variant?: "default" | "success" | "warning" | "accent" | "danger" | "amber";
   className?: string;
+  size?: "sm" | "md";
 }
 
-export function StatCard({ title, value, icon, trend, variant = "default", className }: StatCardProps) {
+export function StatCard({ title, value, icon, trend, variant = "default", className, size = "md" }: StatCardProps) {
   const getVariantStyles = () => {
     switch (variant) {
       case "success":
-        return "border-success/20 bg-gradient-to-br from-success/5 to-success/10";
+        return "border-green-500/20 bg-gradient-to-br from-green-50 to-green-100";
       case "warning":
-        return "border-warning/20 bg-gradient-to-br from-warning/5 to-warning/10";
+        return "border-yellow-500/20 bg-gradient-to-br from-yellow-50 to-yellow-100";
       case "accent":
-        return "border-accent/20 bg-gradient-to-br from-accent/5 to-accent/10";
+        return "border-sky-500/20 bg-gradient-to-br from-sky-50 to-sky-100";
       case "danger":
-        return "border-destructive/20 bg-gradient-to-br from-destructive/5 to-destructive/10";
+        return "border-red-500/20 bg-gradient-to-br from-red-50 to-red-100";
       case "amber":
-        return "border-amber-500/20 bg-gradient-to-br from-amber-500/5 to-amber-500/10";
+        return "border-amber-500/20 bg-gradient-to-br from-amber-50 to-amber-100";
       default:
-        return "border-primary/20 bg-gradient-card";
+        return "border-slate-200 bg-white";
     }
   };
+
+  const headerPadding = size === "sm" ? "px-3" : "px-4";
+  const contentPadding = size === "sm" ? "px-3 pt-0 pb-3" : "px-4 pt-0 pb-3";
+  const valueTextSize = size === "sm" ? "text-[22px]" : "text-[26px]";
+  const percentTextSize = size === "sm" ? "text-[18px]" : "text-[20px]";
+  const iconBoxSize = size === "sm" ? "h-6 w-6" : "h-8 w-8";
 
   const getIconStyles = () => {
     switch (variant) {
       case "success":
-        return "text-success bg-success/10";
+        return "text-green-600 bg-green-100";
       case "warning":
-        return "text-warning bg-warning/10";
+        return "text-yellow-600 bg-yellow-100";
       case "accent":
-        return "text-accent bg-accent/10";
+        return "text-sky-600 bg-sky-100";
       case "danger":
-        return "text-destructive bg-destructive/10";
+        return "text-red-600 bg-red-100";
       case "amber":
-        return "text-amber-600 bg-amber-500/10";
+        return "text-amber-600 bg-amber-100";
       default:
-        return "text-primary bg-primary/10";
+        return "text-slate-600 bg-slate-100";
     }
   };
 
   return (
     <Card className={cn(
-      "relative overflow-hidden transition-all duration-300 hover:shadow-elegant hover:-translate-y-1",
+      "relative overflow-hidden transition-all duration-300 hover:shadow-elegant hover:-translate-y-1 flex flex-col",
       getVariantStyles(),
       className
     )}>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium text-muted-foreground">
+      <CardHeader className={cn("flex flex-row items-center justify-between space-y-0 p-0", headerPadding) }>
+        <CardTitle className="text-sm font-medium text-muted-foreground leading-tight">
           {title}
         </CardTitle>
         <div className={cn(
-          "flex h-10 w-10 items-center justify-center rounded-lg transition-colors",
+          "flex items-center justify-center rounded-lg transition-colors",
+          iconBoxSize,
           getIconStyles()
         )}>
           {icon}
         </div>
       </CardHeader>
-      <CardContent>
-        <div className="flex items-center gap-2">
-          <div className="text-2xl font-bold">{value}</div>
+      <CardContent className={cn(contentPadding, "flex-1 flex flex-col justify-start") }>
+        <div className="flex items-center gap-2 -translate-y-1">
+          <span className={cn("inline-block align-middle font-bold leading-none", valueTextSize)}>{value}</span>
           {trend && !trend.hideValue && trend.value !== undefined && (
-            <div className={cn(
-              "text-2xl font-bold",
-              trend.percentageColor || "text-success"
-            )}>
+            <span className={cn("inline-block align-middle font-bold leading-none", percentTextSize)}>
               ({trend.value}%)
-            </div>
+            </span>
           )}
         </div>
         {trend && (
           <p className={cn(
-            "text-xs flex items-center mt-1",
-            trend.isPositive ? "text-success" : "text-destructive"
+            "text-xs flex items-center mt-0 text-muted-foreground leading-none"
           )}>
-            <span className="mr-1">
-              {trend.isPositive ? "↗" : "↘"}
-            </span>
+            <span className="mr-1">↗</span>
             {trend.description || "Em relação às retiradas entrantes"}
           </p>
         )}
